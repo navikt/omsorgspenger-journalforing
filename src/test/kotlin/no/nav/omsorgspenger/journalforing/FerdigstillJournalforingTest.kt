@@ -19,14 +19,22 @@ internal class FerdigstillJournalforingTest(
     @Test
     fun `Oppdater metadata på journalpost med gyldig data` () {
         with(testApplicationEngine) {
-            handleRequest(HttpMethod.Post, "/rammevedtak") {
+            handleRequest(HttpMethod.Put, "/rest/journalpostapi/v1/123456789") {
                 addHeader("Content-Type", "application/json")
                 addHeader("X-Correlation-Id", UUID.randomUUID().toString())
                 addHeader("nav-x-apiKey", "thisisatest")
                 addHeader("Authorization", "Bearer ${gyldigToken()}")
                 setBody("""
                 {
-                    "personIdent": "29099011111",
+                    "bruker": {
+                        "id": "11111111111",
+                        "idType": "FNR"
+                    }
+                    "sak": {
+                        "sakstype": "FAGSAK",
+                        "fagsakId": "a1b2c3",
+                        "faksaksystem": "OMS"
+                    }
                 }
                 """.trimIndent())
             }.apply {

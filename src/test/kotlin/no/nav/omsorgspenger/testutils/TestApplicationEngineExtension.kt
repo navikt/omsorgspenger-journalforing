@@ -56,10 +56,3 @@ private fun getConfig(config: MutableMap<String,String>): ApplicationConfig {
     val mergedConfig = testConfig.withFallback(fileConfig)
     return HoconApplicationConfig(mergedConfig)
 }
-
-internal fun MutableMap<String, String>.medAppConfig(port: Int) = also {
-    it.putIfAbsent("ktor.deployment.port", "$port")
-    it.putIfAbsent("nav.feature-toggles.rest-api-parsers.enable-personkort", "true")
-    it.putIfAbsent("nav.feature-toggles.rest-api-parsers.enable-xml-brev", "true")
-    it.putIfAbsent("nav.feature-toggles.rest-api-parsers.enable-pdf-brev", "true")
-}

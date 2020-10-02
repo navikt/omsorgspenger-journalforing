@@ -8,9 +8,7 @@ private const val journalpostApiMockPath = "/rest/journalpostapi/v1/"
 
 private fun WireMockServer.stubOppdaterJournalpost(): WireMockServer {
     WireMock.stubFor(
-            //WireMock.any(WireMock.urlPathMatching(".*$journalpostApiMockPath.*"))
-            WireMock.any(WireMock.anyUrl())
-                    //.withHeader("x-nav-apiKey", AnythingPattern())
+            WireMock.put(WireMock.urlPathMatching(".*$journalpostApiMockPath.*"))
                     .willReturn(
                     WireMock.aResponse()
                             .withStatus(200)

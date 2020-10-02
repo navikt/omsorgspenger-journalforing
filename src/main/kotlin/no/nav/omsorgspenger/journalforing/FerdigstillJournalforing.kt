@@ -36,9 +36,8 @@ internal class FerdigstillJournalforing(
         runBlocking {
             val journalPayload = JournalpostPayload(
                     bruker = JournalpostPayload.Bruker(packet[IDENTITETSNUMMER].asText()),
-                    journalpostId = "",
-                    sak = JournalpostPayload.Sak(fagsakId = packet["fagsak"].asText()),
-                    tittel = ""
+                    journalpostId = packet[JOURNALPOSTID].asText(),
+                    sak = JournalpostPayload.Sak(fagsakId = packet["fagsak"].asText())
             )
 
             joarkClient.oppdaterJournalpost(

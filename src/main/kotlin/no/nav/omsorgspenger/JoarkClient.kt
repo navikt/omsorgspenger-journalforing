@@ -2,7 +2,8 @@ package no.nav.omsorgspenger
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
-import io.ktor.client.request.*
+import io.ktor.client.request.put
+import io.ktor.client.request.header
 import io.ktor.client.statement.HttpStatement
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -38,7 +39,6 @@ class JoarkClient(
 
 data class JournalpostPayload(
         val journalpostId: String,
-        val tittel: String,
         val tema: String = "OMS",
         // val behandlingstema: String = "ab0061", // https://confluence.adeo.no/display/BOA/Behandlingstema
         val journalfoerendeEnhet: String = "9999",

@@ -8,6 +8,7 @@ import java.util.Base64
 const val vaultBase = "/var/run/secrets/nais.io/service_user"
 val vaultBasePath: Path = Paths.get(vaultBase)
 
+
 fun readServiceUserCredentials() = ServiceUser(
         username = Files.readString(vaultBasePath.resolve("username")),
         password = Files.readString(vaultBasePath.resolve("password"))
