@@ -1,0 +1,28 @@
+{
+  "app": "omsorgspenger-journalforing",
+  "cluster": "dev-gcp",
+  "namespace": "omsorgspenger",
+  "team": "omsorgspenger",
+  "minReplicas": "1",
+  "maxReplicas": "1",
+  "ingresses": [
+    "https://omsorgspenger-journalforing.dev.adeo.no"
+  ],
+  "apiGwUrl": "api-gw-q1.oera.no",
+  "kafkaBootstrapServers": [
+    "b27apvl00045.preprod.local",
+    "b27apvl00046.preprod.local",
+    "b27apvl00047.preprod.local"
+  ],
+  "env": {
+    "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
+    "KAFKA_PROPERTIES_SECURITY_PROTOCOL": "SASL_SSL",
+    "KAFKA_RAPID_TOPIC": "k9-rapid-v1",
+    "KAFKA_CONSUMER_GROUP_ID": "omsorgspenger-journalforing",
+    "STS_URL": "http://security-token-service.default.svc.nais.local",
+    "JOARK_BASE_URL": "https://dokarkiv-q1.nais.preprod.local",
+    "AZURE_OPENID_CONNECT_CONFIGURATION": "https://login.microsoftonline.com/navq.onmicrosoft.com/.well-known/openid-configuration",
+    "API_GATEWAY_URL": "https://api-gw-q1.oera.no",
+    "DISCOVERY_URL": "https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1"
+  }
+}
