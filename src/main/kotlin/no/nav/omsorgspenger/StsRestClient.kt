@@ -14,9 +14,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
-/**
- * henter jwt token fra STS
- */
 class StsRestClient(
         private val baseUrl: String,
         private val serviceUser: ServiceUser,
@@ -37,10 +34,11 @@ class StsRestClient(
                     "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
             ) {
                 header("Authorization", serviceUser.basicAuth)
+                header("x-nav-apiKey", System.getenv("api-gw-apiKey"))
                 accept(ContentType.Application.Json)
             }
                     .execute {
-                        objectMapper.readValue<Token>(it.readText())
+                        objectMapper.readValue(it.readText())
                     }
         } catch (e: ServerResponseException) {
             logger.error("Feil ved henting av token. Response: ${e.response.readText()}", e)

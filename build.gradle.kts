@@ -17,15 +17,12 @@ plugins {
 dependencies {
     implementation("no.nav.k9.rapid:river:$k9rapidVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
-    implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
-    implementation("no.nav.helse:dusseldorf-ktor-core:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
 
     testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
-    testImplementation("io.ktor:ktor-client-mock-jvm:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }

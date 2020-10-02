@@ -5,7 +5,6 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV1WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2WellKnownUrl
 import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsTokenUrl
-import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl
 import no.nav.omsorgspenger.testutils.wiremock.stubJournalpostApi
 
 
@@ -48,8 +47,6 @@ internal class MockedEnvironment(
         appConfig["nav.auth.clients.1.client_secret"] = "secret"
         appConfig["nav.auth.clients.1.token_endpoint"] = wireMockServer.getNaisStsTokenUrl()
 
-        // Gateway URLS
-        appConfig["nav.gateways.journalpostapi_base_url"] = wireMockServer.journalpostApiBaseUrl()
     }
 
     internal fun start() = this

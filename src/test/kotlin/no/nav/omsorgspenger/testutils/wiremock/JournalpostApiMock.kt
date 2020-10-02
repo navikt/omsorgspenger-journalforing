@@ -2,24 +2,21 @@ package no.nav.omsorgspenger.testutils.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
-import org.intellij.lang.annotations.Language
+import com.github.tomakehurst.wiremock.matching.AnythingPattern
 
-private const val journalpostApiMockPath = "/rest/journalpostapi/v1-mock"
+private const val journalpostApiMockPath = "/rest/journalpostapi/v1/"
 
 private fun WireMockServer.stubOppdaterJournalpost(): WireMockServer {
-    @Language("JSON")
-    val response = """
-    {}
-        """.trimIndent()
     WireMock.stubFor(
-            WireMock.get(WireMock.urlPathMatching(".*$journalpostApiMockPath.*")).willReturn(
+            //WireMock.any(WireMock.urlPathMatching(".*$journalpostApiMockPath.*"))
+            WireMock.any(WireMock.anyUrl())
+                    //.withHeader("x-nav-apiKey", AnythingPattern())
+                    .willReturn(
                     WireMock.aResponse()
                             .withStatus(200)
-                            .withBody(response)
             )
     )
     return this
 }
 
 internal fun WireMockServer.stubJournalpostApi() = stubOppdaterJournalpost()
-internal fun WireMockServer.journalpostApiBaseUrl() = baseUrl() + journalpostApiMockPath

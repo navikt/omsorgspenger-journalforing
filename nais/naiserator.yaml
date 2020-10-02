@@ -50,10 +50,6 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
-  spec:
-    azure:
-      application:
-        enabled: true
   filesFrom:
     - secret: omsorgspenger-journalforing-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user

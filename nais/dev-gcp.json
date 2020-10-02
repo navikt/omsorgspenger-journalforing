@@ -19,10 +19,8 @@
     "KAFKA_PROPERTIES_SECURITY_PROTOCOL": "SASL_SSL",
     "KAFKA_RAPID_TOPIC": "k9-rapid-v1",
     "KAFKA_CONSUMER_GROUP_ID": "omsorgspenger-journalforing",
-    "STS_URL": "http://security-token-service.default.svc.nais.local",
-    "JOARK_BASE_URL": "https://dokarkiv-q1.nais.preprod.local",
-    "AZURE_OPENID_CONNECT_CONFIGURATION": "https://login.microsoftonline.com/navq.onmicrosoft.com/.well-known/openid-configuration",
-    "API_GATEWAY_URL": "https://api-gw-q1.oera.no",
-    "DISCOVERY_URL": "https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1"
+    "STS_URL": "https://api-gw-q1.oera.no/security-token-service",
+    "JOARK_BASE_URL": "https://api-gw-q1.oera.no/dokarkiv",
+    "API_GW_APIKEY": "changeme" // TODO: FIX?
   }
 }

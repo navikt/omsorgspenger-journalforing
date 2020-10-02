@@ -34,25 +34,7 @@ class JoarkClient(
                 }
 
     }
-
-    suspend fun ferdigstillJournalpost(hendelseId: UUID, journalpostPayload: JournalpostPayload): Boolean {
-        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/${journalpostPayload.journalpostId}") {
-            header("Nav-Consumer-Token", hendelseId.toString())
-            header("Authorization", "Bearer ${stsRestClient.token()}")
-            contentType(ContentType.Application.Json)
-            body = FerdigstillJournalpostPayload("9999")
-        }
-                .execute {
-                    if (it.status.value !in 200..300) {
-                        logger.warn("Feil fra Joark: {}", keyValue("response", it.receive<String>()))
-                        false
-                    } else true
-                }
-
-    }
 }
-
-data class FerdigstillJournalpostPayload(val journalfoerendeEnhet:String)
 
 data class JournalpostPayload(
         val journalpostId: String,

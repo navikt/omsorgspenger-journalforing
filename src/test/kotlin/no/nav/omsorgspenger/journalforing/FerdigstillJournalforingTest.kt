@@ -10,34 +10,24 @@ import no.nav.omsorgspenger.testutils.TestApplicationEngineExtension
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.*
+import java.util.UUID
 
 @ExtendWith(TestApplicationEngineExtension::class)
-internal class HenteRammevedtakTest(
+internal class FerdigstillJournalforingTest(
         private val testApplicationEngine: TestApplicationEngine) {
 
     @Test
     fun `Oppdater metadata på journalpost med gyldig data` () {
         with(testApplicationEngine) {
-            handleRequest(HttpMethod.Put, "/rest/journalpostapi/v1/journalpost/12345123451234") {
+            handleRequest(HttpMethod.Post, "/rammevedtak") {
                 addHeader("Content-Type", "application/json")
                 addHeader("X-Correlation-Id", UUID.randomUUID().toString())
+                addHeader("nav-x-apiKey", "thisisatest")
                 addHeader("Authorization", "Bearer ${gyldigToken()}")
                 setBody("""
-                    {
-                        "journalpostId": "12345678""
-                        "tema": "OMS",
-                        "behandlingstema": "ab0061",
-                        "bruker": {
-                            "id": "01019911111",
-                            "idType": "FNR"
-                        },
-                        "sak": {
-                            "fagsakId": "k5c81d",
-                            "fagsaksystem": "K9",
-                            "sakstype": "FAGSAK"
-                        }
-                    }
+                {
+                    "personIdent": "29099011111",
+                }
                 """.trimIndent())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
