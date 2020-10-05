@@ -21,19 +21,17 @@ internal class FerdigstillJournalforingTest(
         with(testApplicationEngine) {
             handleRequest(HttpMethod.Put, "/rest/journalpostapi/v1/123456789") {
                 addHeader("Content-Type", "application/json")
+                addHeader("Nav-Consumer-Token", "consumer")
                 addHeader("X-Correlation-Id", UUID.randomUUID().toString())
                 addHeader("nav-x-apiKey", "thisisatest")
                 addHeader("Authorization", "Bearer ${gyldigToken()}")
                 setBody("""
                 {
                     "bruker": {
-                        "id": "11111111111",
-                        "idType": "FNR"
+                        "id": "11111111111"
                     }
                     "sak": {
-                        "sakstype": "FAGSAK",
-                        "fagsakId": "a1b2c3",
-                        "faksaksystem": "OMS"
+                        "fagsakId": "a1b2c3"
                     }
                 }
                 """.trimIndent())

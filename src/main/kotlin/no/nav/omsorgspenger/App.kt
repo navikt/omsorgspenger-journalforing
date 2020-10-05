@@ -9,6 +9,7 @@ import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.JacksonSerializer
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
+import no.nav.omsorgspenger.journalforing.JournalforingMediator
 import org.slf4j.LoggerFactory
 
 internal val objectMapper: ObjectMapper = jacksonObjectMapper()
@@ -25,8 +26,9 @@ fun main() {
         install(JsonFeature) { serializer = JacksonSerializer(objectMapper) }
     }
     val joarkClient = JoarkClient(requireNotNull(env["JOARK_BASE_URL"]), stsRestClient, httpClient)
+    val journalforingMediator = JournalforingMediator(joarkClient)
 
     RapidApplication.create(env).apply {
-        FerdigstillJournalforing(this, joarkClient)
+        FerdigstillJournalforing(this, journalforingMediator)
     }.start()
 }

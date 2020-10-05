@@ -11,6 +11,14 @@ private object SakMetrics {
             .build("mottatt_behov", "Mottatt behov")
             .register()
 
+    val feilBehovBehandling: Counter = Counter
+            .build("behandlings_feil", "feil vid behandling av behov")
+            .register()
+
+    val behovBehandlet: Counter = Counter
+            .build("behandling_utfort", "Lyckad behandling av behov")
+            .register()
+
 }
 
 private fun safeMetric(block: () -> Unit) = try {
@@ -21,4 +29,12 @@ private fun safeMetric(block: () -> Unit) = try {
 
 internal fun incMottattBehov() {
     safeMetric { SakMetrics.mottattBehov.inc() }
+}
+
+internal fun incBehandlingFeil() {
+    safeMetric { SakMetrics.feilBehovBehandling.inc() }
+}
+
+internal fun incBehandlingUtfort() {
+    safeMetric { SakMetrics.behovBehandlet.inc() }
 }

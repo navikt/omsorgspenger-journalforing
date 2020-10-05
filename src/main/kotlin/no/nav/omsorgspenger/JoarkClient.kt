@@ -1,5 +1,6 @@
 package no.nav.omsorgspenger
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
 import io.ktor.client.request.put
@@ -8,6 +9,7 @@ import io.ktor.client.statement.HttpStatement
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.logstash.logback.argument.StructuredArguments.keyValue
+import no.nav.omsorgspenger.journalforing.BehovPayload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.UUID
@@ -20,12 +22,12 @@ class JoarkClient(
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
 
-    suspend fun oppdaterJournalpost(hendelseId: UUID, journalpostPayload: JournalpostPayload): Boolean {
-        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/${journalpostPayload.journalpostId}") {
+    suspend fun oppdaterJournalpost(hendelseId: UUID, behovPayload: BehovPayload): Boolean {
+        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/${behovPayload.journalpostId}") {
             header("Nav-Consumer-Token", hendelseId.toString())
             header("Authorization", "Bearer ${stsRestClient.token()}")
             contentType(ContentType.Application.Json)
-            body = journalpostPayload
+            body = behovPayload
         }
                 .execute {
                     if (it.status.value !in 200..300) {
@@ -35,25 +37,20 @@ class JoarkClient(
                 }
 
     }
-}
 
-data class JournalpostPayload(
-        val journalpostId: String,
-        val tema: String = "OMS",
-        // val behandlingstema: String = "ab0061", // https://confluence.adeo.no/display/BOA/Behandlingstema
-        val journalfoerendeEnhet: String = "9999",
-        val bruker: Bruker,
-        val sak: Sak
-) {
-    data class Bruker(
-            val id: String,
-            val idType: String = "FNR"
-    )
+    suspend fun ferdigstillJournalpost(hendelseId: UUID, behovPayload: BehovPayload): Boolean {
+        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${behovPayload.journalpostId}/ferdigstill") {
+            header("Nav-Consumer-Token", hendelseId.toString())
+            header("Authorization", "Bearer ${stsRestClient.token()}")
+            contentType(ContentType.Application.Json)
+            body = behovPayload.journalfoerendeEnhet
+        }
+                .execute {
+                    if (it.status.value !in 200..300) {
+                        logger.warn("Feil fra Joark: {}", keyValue("response", it.receive<String>()))
+                        false
+                    } else true
+                }
 
-    data class Sak(
-            val sakstype: String = "FAGSAK",
-            val fagsakId: String,
-            val fagsaksystem: String = "K9"
-    )
-
+    }
 }
