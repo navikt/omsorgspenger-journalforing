@@ -4,7 +4,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing.Companion.BEHOV
 import java.util.UUID
 
-class BehovPayload private constructor(
+class BehovPayload internal constructor(
         val hendelseId: UUID,
         val journalpostId: String,
         private val tema: String,
@@ -35,6 +35,6 @@ class BehovPayload private constructor(
     data class Sak(
             val sakstype: String = "FAGSAK",
             val fagsakId: String,
-            val fagsaksystem: String = "K9"
+            val fagsaksystem: String = "OMSORGSPENGER"
     )
 }
