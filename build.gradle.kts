@@ -1,9 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val junitJupiterVersion = "5.7.0"
-val k9rapidVersion = "1.8775282"
-val ktorVersion = "1.3.2"
-val wiremockVersion = "2.27.2"
+val k9rapidVersion = "1.fe10445"
+val ktorVersion = "1.4.1"
 val dusseldorfKtorVersion = "1.4.1.dcb9ddd"
 val jsonassertVersion = "1.5.0"
 
@@ -17,8 +16,6 @@ plugins {
 dependencies {
     implementation("no.nav.k9.rapid:river:$k9rapidVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
-    //implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
-    //implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
 
     testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
