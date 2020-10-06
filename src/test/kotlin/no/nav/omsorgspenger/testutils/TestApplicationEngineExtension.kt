@@ -2,12 +2,10 @@ package no.nav.omsorgspenger.testutils
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.HoconApplicationConfig
-import io.ktor.server.engine.stop
-import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.createTestEnvironment
-import io.ktor.util.KtorExperimentalAPI
+import io.ktor.config.*
+import io.ktor.server.engine.*
+import io.ktor.server.testing.*
+import io.ktor.util.*
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
@@ -18,10 +16,12 @@ internal class TestApplicationEngineExtension : ParameterResolver {
     @KtorExperimentalAPI
     internal companion object {
         private val mockedEnvironment = MockedEnvironment(wireMockPort = 8084).start()
+
         @KtorExperimentalAPI
         internal val testApplicationEngine = TestApplicationEngine(createTestEnvironment{
             config = getConfig(mockedEnvironment.appConfig)
         })
+
         init {
             testApplicationEngine.start(wait = true)
             Runtime.getRuntime().addShutdownHook(Thread {
@@ -30,22 +30,15 @@ internal class TestApplicationEngineExtension : ParameterResolver {
             })
         }
 
-        private val støttedeParametre = listOf(
-                TestApplicationEngine::class.java,
-                WireMockServer::class.java
-        )
     }
     @KtorExperimentalAPI
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
-        return støttedeParametre.contains(parameterContext.parameter.type)
+        return true
     }
 
     @KtorExperimentalAPI
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
-        return when (parameterContext.parameter.type) {
-            TestApplicationEngine::class.java -> testApplicationEngine
-            else -> mockedEnvironment.wireMockServer
-        }
+        return mockedEnvironment.wireMockServer
     }
 }
 

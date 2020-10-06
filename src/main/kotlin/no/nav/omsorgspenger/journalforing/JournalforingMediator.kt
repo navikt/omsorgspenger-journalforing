@@ -1,10 +1,8 @@
 package no.nav.omsorgspenger.journalforing
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import no.nav.omsorgspenger.JoarkClient
 import org.slf4j.LoggerFactory
-import kotlin.coroutines.EmptyCoroutineContext
 
 class JournalforingMediator(
         private val joarkClient: JoarkClient
@@ -12,20 +10,21 @@ class JournalforingMediator(
 
     internal val logger = LoggerFactory.getLogger(this::class.java)
 
-    internal fun behandlaJournalpost(behovPayload: BehovPayload): Boolean {
-        val journalpostId = behovPayload.journalpostId
+    internal fun behandlaJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         var result = false
 
+        // TODO: Hantera = uppdatering av post som redan är uppdaterat men inte färdigställt?
         runBlocking {
+            val journalpostId = journalpostPayload.journalpostId
             joarkClient.oppdaterJournalpost(
-                    hendelseId = behovPayload.hendelseId,
-                    behovPayload = behovPayload
+                    hendelseId = correlationId,
+                    journalpostPayload = journalpostPayload
             ).let { success ->
                 if (success) {
                     logger.info("Oppdatert journalpostid: $journalpostId")
                     joarkClient.ferdigstillJournalpost(
-                            hendelseId = behovPayload.hendelseId,
-                            behovPayload
+                            hendelseId = correlationId,
+                            journalpostPayload
                     ).let { success ->
                         if (success) {
                             result = true

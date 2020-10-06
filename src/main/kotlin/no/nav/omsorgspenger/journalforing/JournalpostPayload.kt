@@ -2,28 +2,23 @@ package no.nav.omsorgspenger.journalforing
 
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing.Companion.BEHOV
-import java.util.UUID
 
-class BehovPayload internal constructor(
-        val hendelseId: UUID,
+class JournalpostPayload internal constructor(
         val journalpostId: String,
-        private val tema: String,
-        val journalfoerendeEnhet: String,
         private val bruker: Bruker,
-        private val sak: Sak
+        private val sak: Sak,
+        private val tema: String = "OMS",
+        val journalfoerendeEnhet: String = "9999"
 ) {
 
     constructor(packet: JsonMessage) :
             this(
-                    hendelseId = UUID.fromString(packet["@id"].asText()),
                     journalpostId = packet["@behov.$BEHOV.journalpostid"].asText(),
-                    tema = "OMS",
-                    journalfoerendeEnhet = "9999",
                     bruker = Bruker(
                             id = packet["@behov.$BEHOV.identitetsnummer"].asText()
                     ),
                     sak = Sak(
-                     fagsakId = packet["@behov.$BEHOV.saksnummer"].asText()
+                            fagsakId = packet["@behov.$BEHOV.saksnummer"].asText()
                     )
             )
 

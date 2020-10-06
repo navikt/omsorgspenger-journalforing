@@ -22,6 +22,7 @@ class StsRestClient(
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
     private var cachedOidcToken: Token = runBlocking { fetchToken() }
+    private val apiKey = System.getenv("api-gw-apiKey")
 
     suspend fun token(): String {
         if (cachedOidcToken.expired) cachedOidcToken = fetchToken()
@@ -34,7 +35,7 @@ class StsRestClient(
                     "$baseUrl?grant_type=client_credentials&scope=openid"
             ) {
                 header("Authorization", serviceUser.basicAuth)
-                header("x-nav-apiKey", System.getenv("api-gw-apiKey"))
+                header("x-nav-apiKey", apiKey)
                 accept(ContentType.Application.Json)
             }
                     .execute {
