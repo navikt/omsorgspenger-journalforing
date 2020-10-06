@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
-import no.nav.k9.rapid.behov.Behov
-import no.nav.k9.rapid.river.*
+import no.nav.k9.rapid.river.BehovssekvensPacketListener
+import no.nav.k9.rapid.river.leggTilLøsning
+import no.nav.k9.rapid.river.skalLøseBehov
 import org.slf4j.LoggerFactory
 
 internal class FerdigstillJournalforing(

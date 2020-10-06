@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
-import io.ktor.client.*
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JacksonSerializer
-import kotlinx.coroutines.delay
+import io.ktor.client.features.json.JsonFeature
+import java.util.UUID
+import kotlin.test.assertEquals
 import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsTokenUrl
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
@@ -23,9 +24,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.ExtendWith
-import java.lang.Thread.sleep
-import java.util.*
-import kotlin.test.assertEquals
 
 @ExtendWith(TestApplicationEngineExtension::class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

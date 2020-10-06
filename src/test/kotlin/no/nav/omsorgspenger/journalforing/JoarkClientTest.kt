@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.tomakehurst.wiremock.WireMockServer
-import io.ktor.client.*
-import io.ktor.client.features.json.*
+import io.ktor.client.HttpClient
+import io.ktor.client.features.json.JacksonSerializer
+import io.ktor.client.features.json.JsonFeature
+import java.util.*
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.dusseldorf.testsupport.jws.Azure
 import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsTokenUrl
 import no.nav.omsorgspenger.JoarkClient
 import no.nav.omsorgspenger.ServiceUser
@@ -18,7 +19,6 @@ import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import java.util.UUID
 
 @ExtendWith(TestApplicationEngineExtension::class)
 internal class JoarkClientTest(
