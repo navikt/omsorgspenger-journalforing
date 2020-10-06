@@ -53,6 +53,8 @@ spec:
   filesFrom:
     - secret: omsorgspenger-journalforing-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user
+  envFrom:
+    - secret: omsorgspenger-journalforing-apigwkey
   env:
   {{#each env}}
     - name: {{@key}}
