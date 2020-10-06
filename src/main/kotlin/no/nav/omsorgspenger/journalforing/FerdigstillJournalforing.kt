@@ -8,6 +8,7 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.skalLøseBehov
 import org.slf4j.LoggerFactory
+import kotlin.collections.emptyMap as emptyMap
 
 internal class FerdigstillJournalforing(
         rapidsConnection: RapidsConnection,
@@ -43,16 +44,14 @@ internal class FerdigstillJournalforing(
                             sak = JournalpostPayload.Sak(fagsakId = saksnummer)
                     )
             ).let { success ->
-                if(success) {
-                    packet.leggTilLøsning(BEHOV, mapOf("løsning" to packet["@behov.$BEHOV.saksnummer"]))
-                }
+                if(success) logger.info("Behandlet journalpostId: ${it.asText()}")
                 else {
-                    logger.error("Feil vid behandling av behov: $id").also { incBehandlingFeil() }
+                    logger.error("Feil vid behandling av journalpostId: ${it.asText()}").also { incBehandlingFeil() }
                     return false
                 }
             }
         }
-
+        packet.leggTilLøsning(BEHOV, emptyMap<String, String>())
         return true
     }
 

@@ -4,6 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
 import io.ktor.client.request.put
 import io.ktor.client.request.header
+import io.ktor.client.request.patch
 import io.ktor.client.statement.HttpStatement
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -39,7 +40,7 @@ class JoarkClient(
     }
 
     suspend fun ferdigstillJournalpost(hendelseId: String, journalpostPayload: JournalpostPayload): Boolean {
-        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
+        return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
             header("Nav-Consumer-Token", hendelseId)
             header("Authorization", "Bearer ${stsRestClient.token()}")
             header("x-nav-apiKey", apiKey)
