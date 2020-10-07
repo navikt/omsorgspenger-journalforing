@@ -20,13 +20,12 @@ class JoarkClient(
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
-    private val apiKey = System.getenv("api-gw-apiKey")
 
-    suspend fun oppdaterJournalpost(hendelseId: String, journalpostPayload: JournalpostPayload): Boolean {
-        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/${journalpostPayload.journalpostId}") {
-            header("Nav-Consumer-Token", hendelseId)
+    suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
+        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
+            header("Nav-Consumer-Token", correlationId)
             header("Authorization", "Bearer ${stsRestClient.token()}")
-            header("x-nav-apiKey", apiKey)
+            header("x-nav-apiKey", apiGwKey)
             contentType(ContentType.Application.Json)
             body = journalpostPayload
         }
@@ -39,13 +38,13 @@ class JoarkClient(
 
     }
 
-    suspend fun ferdigstillJournalpost(hendelseId: String, journalpostPayload: JournalpostPayload): Boolean {
+    suspend fun ferdigstillJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
-            header("Nav-Consumer-Token", hendelseId)
+            header("Nav-Consumer-Token", correlationId)
             header("Authorization", "Bearer ${stsRestClient.token()}")
-            header("x-nav-apiKey", apiKey)
+            header("x-nav-apiKey", apiGwKey)
             contentType(ContentType.Application.Json)
-            body = journalpostPayload.journalfoerendeEnhet
+            body = journalfoerendeEnhet("9999")
         }
                 .execute {
                     if (it.status.value !in 200..300) {
@@ -55,4 +54,6 @@ class JoarkClient(
                 }
 
     }
+
+    internal data class journalfoerendeEnhet(val journalfoerendeEnhet: String)
 }

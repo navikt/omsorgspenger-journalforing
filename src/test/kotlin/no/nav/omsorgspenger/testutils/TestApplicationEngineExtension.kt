@@ -1,15 +1,15 @@
 package no.nav.omsorgspenger.testutils
 
-import com.github.tomakehurst.wiremock.WireMockServer
 import com.typesafe.config.ConfigFactory
-import io.ktor.config.*
-import io.ktor.server.engine.*
-import io.ktor.server.testing.*
-import io.ktor.util.*
+import io.ktor.config.ApplicationConfig
+import io.ktor.config.HoconApplicationConfig
+import io.ktor.server.engine.stop
+import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.util.KtorExperimentalAPI
+import java.util.concurrent.TimeUnit
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
-import java.util.concurrent.TimeUnit
 
 internal class TestApplicationEngineExtension : ParameterResolver {
 
@@ -18,9 +18,7 @@ internal class TestApplicationEngineExtension : ParameterResolver {
         private val mockedEnvironment = MockedEnvironment(wireMockPort = 8084).start()
 
         @KtorExperimentalAPI
-        internal val testApplicationEngine = TestApplicationEngine(createTestEnvironment{
-            config = getConfig(mockedEnvironment.appConfig)
-        })
+        internal val testApplicationEngine = TestApplicationEngine()
 
         init {
             testApplicationEngine.start(wait = true)

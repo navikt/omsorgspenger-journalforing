@@ -17,13 +17,13 @@ class JournalforingMediator(
         runBlocking {
             val journalpostId = journalpostPayload.journalpostId
             joarkClient.oppdaterJournalpost(
-                    hendelseId = correlationId,
+                    correlationId = correlationId,
                     journalpostPayload = journalpostPayload
             ).let { success ->
                 if (success) {
                     logger.info("Oppdatert journalpostid: $journalpostId")
                     joarkClient.ferdigstillJournalpost(
-                            hendelseId = correlationId,
+                            correlationId = correlationId,
                             journalpostPayload
                     ).let { success ->
                         if (success) {

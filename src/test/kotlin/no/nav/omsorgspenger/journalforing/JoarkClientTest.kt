@@ -33,42 +33,23 @@ internal class JoarkClientTest(
     }
 
     private val client = JoarkClient(
-        baseUrl = wireMockServer.journalpostApiBaseUrl(),
-        httpClient = httpClient,
-        stsRestClient = StsRestClient(
-            baseUrl = wireMockServer.getNaisStsTokenUrl(),
-            serviceUser = ServiceUser("foo", "bar"),
-            httpClient = httpClient
-        )
+            baseUrl = wireMockServer.journalpostApiBaseUrl(),
+            httpClient = httpClient,
+            stsRestClient = StsRestClient(
+                    baseUrl = wireMockServer.getNaisStsTokenUrl(),
+                    serviceUser = ServiceUser("foo", "bar"),
+                    httpClient = httpClient
+            )
     )
 
     @Test
-    fun `ferdigstill journalpost test` () {
+    fun `ferdigstill journalpost test`() {
 
         val hendelseId = UUID.randomUUID().toString()
 
         val result = runBlocking {
             client.ferdigstillJournalpost(
-                hendelseId = hendelseId,
-                journalpostPayload = JournalpostPayload(
-                    journalpostId = "123",
-                    bruker = JournalpostPayload.Bruker(id = "12312312311"),
-                    sak = JournalpostPayload.Sak(fagsakId = "123")
-                )
-            )
-        }
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `oppdater journalpost test` () {
-
-        val hendelseId = UUID.randomUUID().toString()
-
-        val result = runBlocking {
-            client.oppdaterJournalpost(
-                    hendelseId = hendelseId,
+                    correlationId = hendelseId,
                     journalpostPayload = JournalpostPayload(
                             journalpostId = "123",
                             bruker = JournalpostPayload.Bruker(id = "12312312311"),
@@ -79,4 +60,24 @@ internal class JoarkClientTest(
 
         assertTrue(result)
     }
+
+    @Test
+    fun `oppdater journalpost test`() {
+
+        val hendelseId = UUID.randomUUID().toString()
+
+        val result = runBlocking {
+            client.oppdaterJournalpost(
+                    correlationId = hendelseId,
+                    journalpostPayload = JournalpostPayload(
+                            journalpostId = "123",
+                            bruker = JournalpostPayload.Bruker(id = "12312312311"),
+                            sak = JournalpostPayload.Sak(fagsakId = "123")
+                    )
+            )
+        }
+
+        assertTrue(result)
+    }
+
 }
