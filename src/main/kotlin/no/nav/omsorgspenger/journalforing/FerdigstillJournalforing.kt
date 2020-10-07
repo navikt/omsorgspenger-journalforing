@@ -53,7 +53,7 @@ internal class FerdigstillJournalforing(
                 }
             }
         }
-        packet.leggTilLøsning(BEHOV, emptyMap<String, String>())
+        packet.leggTilLøsning(BEHOV)
         return true
     }
 
