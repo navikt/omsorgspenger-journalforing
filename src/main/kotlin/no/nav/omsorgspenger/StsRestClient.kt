@@ -20,7 +20,7 @@ class StsRestClient(
         private val httpClient: HttpClient = HttpClient()
 ) {
 
-    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)
     private var cachedOidcToken: Token = runBlocking { fetchToken() }
     private val apiKey = System.getenv("STS_API_GW_KEY")
 

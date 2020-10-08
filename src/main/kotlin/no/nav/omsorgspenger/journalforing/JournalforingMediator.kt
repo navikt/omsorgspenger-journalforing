@@ -8,7 +8,7 @@ class JournalforingMediator(
         private val joarkClient: JoarkClient
 ) {
 
-    internal val logger = LoggerFactory.getLogger(this::class.java)
+    internal val logger = LoggerFactory.getLogger(JournalforingMediator::class.java)
 
     internal fun behandlaJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         var result = false
