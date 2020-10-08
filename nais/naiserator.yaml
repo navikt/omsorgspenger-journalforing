@@ -54,7 +54,7 @@ spec:
     - secret: omsorgspenger-journalforing-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user
   envFrom:
-    - secret: omsorgspenger-journalforing-apigwkey
+    - secret: omsorgspenger-journalforing-apigwkeys
   env:
   {{#each env}}
     - name: {{@key}}

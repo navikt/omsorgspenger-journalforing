@@ -20,12 +20,13 @@ class JoarkClient(
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+    private val apiKey = System.getenv("JOARK_API_GW_KEY")?: "Test"
 
     suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
             header("Nav-Consumer-Token", correlationId)
             header("Authorization", "Bearer ${stsRestClient.token()}")
-            header("x-nav-apiKey", apiGwKey)
+            header("x-nav-apiKey", apiKey)
             contentType(ContentType.Application.Json)
             body = journalpostPayload
         }
@@ -42,7 +43,7 @@ class JoarkClient(
         return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
             header("Nav-Consumer-Token", correlationId)
             header("Authorization", "Bearer ${stsRestClient.token()}")
-            header("x-nav-apiKey", apiGwKey)
+            header("x-nav-apiKey", apiKey)
             contentType(ContentType.Application.Json)
             body = journalfoerendeEnhet("9999")
         }

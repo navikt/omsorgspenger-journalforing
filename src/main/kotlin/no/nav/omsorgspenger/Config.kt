@@ -5,10 +5,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.Base64
 
-internal val apiGwKey = System.getenv("api-gw-apiKey")?: "Test"
 const val secretBase = "/var/run/secrets/nais.io/service_user"
 val secretBasePath: Path = Paths.get(secretBase)
-
 
 fun readServiceUserCredentials() = ServiceUser(
         username = Files.readString(secretBasePath.resolve("username")),

@@ -10,13 +10,10 @@ import io.ktor.client.features.json.JacksonSerializer
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
-import org.slf4j.LoggerFactory
 
 internal val objectMapper: ObjectMapper = jacksonObjectMapper()
         .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .registerModule(JavaTimeModule())
-
-internal val secureLog = LoggerFactory.getLogger("tjenestekall")
 
 fun main() {
     val env = System.getenv()
