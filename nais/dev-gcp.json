@@ -1,0 +1,25 @@
+{
+  "app": "omsorgspenger-journalforing",
+  "cluster": "dev-gcp",
+  "namespace": "omsorgspenger",
+  "team": "omsorgspenger",
+  "minReplicas": "1",
+  "maxReplicas": "1",
+  "ingresses": [
+    "https://omsorgspenger-journalforing.dev.adeo.no"
+  ],
+  "apiGwUrl": "api-gw-q1.oera.no",
+  "kafkaBootstrapServers": [
+    "b27apvl00045.preprod.local",
+    "b27apvl00046.preprod.local",
+    "b27apvl00047.preprod.local"
+  ],
+  "env": {
+    "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
+    "KAFKA_PROPERTIES_SECURITY_PROTOCOL": "SASL_SSL",
+    "KAFKA_RAPID_TOPIC": "k9-rapid-v2",
+    "KAFKA_CONSUMER_GROUP_ID": "omsorgspenger-journalforing",
+    "STS_URL": "https://api-gw-q1.oera.no/security-token-service",
+    "JOARK_BASE_URL": "https://api-gw-q1.oera.no/dokarkiv"
+  }
+}
