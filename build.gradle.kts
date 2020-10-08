@@ -16,6 +16,7 @@ plugins {
 dependencies {
     implementation("no.nav.k9.rapid:river:$k9rapidVersion")
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-client:$ktorVersion")
 
     testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
