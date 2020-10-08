@@ -22,7 +22,8 @@ class StsRestClient(
 
     private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)
     private var cachedOidcToken: Token = runBlocking { fetchToken() }
-    private val apiKey = System.getenv("STS_API_GW_KEY")
+    //private val apiKey = System.getenv("STS_API_GW_KEY")
+    private val apiKey = "invalidTestKey"
 
     suspend fun token(): String {
         if (cachedOidcToken.expired) cachedOidcToken = fetchToken()
