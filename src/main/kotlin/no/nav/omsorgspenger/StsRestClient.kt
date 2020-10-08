@@ -32,7 +32,7 @@ class StsRestClient(
     private suspend fun fetchToken(): Token {
         try {
             return httpClient.get<HttpStatement>(
-                    "$baseUrl?grant_type=client_credentials&scope=openid"
+                    "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
             ) {
                 header("Authorization", serviceUser.basicAuth)
                 header("x-nav-apiKey", apiKey)
