@@ -3,7 +3,7 @@ name: Deploy til dev-gcp
 on: [workflow_dispatch]
 
 env:
-  BASE_IMAGE: docker.pkg.github.com/${{ github.repository }}/omsorgspenger-sak
+  BASE_IMAGE: docker.pkg.github.com/${{ github.repository }}/omsorgspenger-journalforing
   GITHUB_USERNAME: x-access-token
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
