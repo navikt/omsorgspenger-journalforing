@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 class StsRestClient(
         private val baseUrl: String,
         private val serviceUser: ServiceUser,
-        private val httpClient: HttpClient = HttpClient()
+        private val httpClient: HttpClient
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)

@@ -17,5 +17,5 @@ data class ServiceUser(
         val username: String,
         val password: String
 ) {
-    val basicAuth = "Basic ${Base64.getEncoder().encodeToString("$username:$password".toByteArray())}"
+    val basicAuth = "Basic ${Base64.getEncoder().encodeToString("$username:$password".toByteArray(Charsets.UTF_8))}"
 }

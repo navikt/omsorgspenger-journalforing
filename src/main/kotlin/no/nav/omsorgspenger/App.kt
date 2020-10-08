@@ -18,10 +18,10 @@ internal val objectMapper: ObjectMapper = jacksonObjectMapper()
 fun main() {
     val env = System.getenv()
     val serviceUser = readServiceUserCredentials()
-    val stsRestClient = StsRestClient(requireNotNull(env["STS_URL"]), serviceUser)
     val httpClient = HttpClient {
         install(JsonFeature) { serializer = JacksonSerializer(objectMapper) }
     }
+    val stsRestClient = StsRestClient(requireNotNull(env["STS_URL"]), serviceUser, httpClient)
     val joarkClient = JoarkClient(requireNotNull(env["JOARK_BASE_URL"]), stsRestClient, httpClient)
     val journalforingMediator = JournalforingMediator(joarkClient)
 
