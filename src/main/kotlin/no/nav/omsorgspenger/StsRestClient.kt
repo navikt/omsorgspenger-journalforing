@@ -33,6 +33,7 @@ class StsRestClient(
     }
 
     private suspend fun fetchToken(): Token {
+        if(apiKey.isNullOrEmpty()) logger.error("STS apiGwkey not set.")
         try {
             return httpClient.get<HttpStatement>(
                     "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
@@ -42,7 +43,6 @@ class StsRestClient(
                 accept(ContentType.Application.Json)
             }
                     .execute {
-                        logger.info("apikey:${apiKey.substring(0, 14)}")
                         objectMapper.readValue(it.readText())
                     }
         } catch (e: ResponseException) {
