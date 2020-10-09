@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 class StsRestClient(
         private val baseUrl: String,
         private val serviceUser: ServiceUser,
-        private val httpClient: HttpClient
+        private val httpClient: HttpClient = HttpClient()
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)
@@ -39,8 +39,9 @@ class StsRestClient(
                 accept(ContentType.Application.Json)
             }
                     .execute {
-                        logger.info("STS respons: "+it.readText())
-                        objectMapper.readValue(it.readText())
+                        val response = it.readText()
+                        logger.info("STS respons: "+response)
+                        objectMapper.readValue(response)
                     }
         } catch (e: ServerResponseException) {
             logger.error("Feil ved henting av token. Response: ${e.response.readText()}", e)
