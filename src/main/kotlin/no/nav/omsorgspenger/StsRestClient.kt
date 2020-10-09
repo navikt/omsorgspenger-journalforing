@@ -6,9 +6,11 @@ import io.ktor.client.features.ServerResponseException
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
 import io.ktor.client.statement.HttpStatement
 import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -34,14 +36,12 @@ class StsRestClient(
             return httpClient.get<HttpStatement>(
                     "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
             ) {
-                header("Authorization", serviceUser.basicAuth)
+                header(HttpHeaders.Authorization, serviceUser.basicAuth)
                 header("x-nav-apiKey", apiKey)
                 accept(ContentType.Application.Json)
             }
                     .execute {
-                        val response = it.readText()
-                        logger.info("STS respons: "+response)
-                        objectMapper.readValue(response)
+                        objectMapper.readValue(it.readText())
                     }
         } catch (e: ServerResponseException) {
             logger.error("Feil ved henting av token. Response: ${e.response.readText()}", e)
