@@ -2,6 +2,7 @@ package no.nav.omsorgspenger
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
+import io.ktor.client.features.ResponseException
 import io.ktor.client.features.ServerResponseException
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
@@ -43,7 +44,7 @@ class StsRestClient(
                     .execute {
                         objectMapper.readValue(it.readText())
                     }
-        } catch (e: ServerResponseException) {
+        } catch (e: ResponseException) {
             logger.error("Feil ved henting av token. Response: ${e.response.readText()}", e)
             throw RuntimeException("Feil ved henting av token", e)
         } catch (e: Exception) {
