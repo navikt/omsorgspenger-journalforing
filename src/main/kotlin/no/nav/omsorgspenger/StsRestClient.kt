@@ -39,6 +39,7 @@ class StsRestClient(
                 accept(ContentType.Application.Json)
             }
                     .execute {
+                        logger.info("STS respons: "+it.readText())
                         objectMapper.readValue(it.readText())
                     }
         } catch (e: ServerResponseException) {
