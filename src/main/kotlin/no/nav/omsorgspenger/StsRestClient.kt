@@ -42,14 +42,15 @@ class StsRestClient(
                 accept(ContentType.Application.Json)
             }
                     .execute {
+                        logger.info("apikey:${apiKey.substring(0, 14)}")
                         objectMapper.readValue(it.readText())
                     }
         } catch (e: ResponseException) {
             logger.error("Feil ved henting av token. Response: ${e.response.readText()}", e)
-            throw RuntimeException("Feil ved henting av token", e)
+            throw RuntimeException("Feil ved henting av token")
         } catch (e: Exception) {
             logger.error("Uventet feil ved henting av token", e)
-            throw RuntimeException("Uventet feil ved henting av token", e)
+            throw RuntimeException("Uventet feil ved henting av token")
         }
     }
 
