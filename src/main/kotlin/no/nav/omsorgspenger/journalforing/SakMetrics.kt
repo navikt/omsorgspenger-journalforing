@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 
 private object SakMetrics {
 
-    val logger = LoggerFactory.getLogger(this::class.java)
+    val logger = LoggerFactory.getLogger(SakMetrics::class.java)
 
     val mottattBehov: Counter = Counter
             .build("mottatt_behov", "Mottatt behov")

@@ -19,7 +19,7 @@ class JoarkClient(
         private val httpClient: HttpClient
 ) {
 
-    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(JoarkClient::class.java)
     private val apiKey = System.getenv("JOARK_API_GW_KEY")?: "Test"
 
     suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {

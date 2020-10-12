@@ -2,17 +2,18 @@ package no.nav.omsorgspenger
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ServerResponseException
+import io.ktor.client.features.ResponseException
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.HttpStatement
 import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import java.time.LocalDateTime
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
 
 class StsRestClient(
         private val baseUrl: String,
@@ -20,9 +21,8 @@ class StsRestClient(
         private val httpClient: HttpClient = HttpClient()
 ) {
 
-    private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)
     private var cachedOidcToken: Token = runBlocking { fetchToken() }
-    private val apiKey = System.getenv("STS_API_GW_KEY")
 
     suspend fun token(): String {
         if (cachedOidcToken.expired) cachedOidcToken = fetchToken()
@@ -32,21 +32,21 @@ class StsRestClient(
     private suspend fun fetchToken(): Token {
         try {
             return httpClient.get<HttpStatement>(
-                    "$baseUrl?grant_type=client_credentials&scope=openid"
+                    "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
             ) {
-                header("Authorization", serviceUser.basicAuth)
-                header("x-nav-apiKey", apiKey)
+                header(HttpHeaders.Authorization, serviceUser.basicAuth)
+                header("x-nav-apiKey", System.getenv("STS_API_GW_KEY"))
                 accept(ContentType.Application.Json)
             }
                     .execute {
                         objectMapper.readValue(it.readText())
                     }
-        } catch (e: ServerResponseException) {
+        } catch (e: ResponseException) {
             logger.error("Feil ved henting av token. Response: ${e.response.readText()}", e)
-            throw RuntimeException("Feil ved henting av token", e)
+            throw RuntimeException("Feil ved henting av token")
         } catch (e: Exception) {
             logger.error("Uventet feil ved henting av token", e)
-            throw RuntimeException("Uventet feil ved henting av token", e)
+            throw RuntimeException("Uventet feil ved henting av token")
         }
     }
 

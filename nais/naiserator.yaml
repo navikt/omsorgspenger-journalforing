@@ -13,14 +13,8 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: login.microsoftonline.com
-        - host: {{apiGwUrl}}
-      {{#each kafkaBootstrapServers as |server|}}
-        - host: {{server}}
-      ports:
-        - port: 8443
-          name: kafka
-          protocol: TLS
+      {{#each externalHosts as |url|}}
+        - host: {{url}}
       {{/each}}
   liveness:
     path: isalive
