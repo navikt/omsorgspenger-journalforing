@@ -12,6 +12,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import java.time.LocalDateTime
 import kotlinx.coroutines.runBlocking
+import no.nav.omsorgspenger.config.ServiceUser
+import no.nav.omsorgspenger.config.getStsApiKey
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -35,7 +37,7 @@ class StsRestClient(
                     "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
             ) {
                 header(HttpHeaders.Authorization, serviceUser.basicAuth)
-                header("x-nav-apiKey", System.getenv("STS_API_GW_KEY"))
+                header("x-nav-apiKey", getStsApiKey())
                 accept(ContentType.Application.Json)
             }
                     .execute {

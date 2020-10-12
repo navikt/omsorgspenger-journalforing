@@ -15,7 +15,7 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.JoarkClient
-import no.nav.omsorgspenger.ServiceUser
+import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.StsRestClient
 import no.nav.omsorgspenger.testutils.TestApplicationEngineExtension
 import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl

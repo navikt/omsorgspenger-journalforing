@@ -8,6 +8,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.JacksonSerializer
 import no.nav.helse.rapids_rivers.RapidApplication
+import no.nav.omsorgspenger.config.readServiceUserCredentials
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
 

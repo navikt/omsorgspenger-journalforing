@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.config
 
 import java.nio.file.Files
 import java.nio.file.Path

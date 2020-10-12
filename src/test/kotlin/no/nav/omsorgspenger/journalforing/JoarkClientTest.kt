@@ -12,7 +12,7 @@ import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsTokenUrl
 import no.nav.omsorgspenger.JoarkClient
-import no.nav.omsorgspenger.ServiceUser
+import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.StsRestClient
 import no.nav.omsorgspenger.testutils.TestApplicationEngineExtension
 import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl
