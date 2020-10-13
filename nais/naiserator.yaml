@@ -46,7 +46,7 @@ spec:
     path: /metrics
   filesFrom:
     - secret: omsorgspenger-journalforing-srvusercredentials
-      mountPath: /var/run/secrets/nais.io/service_user
+      mountPath: /var/run/secrets/nais.io/service_user # Behov fra rapids-and-rivers.
   envFrom:
     - secret: omsorgspenger-journalforing-apigwkeys
   env:

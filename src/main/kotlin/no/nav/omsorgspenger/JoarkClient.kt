@@ -9,19 +9,21 @@ import io.ktor.client.statement.HttpStatement
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.logstash.logback.argument.StructuredArguments.keyValue
-import no.nav.omsorgspenger.config.getJoarkApiKey
+import no.nav.omsorgspenger.config.Environment
+import no.nav.omsorgspenger.config.hentRequiredEnv
 import no.nav.omsorgspenger.journalforing.JournalpostPayload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class JoarkClient(
-        private val baseUrl: String,
+        private val env: Environment,
         private val stsRestClient: StsRestClient,
         private val httpClient: HttpClient
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(JoarkClient::class.java)
-    private val apiKey = getJoarkApiKey()
+    private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
+    private val apiKey = env.hentRequiredEnv("JOARK_API_GW_KEY")
 
     suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {

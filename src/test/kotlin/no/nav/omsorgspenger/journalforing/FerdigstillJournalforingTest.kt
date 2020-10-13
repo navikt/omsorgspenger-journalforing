@@ -38,17 +38,21 @@ internal class FerdigstillJournalforingTest(
         install(JsonFeature) { serializer = JacksonSerializer(objectMapper) }
     }
 
-    private val joarkClient = JoarkClient(
-            baseUrl = wireMockServer.journalpostApiBaseUrl(),
+    private val client = JoarkClient(
+            env = mapOf(
+                    "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
+                    "JOARK_API_GW_KEY" to "testApiKey"),
             httpClient = httpClient,
             stsRestClient = StsRestClient(
-                    baseUrl = wireMockServer.getNaisStsTokenUrl(),
+                    env = mapOf(
+                            "STS_URL" to wireMockServer.getNaisStsTokenUrl(),
+                            "STS_API_GW_KEY" to "testApiKey"),
                     serviceUser = ServiceUser("foo", "bar"),
                     httpClient = httpClient
             )
     )
     private var rapid = TestRapid()
-    private val journalforingMediator = JournalforingMediator(joarkClient)
+    private val journalforingMediator = JournalforingMediator(client)
 
     @BeforeAll
     internal fun setup() {
