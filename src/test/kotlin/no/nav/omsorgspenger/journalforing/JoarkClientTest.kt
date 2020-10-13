@@ -12,7 +12,7 @@ import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsTokenUrl
 import no.nav.omsorgspenger.JoarkClient
-import no.nav.omsorgspenger.ServiceUser
+import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.StsRestClient
 import no.nav.omsorgspenger.testutils.TestApplicationEngineExtension
 import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl
@@ -33,10 +33,14 @@ internal class JoarkClientTest(
     }
 
     private val client = JoarkClient(
-            baseUrl = wireMockServer.journalpostApiBaseUrl(),
+            env = mapOf(
+                    "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
+                    "JOARK_API_GW_KEY" to "testApiKey"),
             httpClient = httpClient,
             stsRestClient = StsRestClient(
-                    baseUrl = wireMockServer.getNaisStsTokenUrl(),
+                    env = mapOf(
+                            "STS_URL" to wireMockServer.getNaisStsTokenUrl(),
+                            "STS_API_GW_KEY" to "testApiKey"),
                     serviceUser = ServiceUser("foo", "bar"),
                     httpClient = httpClient
             )

@@ -12,16 +12,21 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import java.time.LocalDateTime
 import kotlinx.coroutines.runBlocking
+import no.nav.omsorgspenger.config.Environment
+import no.nav.omsorgspenger.config.ServiceUser
+import no.nav.omsorgspenger.config.hentRequiredEnv
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class StsRestClient(
-        private val baseUrl: String,
+        private val env: Environment,
         private val serviceUser: ServiceUser,
         private val httpClient: HttpClient = HttpClient()
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)
+    private val baseUrl = env.hentRequiredEnv("STS_URL")
+    private val apiKey = env.hentRequiredEnv("STS_API_GW_KEY")
     private var cachedOidcToken: Token = runBlocking { fetchToken() }
 
     suspend fun token(): String {
@@ -35,17 +40,17 @@ class StsRestClient(
                     "$baseUrl/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
             ) {
                 header(HttpHeaders.Authorization, serviceUser.basicAuth)
-                header("x-nav-apiKey", System.getenv("STS_API_GW_KEY"))
+                header("x-nav-apiKey", apiKey)
                 accept(ContentType.Application.Json)
             }
                     .execute {
                         objectMapper.readValue(it.readText())
                     }
         } catch (e: ResponseException) {
-            logger.error("Feil ved henting av token. Response: ${e.response.readText()}", e)
+            logger.error("Feil ved henting av token. Response: ${e.response.readText()}")
             throw RuntimeException("Feil ved henting av token")
         } catch (e: Exception) {
-            logger.error("Uventet feil ved henting av token", e)
+            logger.error("Uventet feil ved henting av token")
             throw RuntimeException("Uventet feil ved henting av token")
         }
     }
