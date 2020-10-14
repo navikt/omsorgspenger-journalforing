@@ -3,14 +3,19 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 val junitJupiterVersion = "5.7.0"
 val k9rapidVersion = "1.fe10445"
 val ktorVersion = "1.4.1"
-val dusseldorfKtorVersion = "1.4.1.dcb9ddd"
+val dusseldorfKtorVersion = "1.4.1.4754df6"
 val jsonassertVersion = "1.5.0"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "1.4.10"
-    id("com.github.johnrengelman.shadow") version "6.0.0"
+    id("com.github.johnrengelman.shadow") version "6.1.0"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_12
+    targetCompatibility = JavaVersion.VERSION_12
 }
 
 dependencies {
