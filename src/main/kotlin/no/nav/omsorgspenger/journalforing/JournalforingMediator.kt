@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.JoarkClient
 import org.slf4j.LoggerFactory
 
-class JournalforingMediator(
+internal class JournalforingMediator(
         private val joarkClient: JoarkClient
 ) {
 

@@ -15,8 +15,8 @@ import no.nav.omsorgspenger.journalforing.JournalpostPayload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-class JoarkClient(
-        private val env: Environment,
+internal class JoarkClient(
+        env: Environment,
         private val stsRestClient: StsRestClient,
         private val httpClient: HttpClient
 ) {
@@ -25,7 +25,7 @@ class JoarkClient(
     private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
     private val apiKey = env.hentRequiredEnv("JOARK_API_GW_KEY")
 
-    suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
+    internal suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
             header("Nav-Consumer-Token", correlationId)
             header("Authorization", "Bearer ${stsRestClient.token()}")
@@ -42,7 +42,7 @@ class JoarkClient(
 
     }
 
-    suspend fun ferdigstillJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
+    internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
             header("Nav-Consumer-Token", correlationId)
             header("Authorization", "Bearer ${stsRestClient.token()}")
