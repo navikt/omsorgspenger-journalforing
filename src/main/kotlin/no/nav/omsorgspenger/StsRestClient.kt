@@ -40,10 +40,7 @@ internal class StsRestClient(
                 header(HttpHeaders.Authorization, serviceUser.basicAuth)
                 header("x-nav-apiKey", apiKey)
                 accept(ContentType.Application.Json)
-            }
-                .execute {
-                    objectMapper.readValue(it.readText())
-                }
+            }.receive()
         } catch (e: ResponseException) {
             logger.error("Feil ved henting av token. Response: ${e.response.readText()}")
             throw RuntimeException("Feil ved henting av token")
