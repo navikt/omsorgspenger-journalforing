@@ -8,9 +8,12 @@ import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.registerApplicationContext
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
+import org.json.JSONObject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.time.ZonedDateTime
+import kotlin.test.assertNotNull
 
 @ExtendWith(ApplicationContextExtension::class)
 internal class FerdigstillJournalforingTest(
@@ -34,6 +37,14 @@ internal class FerdigstillJournalforingTest(
         rapid.sendTestMessage(behovssekvens)
 
         assertEquals(1, rapid.inspektør.size)
+        val løst = rapid.inspektør.message(0)
+            .get("@løsninger")
+            .get(BEHOV)
+            .get("løst")
+            .asText()
+            .let { ZonedDateTime.parse(it) }
+
+        assertNotNull(løst)
     }
 
     internal companion object {
