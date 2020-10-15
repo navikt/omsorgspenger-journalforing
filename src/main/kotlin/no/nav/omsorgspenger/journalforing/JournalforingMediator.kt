@@ -19,14 +19,14 @@ internal class JournalforingMediator(
             joarkClient.oppdaterJournalpost(
                     correlationId = correlationId,
                     journalpostPayload = journalpostPayload
-            ).let { success ->
-                if (success) {
+            ).let { oppdaterJournalpostSuccess ->
+                if (oppdaterJournalpostSuccess) {
                     logger.info("Oppdatert journalpostid: $journalpostId")
                     joarkClient.ferdigstillJournalpost(
                             correlationId = correlationId,
                             journalpostPayload
-                    ).let { success ->
-                        if (success) {
+                    ).let { ferdigstiltJournalpostSuccess ->
+                        if (ferdigstiltJournalpostSuccess) {
                             result = true
                             logger.info("Ferdigstillt journalpostid: $journalpostId")
                         }

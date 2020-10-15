@@ -100,7 +100,8 @@ internal class ApplicationContext(
                     joarkClient = benyttetJoarkClient
                 ),
                 healthService = HealthService(healthChecks = setOf(
-                    benyttetStsRestClient
+                    benyttetStsRestClient,
+                    benyttetJoarkClient
                 ))
             )
         }
