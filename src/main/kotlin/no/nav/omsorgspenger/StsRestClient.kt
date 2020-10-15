@@ -1,6 +1,5 @@
 package no.nav.omsorgspenger
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
 import io.ktor.client.request.accept
@@ -11,7 +10,9 @@ import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import java.time.LocalDateTime
-import kotlinx.coroutines.runBlocking
+import no.nav.helse.dusseldorf.ktor.health.HealthCheck
+import no.nav.helse.dusseldorf.ktor.health.Healthy
+import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.omsorgspenger.config.Environment
 import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.config.hentRequiredEnv
@@ -22,16 +23,16 @@ internal class StsRestClient(
         env: Environment,
         private val serviceUser: ServiceUser,
         private val httpClient: HttpClient = HttpClient()
-) {
+) : HealthCheck {
 
     private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)
     private val tokenUrl = "${env.hentRequiredEnv("STS_URL")}/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
     private val apiKey = env.hentRequiredEnv("STS_API_GW_KEY")
-    private var cachedOidcToken: Token = runBlocking { fetchToken() }
+    private var cachedOidcToken: Token? = null
 
     internal suspend fun token(): String {
-        if (cachedOidcToken.expired) cachedOidcToken = fetchToken()
-        return cachedOidcToken.access_token
+        if (cachedOidcToken?.expired != false) cachedOidcToken = fetchToken()
+        return cachedOidcToken!!.access_token
     }
 
     private suspend fun fetchToken(): Token {
@@ -59,4 +60,11 @@ internal class StsRestClient(
         private val expirationTime: LocalDateTime = LocalDateTime.now().plusSeconds(expires_in - 10L)
         val expired get() = expirationTime.isBefore(LocalDateTime.now())
     }
+
+    override suspend fun check() = kotlin.runCatching {
+        fetchToken()
+    }.fold(
+        onSuccess = { Healthy("StsRestClient", "OK")},
+        onFailure = { UnHealthy("StsRestClient", "Feil: ${it.message}")}
+    )
 }

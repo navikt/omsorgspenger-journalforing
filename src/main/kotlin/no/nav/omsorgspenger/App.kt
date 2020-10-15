@@ -12,6 +12,7 @@ import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.routing.*
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
+import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.omsorgspenger.config.Environment
@@ -27,7 +28,6 @@ fun main() {
         .build()
         .apply { registerApplicationContext(applicationContext) }
         .start()
-
 }
 
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
@@ -49,11 +49,9 @@ internal fun Application.omsorgspengerJournalføring(applicationContext: Applica
     install(ContentNegotiation) {
         jackson()
     }
-    /*
     routing {
         HealthRoute(healthService = applicationContext.healthService)
     }
-     */
 }
 
 internal class ApplicationContext(
@@ -62,7 +60,8 @@ internal class ApplicationContext(
     internal val httpClient: HttpClient,
     internal val stsRestClient: StsRestClient,
     internal val joarkClient: JoarkClient,
-    internal val journalforingMediator: JournalforingMediator) {
+    internal val journalforingMediator: JournalforingMediator,
+    internal val healthService: HealthService) {
 
     internal fun start() {}
     internal fun stop() {}
@@ -99,7 +98,10 @@ internal class ApplicationContext(
                 joarkClient = benyttetJoarkClient,
                 journalforingMediator = journalforingMediator?: JournalforingMediator(
                     joarkClient = benyttetJoarkClient
-                )
+                ),
+                healthService = HealthService(healthChecks = setOf(
+                    benyttetStsRestClient
+                ))
             )
         }
 
