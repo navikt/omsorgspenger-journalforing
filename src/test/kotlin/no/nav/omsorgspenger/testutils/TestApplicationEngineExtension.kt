@@ -1,8 +1,5 @@
 package no.nav.omsorgspenger.testutils
 
-import com.typesafe.config.ConfigFactory
-import io.ktor.config.ApplicationConfig
-import io.ktor.config.HoconApplicationConfig
 import io.ktor.server.engine.stop
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.util.KtorExperimentalAPI
@@ -38,12 +35,4 @@ internal class TestApplicationEngineExtension : ParameterResolver {
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
         return mockedEnvironment.wireMockServer
     }
-}
-
-@KtorExperimentalAPI
-private fun getConfig(config: MutableMap<String,String>): ApplicationConfig {
-    val fileConfig = ConfigFactory.load()
-    val testConfig = ConfigFactory.parseMap(config)
-    val mergedConfig = testConfig.withFallback(fileConfig)
-    return HoconApplicationConfig(mergedConfig)
 }
