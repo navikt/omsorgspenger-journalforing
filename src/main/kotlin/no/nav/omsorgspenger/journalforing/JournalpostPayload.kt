@@ -2,10 +2,9 @@ package no.nav.omsorgspenger.journalforing
 
 class JournalpostPayload internal constructor(
         val journalpostId: String,
-        private val bruker: Bruker,
-        private val sak: Sak,
-        private val tema: String = "OMS",
-        val journalfoerendeEnhet: String = "9999"
+        val bruker: Bruker,
+        val sak: Sak,
+        val tema: String = "OMS"
 ) {
 
     data class Bruker(

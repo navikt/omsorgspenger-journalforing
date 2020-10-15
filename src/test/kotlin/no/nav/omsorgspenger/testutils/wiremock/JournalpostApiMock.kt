@@ -18,7 +18,6 @@ private fun WireMockServer.stubOppdaterJournalpost(): WireMockServer {
                 .withHeader("Nav-Consumer-Token", AnythingPattern())
                 .withHeader("x-nav-apiKey", equalTo("testApiKeyJoark"))
                 .withRequestBody(matchingJsonPath("$.journalpostId"))
-                .withRequestBody(matchingJsonPath("$.journalfoerendeEnhet", equalTo("9999")))
                 .withRequestBody(matchingJsonPath("$.sak.sakstype", equalTo("FAGSAK")))
                 .withRequestBody(matchingJsonPath("$.sak.fagsaksystem", equalTo("OMSORGSPENGER")))
                 .withRequestBody(matchingJsonPath("$.tema", equalTo("OMS")))

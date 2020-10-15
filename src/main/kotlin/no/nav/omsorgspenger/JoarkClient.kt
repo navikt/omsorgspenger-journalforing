@@ -35,7 +35,7 @@ internal class JoarkClient(
             body = journalpostPayload
         }
                 .execute {
-                    if (it.status.value !in 200..300) {
+                    if (it.status.value != 200) {
                         logger.warn("Feil fra Joark: {}", keyValue("response", it.receive<String>()))
                         false
                     } else true
@@ -52,7 +52,7 @@ internal class JoarkClient(
             body = journalfoerendeEnhet("9999")
         }
                 .execute {
-                    if (it.status.value !in 200..300) {
+                    if (it.status.value != 200) {
                         logger.warn("Feil fra Joark: {}", keyValue("response", it.receive<String>()))
                         false
                     } else true
