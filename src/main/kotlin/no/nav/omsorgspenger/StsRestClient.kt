@@ -26,7 +26,7 @@ internal class StsRestClient(
 ) : HealthCheck {
 
     private val logger: Logger = LoggerFactory.getLogger(StsRestClient::class.java)
-    private val tokenUrl = "${env.hentRequiredEnv("STS_URL")}/rest/v1/sts/token?grant_type=client_credentials&scope=openid"
+    private val tokenUrl = "${env.hentRequiredEnv("STS_TOKEN_ENDPOINT")}?grant_type=client_credentials&scope=openid"
     private val apiKey = env.hentRequiredEnv("STS_API_GW_KEY")
     private var cachedOidcToken: Token? = null
 

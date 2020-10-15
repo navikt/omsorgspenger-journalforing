@@ -17,7 +17,7 @@
     "KAFKA_PROPERTIES_SECURITY_PROTOCOL": "SASL_SSL",
     "KAFKA_RAPID_TOPIC": "k9-rapid-v2",
     "KAFKA_CONSUMER_GROUP_ID": "omsorgspenger-journalforing",
-    "STS_URL": "https://api-gw-q1.oera.no/security-token-service",
+    "STS_TOKEN_ENDPOINT": "https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token",
     "JOARK_BASE_URL": "https://api-gw-q1.oera.no/dokarkiv"
   }
 }

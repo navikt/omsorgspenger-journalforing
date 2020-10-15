@@ -25,7 +25,7 @@ internal class ApplicationContextExtension : ParameterResolver {
             env = mapOf(
                 "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
                 "JOARK_API_GW_KEY" to "testApiKeyJoark",
-                "STS_URL" to wireMockServer.getNaisStsTokenUrl(),
+                "STS_TOKEN_ENDPOINT" to wireMockServer.getNaisStsTokenUrl(),
                 "STS_API_GW_KEY" to "testApiKeySts"
             ),
             serviceUser = ServiceUser(
