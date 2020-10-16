@@ -21,7 +21,7 @@ internal class ApplicationContextExtension : ParameterResolver {
             .build()
             .stubJournalpostApi()
 
-        private val applicationContextBuilder = ApplicationContext.Buider(
+        private val applicationContextBuilder = ApplicationContext.Builder(
             env = mapOf(
                 "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
                 "JOARK_API_GW_KEY" to "testApiKeyJoark",
@@ -43,7 +43,7 @@ internal class ApplicationContextExtension : ParameterResolver {
         }
 
         private val støttedeParametre = listOf(
-            ApplicationContext.Buider::class.java,
+            ApplicationContext.Builder::class.java,
             ApplicationContext::class.java,
             WireMockServer::class.java
         )
@@ -58,7 +58,7 @@ internal class ApplicationContextExtension : ParameterResolver {
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
         return when (parameterContext.parameter.type) {
             ApplicationContext::class.java -> applicationContext
-            ApplicationContext.Buider::class.java -> applicationContextBuilder
+            ApplicationContext.Builder::class.java -> applicationContextBuilder
             else -> wireMockServer
         }
     }

@@ -22,7 +22,7 @@ import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
 
 fun main() {
-    val applicationContext = ApplicationContext.Buider().build()
+    val applicationContext = ApplicationContext.Builder().build()
     RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(applicationContext.env))
         .withKtorModule { omsorgspengerJournalføring(applicationContext) }
         .build()
@@ -66,7 +66,7 @@ internal class ApplicationContext(
     internal fun start() {}
     internal fun stop() {}
 
-    internal class Buider(
+    internal class Builder(
         internal var env: Environment? = null,
         internal var serviceUser: ServiceUser? = null,
         internal var httpClient: HttpClient? = null,
