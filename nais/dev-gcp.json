@@ -6,11 +6,10 @@
   "minReplicas": "1",
   "maxReplicas": "1",
   "ingresses": [
-    "https://omsorgspenger-journalforing.dev.adeo.no"
+    "https://omsorgspenger-journalforing.dev.intern.nav.no"
   ],
   "externalHosts": [
-    "api-gw-q1.oera.no",
-    "login.microsoftonline.com"
+    "api-gw-q1.oera.no"
   ],
   "env": {
     "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
