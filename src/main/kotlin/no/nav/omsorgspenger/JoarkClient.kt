@@ -28,7 +28,8 @@ internal class JoarkClient(
 
     internal suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
-            header("Nav-Consumer-Token", correlationId)
+            header("Nav-Callid", correlationId)
+            header("Nav-Consumer-Id", "omsorgspenger-journalforing")
             header("Authorization", "Bearer ${stsRestClient.token()}")
             header("x-nav-apiKey", apiKey)
             contentType(ContentType.Application.Json)
@@ -45,7 +46,8 @@ internal class JoarkClient(
 
     internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
-            header("Nav-Consumer-Token", correlationId)
+            header("Nav-Callid", correlationId)
+            header("Nav-Consumer-Id", "omsorgspenger-journalforing")
             header("Authorization", "Bearer ${stsRestClient.token()}")
             header("x-nav-apiKey", apiKey)
             contentType(ContentType.Application.Json)
@@ -63,7 +65,9 @@ internal class JoarkClient(
     internal data class journalfoerendeEnhet(val journalfoerendeEnhet: String)
 
     override suspend fun check() = kotlin.runCatching {
-        httpClient.get<HttpStatement>(pingUrl).execute().status
+        httpClient.get<HttpStatement>(pingUrl) {
+            header("x-nav-apiKey", apiKey)
+        }.execute().status
     }.fold(
         onSuccess = { statusCode ->
             when (HttpStatusCode.OK == statusCode) {
