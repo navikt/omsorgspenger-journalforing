@@ -50,6 +50,22 @@ private fun WireMockServer.stubFerdigstillJournalpost(): WireMockServer {
     return this
 }
 
+private fun WireMockServer.stubKaste400(): WireMockServer {
+    WireMock.stubFor(
+            WireMock.put(WireMock
+                    .urlPathMatching(".*$journalpostApiMockPath.*"))
+                    .withHeader("Authorization", RegexPattern("^Bearer .+$"))
+                    .withHeader("Content-Type", equalTo("application/json"))
+                    .withHeader("Nav-Consumer-Id", equalTo("omsorgspenger-journalforing"))
+                    .withHeader("Nav-Callid", equalTo("400"))
+                    .willReturn(
+                            WireMock.aResponse()
+                                    .withStatus(400)
+                                    .withBody("Fick 400 feil fra dokarkiv!")
+                    )
+    )
+    return this
+}
 
 internal fun WireMockServer.stubIsReady(): WireMockServer {
     stubFor(WireMock.get("$journalpostApiBasePath/isReady")
@@ -60,5 +76,5 @@ internal fun WireMockServer.stubIsReady(): WireMockServer {
 }
 
 
-internal fun WireMockServer.stubJournalpostApi() = stubOppdaterJournalpost().stubFerdigstillJournalpost().stubIsReady()
+internal fun WireMockServer.stubJournalpostApi() = stubOppdaterJournalpost().stubFerdigstillJournalpost().stubIsReady().stubKaste400()
 internal fun WireMockServer.journalpostApiBaseUrl() = baseUrl() + journalpostApiBasePath

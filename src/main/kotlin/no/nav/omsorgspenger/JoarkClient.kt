@@ -2,6 +2,7 @@ package no.nav.omsorgspenger
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.receive
+import io.ktor.client.features.ResponseException
 import io.ktor.client.request.*
 import io.ktor.client.statement.HttpStatement
 import io.ktor.http.*
@@ -24,41 +25,52 @@ internal class JoarkClient(
 ) : HealthCheck {
 
     private val logger: Logger = LoggerFactory.getLogger(JoarkClient::class.java)
+    private val secureLogger = LoggerFactory.getLogger("tjenestekall")
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
     private val pingUrl = "$baseUrl/isReady"
 
     internal suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
-        return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
-            header("Nav-Callid", correlationId)
-            header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-            header("Authorization", getAccessToken())
-            contentType(ContentType.Application.Json)
-            body = journalpostPayload
-        }
-                .execute {
-                    if (it.status.value != 200) {
-                        logger.warn("Feil fra Joark: {}", keyValue("response", it.receive<String>()))
-                        false
-                    } else true
-                }
-
+        return kotlin.runCatching {
+            httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
+                header("Nav-Callid", correlationId)
+                header("Nav-Consumer-Id", "omsorgspenger-journalforing")
+                header("Authorization", getAccessToken())
+                contentType(ContentType.Application.Json)
+                body = journalpostPayload
+            }.execute()
+        }.fold(
+                onSuccess = { return it.status.value == 200 },
+                onFailure = { cause ->
+                    if (cause is ResponseException) {
+                        secureLogger.error("Http ${cause.response.status}, response: ${cause.response.receive<String>()}")
+                    } else {
+                        throw cause
+                    }
+                    false
+                })
     }
 
     internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
-        return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
-            header("Nav-Callid", correlationId)
-            header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-            header("Authorization", getAccessToken())
-            contentType(ContentType.Application.Json)
-            body = journalfoerendeEnhet("9999")
-        }
-                .execute {
-                    if (it.status.value != 200) {
-                        logger.warn("Feil fra Joark: {}", keyValue("response", it.receive<String>()))
-                        false
-                    } else true
-                }
+        return kotlin.runCatching {
+            httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
+                header("Nav-Callid", correlationId)
+                header("Nav-Consumer-Id", "omsorgspenger-journalforing")
+                header("Authorization", getAccessToken())
+                contentType(ContentType.Application.Json)
+                body = journalfoerendeEnhet("9999")
+            }.execute()
+        }.fold(
+                onSuccess = { return it.status.value == 200 },
+                onFailure = { cause ->
+                    if (cause is ResponseException) {
+                        secureLogger.error("Http ${cause.response.status}, response: ${cause.response.receive<String>()}")
+                    } else {
+                        throw cause
+                    }
+                    false
+                })
+
 
     }
 
