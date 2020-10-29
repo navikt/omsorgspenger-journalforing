@@ -32,7 +32,7 @@ internal class JoarkClient(
         return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
             header("Nav-Callid", correlationId)
             header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-            header("Authorization", "Bearer ${getAccessToken()}")
+            header("Authorization", getAccessToken())
             contentType(ContentType.Application.Json)
             body = journalpostPayload
         }
@@ -49,7 +49,7 @@ internal class JoarkClient(
         return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
             header("Nav-Callid", correlationId)
             header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-            header("Authorization", "Bearer ${getAccessToken()}")
+            header("Authorization", getAccessToken())
             contentType(ContentType.Application.Json)
             body = journalfoerendeEnhet("9999")
         }
@@ -64,20 +64,21 @@ internal class JoarkClient(
 
     internal data class journalfoerendeEnhet(val journalfoerendeEnhet: String)
 
-    private fun getAccessToken() =
-            cachedAccessTokenClient.getAccessToken(setOf(env.hentRequiredEnv("DOKARKIV_SCOPES")))
+    private fun getAccessToken() = cachedAccessTokenClient.getAccessToken(
+            setOf(env.hentRequiredEnv("DOKARKIV_SCOPES"))
+    ).asAuthoriationHeader()
 
     override suspend fun check() = kotlin.runCatching {
         httpClient.get<HttpStatement>(pingUrl).execute().status
     }.fold(
-        onSuccess = { statusCode ->
-            when (HttpStatusCode.OK == statusCode) {
-                true -> Healthy("JoarkClient", "OK")
-                false -> UnHealthy("JoarkClient", "Feil: Mottok Http Status Code ${statusCode.value}")
+            onSuccess = { statusCode ->
+                when (HttpStatusCode.OK == statusCode) {
+                    true -> Healthy("JoarkClient", "OK")
+                    false -> UnHealthy("JoarkClient", "Feil: Mottok Http Status Code ${statusCode.value}")
+                }
+            },
+            onFailure = {
+                UnHealthy("JoarkClient", "Feil: ${it.message}")
             }
-        },
-        onFailure = {
-            UnHealthy("JoarkClient", "Feil: ${it.message}")
-        }
     )
 }
