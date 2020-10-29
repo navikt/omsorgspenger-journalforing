@@ -2,10 +2,11 @@ package no.nav.omsorgspenger.testutils
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import io.ktor.util.KtorExperimentalAPI
+import java.net.URI
+import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
-import no.nav.helse.dusseldorf.testsupport.wiremock.getNaisStsTokenUrl
+import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2TokenUrl
 import no.nav.omsorgspenger.ApplicationContext
-import no.nav.omsorgspenger.config.ServiceUser
 import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl
 import no.nav.omsorgspenger.testutils.wiremock.stubJournalpostApi
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -17,21 +18,20 @@ internal class ApplicationContextExtension : ParameterResolver {
     @KtorExperimentalAPI
     internal companion object {
         private val wireMockServer = WireMockBuilder()
-            .withNaisStsSupport()
-            .build()
-            .stubJournalpostApi()
+                .withAzureSupport()
+                .build()
+                .stubJournalpostApi()
 
         private val applicationContextBuilder = ApplicationContext.Builder(
-            env = mapOf(
-                "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
-                "JOARK_API_GW_KEY" to "testApiKeyJoark",
-                "STS_TOKEN_ENDPOINT" to wireMockServer.getNaisStsTokenUrl(),
-                "STS_API_GW_KEY" to "testApiKeySts"
-            ),
-            serviceUser = ServiceUser(
-                username = "foo",
-                password = "bar"
-            )
+                env = mapOf(
+                        "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
+                        "DOKARKIV_SCOPES" to "testScope/.default"
+                ),
+                accessTokenClient =  ClientSecretAccessTokenClient(
+                        clientId = "omsorgspenger-journalforing",
+                        clientSecret = "azureSecret",
+                        tokenEndpoint = URI(wireMockServer.getAzureV2TokenUrl())
+                )
         )
 
         private val applicationContext = applicationContextBuilder.build()
@@ -43,9 +43,9 @@ internal class ApplicationContextExtension : ParameterResolver {
         }
 
         private val støttedeParametre = listOf(
-            ApplicationContext.Builder::class.java,
-            ApplicationContext::class.java,
-            WireMockServer::class.java
+                ApplicationContext.Builder::class.java,
+                ApplicationContext::class.java,
+                WireMockServer::class.java
         )
     }
 

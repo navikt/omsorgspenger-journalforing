@@ -9,6 +9,8 @@ import net.logstash.logback.argument.StructuredArguments.keyValue
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.omsorgspenger.config.Environment
 import no.nav.omsorgspenger.config.hentRequiredEnv
 import no.nav.omsorgspenger.journalforing.JournalpostPayload
@@ -16,22 +18,21 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 internal class JoarkClient(
-        env: Environment,
-        private val stsRestClient: StsRestClient,
+        private val env: Environment,
+        private val accessTokenClient: AccessTokenClient,
         private val httpClient: HttpClient
 ) : HealthCheck {
 
     private val logger: Logger = LoggerFactory.getLogger(JoarkClient::class.java)
+    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
-    private val apiKey = env.hentRequiredEnv("JOARK_API_GW_KEY")
     private val pingUrl = "$baseUrl/isReady"
 
     internal suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
         return httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
             header("Nav-Callid", correlationId)
             header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-            header("Authorization", "Bearer ${stsRestClient.token()}")
-            header("x-nav-apiKey", apiKey)
+            header("Authorization", "Bearer ${getAccessToken()}")
             contentType(ContentType.Application.Json)
             body = journalpostPayload
         }
@@ -48,8 +49,7 @@ internal class JoarkClient(
         return httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
             header("Nav-Callid", correlationId)
             header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-            header("Authorization", "Bearer ${stsRestClient.token()}")
-            header("x-nav-apiKey", apiKey)
+            header("Authorization", "Bearer ${getAccessToken()}")
             contentType(ContentType.Application.Json)
             body = journalfoerendeEnhet("9999")
         }
@@ -64,10 +64,11 @@ internal class JoarkClient(
 
     internal data class journalfoerendeEnhet(val journalfoerendeEnhet: String)
 
+    private fun getAccessToken() =
+            cachedAccessTokenClient.getAccessToken(setOf(env.hentRequiredEnv("DOKARKIV_SCOPES")))
+
     override suspend fun check() = kotlin.runCatching {
-        httpClient.get<HttpStatement>(pingUrl) {
-            header("x-nav-apiKey", apiKey)
-        }.execute().status
+        httpClient.get<HttpStatement>(pingUrl).execute().status
     }.fold(
         onSuccess = { statusCode ->
             when (HttpStatusCode.OK == statusCode) {

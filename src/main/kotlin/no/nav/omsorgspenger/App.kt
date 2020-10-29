@@ -11,13 +11,15 @@ import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.routing.*
+import java.net.URI
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
+import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.omsorgspenger.config.Environment
-import no.nav.omsorgspenger.config.ServiceUser
-import no.nav.omsorgspenger.config.readServiceUserCredentials
+import no.nav.omsorgspenger.config.hentRequiredEnv
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
 
@@ -56,9 +58,6 @@ internal fun Application.omsorgspengerJournalføring(applicationContext: Applica
 
 internal class ApplicationContext(
     internal val env: Environment,
-    internal val serviceUser: ServiceUser,
-    internal val httpClient: HttpClient,
-    internal val stsRestClient: StsRestClient,
     internal val joarkClient: JoarkClient,
     internal val journalforingMediator: JournalforingMediator,
     internal val healthService: HealthService) {
@@ -68,9 +67,8 @@ internal class ApplicationContext(
 
     internal class Builder(
         internal var env: Environment? = null,
-        internal var serviceUser: ServiceUser? = null,
         internal var httpClient: HttpClient? = null,
-        internal var stsRestClient: StsRestClient? = null,
+        internal val accessTokenClient: AccessTokenClient? = null,
         internal var joarkClient: JoarkClient? = null,
         internal var journalforingMediator: JournalforingMediator? = null) {
         internal fun build() : ApplicationContext {
@@ -78,29 +76,24 @@ internal class ApplicationContext(
             val benyttetHttpClient = httpClient?:HttpClient {
                 install(JsonFeature) { serializer = JacksonSerializer(objectMapper) }
             }
-            val benyttetServiceUser = serviceUser?:serviceUser?:readServiceUserCredentials()
-            val benyttetStsRestClient = stsRestClient?:StsRestClient(
-                env = benyttetEnv,
-                serviceUser = benyttetServiceUser,
-                httpClient = benyttetHttpClient
+            val benyttetAccessTokenClient = accessTokenClient?: ClientSecretAccessTokenClient(
+                    clientId = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_ID"),
+                    clientSecret = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_SECRET"),
+                    tokenEndpoint = URI(benyttetEnv.hentRequiredEnv("AZURE_APP_TOKEN_ENDPOINT"))
             )
             val benyttetJoarkClient = joarkClient?: JoarkClient(
                 env = benyttetEnv,
-                stsRestClient = benyttetStsRestClient,
+                accessTokenClient = benyttetAccessTokenClient,
                 httpClient = benyttetHttpClient
             )
 
             return ApplicationContext(
                 env = benyttetEnv,
-                serviceUser = benyttetServiceUser,
-                httpClient = benyttetHttpClient,
-                stsRestClient = benyttetStsRestClient,
                 joarkClient = benyttetJoarkClient,
                 journalforingMediator = journalforingMediator?: JournalforingMediator(
                     joarkClient = benyttetJoarkClient
                 ),
                 healthService = HealthService(healthChecks = setOf(
-                    benyttetStsRestClient,
                     benyttetJoarkClient
                 ))
             )
