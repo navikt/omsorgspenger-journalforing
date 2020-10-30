@@ -3,7 +3,6 @@ package no.nav.omsorgspenger.journalforing
 import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.ApplicationContext
-import no.nav.omsorgspenger.JoarkClient
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
