@@ -37,6 +37,8 @@ internal class FerdigstillJournalforing(
         val identitetsnummer = packet[IDENTITETSNUMMER].asText()
         val saksnummer = packet[SAKSNUMMER].asText()
 
+        logger.info("Saksnummer: $saksnummer, JournalpostIder: $journalpostIder")
+
         journalpostIder.forEach {
             journalforingMediator.behandlaJournalpost(
                 correlationId = packet["@correlationId"].asText(),
@@ -45,13 +47,9 @@ internal class FerdigstillJournalforing(
                     identitetsnummer = identitetsnummer,
                     saksnummer = saksnummer
                 )
-            ).let { success ->
-                if (success) logger.info("Behandlet journalpostId: $it")
-                else {
-                    logger.error("Feil vid behandling av journalpostId: $it").also { incBehandlingFeil() }
-                    return false
-                }
-            }
+            ).let { success -> if (!success) {
+                return false
+            }}
         }
         packet.leggTilLøsning(BEHOV)
         return true

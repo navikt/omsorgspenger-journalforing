@@ -36,7 +36,7 @@ internal class JoarkClient(
 
     internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost): JournalpostStatus {
         val payload = journalpost.oppdatertJournalpostBody().also {
-            secureLogger.info("Sendes til Dokarkiv for oppdatering av journalpost: $it")
+            secureLogger.info("[JournalpostId=${journalpost.journalpostId}] Sendes til Dokarkiv for oppdatering: $it")
         }
 
         return kotlin.runCatching {
@@ -58,7 +58,7 @@ internal class JoarkClient(
 
     internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostId: String): JournalpostStatus {
         val payload = ferdigstillJournalpostBody.also {
-            secureLogger.info("Sendes til Dokarkiv for ferdigstilling av journalpost: $it")
+            secureLogger.info("[JournalpostId=${journalpostId}] Sendes til Dokarkiv for ferdigstilling: $it")
         }
         return kotlin.runCatching {
             httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostId}/ferdigstill") {
