@@ -1,9 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val junitJupiterVersion = "5.7.0"
-val k9rapidVersion = "1.fe10445"
+val k9rapidVersion = "1.e27694e"
 val ktorVersion = "1.4.1"
-val dusseldorfKtorVersion = "1.4.1.4754df6"
+val dusseldorfKtorVersion = "1.4.1.15e3c67"
 val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20200518"
 
@@ -75,7 +75,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "6.6.1"
+        gradleVersion = "6.7"
     }
 
 }

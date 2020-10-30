@@ -11,8 +11,8 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
-import no.nav.omsorgspenger.config.Environment
-import no.nav.omsorgspenger.config.hentRequiredEnv
+import no.nav.k9.rapid.river.Environment
+import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import no.nav.omsorgspenger.journalforing.Journalpost
 import org.intellij.lang.annotations.Language
