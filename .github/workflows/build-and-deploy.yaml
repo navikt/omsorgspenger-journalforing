@@ -1,6 +1,10 @@
-name: Deploy til dev-gcp
+name: Bygg og deploy
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
 
 env:
   BASE_IMAGE: docker.pkg.github.com/${{ github.repository }}/omsorgspenger-journalforing
@@ -8,9 +12,10 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  Build:
+  build-and-deploy:
 
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && !contains(github.event.head_commit.message, 'ci skip')
 
     steps:
       - uses: actions/checkout@v2.3.3
