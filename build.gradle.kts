@@ -21,6 +21,7 @@ java {
 dependencies {
     implementation("no.nav.k9.rapid:river:$k9rapidVersion")
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
 
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")

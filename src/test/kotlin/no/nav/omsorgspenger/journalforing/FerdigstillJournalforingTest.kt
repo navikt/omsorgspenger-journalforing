@@ -8,7 +8,6 @@ import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.registerApplicationContext
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
-import org.json.JSONObject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

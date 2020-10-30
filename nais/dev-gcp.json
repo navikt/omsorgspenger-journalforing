@@ -9,7 +9,8 @@
     "https://omsorgspenger-journalforing.dev.intern.nav.no"
   ],
   "externalHosts": [
-    "login.microsoftonline.com"
+    "login.microsoftonline.com",
+    "dokarkiv.dev-fss-pub.nais.io"
   ],
   "azureTenant": "trygdeetaten.no",
   "env": {
@@ -17,7 +18,8 @@
     "KAFKA_PROPERTIES_SECURITY_PROTOCOL": "SASL_SSL",
     "KAFKA_RAPID_TOPIC": "k9-rapid-v2",
     "KAFKA_CONSUMER_GROUP_ID": "omsorgspenger-journalforing",
-    "STS_TOKEN_ENDPOINT": "https://api-gw-q1.oera.no/security-token-service/rest/v1/sts/token",
-    "JOARK_BASE_URL": "https://dokarkiv.dev-fss-pub.nais.io"
+    "JOARK_BASE_URL": "https://dokarkiv.dev-fss-pub.nais.io",
+    "AZURE_APP_TOKEN_ENDPOINT": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
+    "DOKARKIV_SCOPES": "972814f3-8bdf-44f8-a191-c2ed00020b54/.default"
   }
 }
