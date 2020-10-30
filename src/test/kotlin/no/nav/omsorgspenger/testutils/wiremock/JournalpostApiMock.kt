@@ -18,7 +18,6 @@ private fun WireMockServer.stubOppdaterJournalpost(): WireMockServer {
                     .withHeader("Content-Type", equalTo("application/json"))
                     .withHeader("Nav-Consumer-Id", equalTo("omsorgspenger-journalforing"))
                     .withHeader("Nav-Callid", AnythingPattern())
-                    .withRequestBody(matchingJsonPath("$.journalpostId"))
                     .withRequestBody(matchingJsonPath("$.sak.sakstype", equalTo("FAGSAK")))
                     .withRequestBody(matchingJsonPath("$.sak.fagsaksystem", equalTo("OMSORGSPENGER")))
                     .withRequestBody(matchingJsonPath("$.tema", equalTo("OMS")))
@@ -50,7 +49,7 @@ private fun WireMockServer.stubFerdigstillJournalpost(): WireMockServer {
     return this
 }
 
-private fun WireMockServer.stubKaste400(): WireMockServer {
+private fun WireMockServer.stubOppdaterJournalpostHttp400Feil(): WireMockServer {
     WireMock.stubFor(
             WireMock.put(WireMock
                     .urlPathMatching(".*$journalpostApiMockPath.*"))
@@ -76,5 +75,8 @@ internal fun WireMockServer.stubIsReady(): WireMockServer {
 }
 
 
-internal fun WireMockServer.stubJournalpostApi() = stubOppdaterJournalpost().stubFerdigstillJournalpost().stubIsReady().stubKaste400()
+internal fun WireMockServer.stubJournalpostApi() = stubOppdaterJournalpost()
+    .stubFerdigstillJournalpost()
+    .stubOppdaterJournalpostHttp400Feil()
+    .stubIsReady()
 internal fun WireMockServer.journalpostApiBaseUrl() = baseUrl() + journalpostApiBasePath

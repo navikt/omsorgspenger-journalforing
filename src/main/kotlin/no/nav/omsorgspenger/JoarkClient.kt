@@ -13,7 +13,9 @@ import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.omsorgspenger.config.Environment
 import no.nav.omsorgspenger.config.hentRequiredEnv
-import no.nav.omsorgspenger.journalforing.JournalpostPayload
+import no.nav.omsorgspenger.extensions.StringExt.trimJson
+import no.nav.omsorgspenger.journalforing.Journalpost
+import org.intellij.lang.annotations.Language
 import org.slf4j.LoggerFactory
 
 internal class JoarkClient(
@@ -21,30 +23,32 @@ internal class JoarkClient(
         accessTokenClient: AccessTokenClient,
         private val httpClient: HttpClient
 ) : HealthCheck {
-    private val secureLogger = LoggerFactory.getLogger("tjenestekall")
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
     private val pingUrl = "$baseUrl/isReady"
 
-    internal suspend fun oppdaterJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
-        secureLogger.info("Sendes til Joark for oppdatering av journalpost: $journalpostPayload")
+    internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost): Boolean {
+        val payload = journalpost.oppdatertJournalpostBody().also {
+            secureLogger.info("Sendes til Dokarkiv for oppdatering av journalpost: $it")
+        }
+
         return kotlin.runCatching {
-            httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}") {
+            httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpost.journalpostId}") {
                 header("Nav-Callid", correlationId)
                 header("Nav-Consumer-Id", "omsorgspenger-journalforing")
                 header("Authorization", getAccessToken())
                 contentType(ContentType.Application.Json)
-                body = journalpostPayload
+                body = payload
             }.execute()
         }.håndterResponseFraJoark()
     }
 
-    internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
-        val payload = JournalfoerendeEnhet("9999").also {
+    internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostId: String): Boolean {
+        val payload = ferdigstillJournalpostBody.also {
             secureLogger.info("Sendes til Joark for ferdigstilling av journalpost: $it")
         }
         return kotlin.runCatching {
-            httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostPayload.journalpostId}/ferdigstill") {
+            httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostId}/ferdigstill") {
                 header("Nav-Callid", correlationId)
                 header("Nav-Consumer-Id", "omsorgspenger-journalforing")
                 header("Authorization", getAccessToken())
@@ -68,8 +72,6 @@ internal class JoarkClient(
     private suspend fun HttpResponse.secureLog() =
         secureLogger.error("HTTP ${status.value} fra Joark, response: ${String(content.toByteArray())}").let { false }
 
-    private data class JournalfoerendeEnhet(val journalfoerendeEnhet: String)
-
     private fun getAccessToken() = cachedAccessTokenClient.getAccessToken(
             setOf(env.hentRequiredEnv("DOKARKIV_SCOPES"))
     ).asAuthoriationHeader()
@@ -87,4 +89,36 @@ internal class JoarkClient(
             UnHealthy("JoarkClient", "Feil: ${it.message}")
         }
     )
+
+    private companion object {
+        private val secureLogger = LoggerFactory.getLogger("tjenestekall")
+        private val ferdigstillJournalpostBody = {
+            @Language("JSON")
+            val json = """
+                {
+                    "journalfoerendeEnhet": "9999"
+                }
+            """.trimIndent().trimJson()
+            json.trimJson()
+        }()
+    }
+}
+
+private fun Journalpost.oppdatertJournalpostBody() : String {
+    @Language("JSON")
+    val json = """
+        {
+          "tema": "OMS",
+          "bruker": {
+            "idType": "FNR",
+            "id": "$identitetsnummer"
+          },
+          "sak": {
+            "sakstype": "FAGSAK",
+            "fagsaksystem": "OMSORGSPENGER",
+            "fagsakId": "$saksnummer"
+          }
+        }
+    """.trimIndent()
+    return json.trimJson()
 }

@@ -22,12 +22,8 @@ internal class JoarkClientTest(
 
         val result = runBlocking {
             client.ferdigstillJournalpost(
-                    correlationId = hendelseId,
-                    journalpostPayload = JournalpostPayload(
-                            journalpostId = "123",
-                            bruker = JournalpostPayload.Bruker(id = "12312312311"),
-                            sak = JournalpostPayload.Sak(fagsakId = "123")
-                    )
+                correlationId = hendelseId,
+                journalpostId = "123"
             )
         }
 
@@ -41,12 +37,12 @@ internal class JoarkClientTest(
 
         val result = runBlocking {
             client.oppdaterJournalpost(
-                    correlationId = hendelseId,
-                    journalpostPayload = JournalpostPayload(
-                            journalpostId = "123",
-                            bruker = JournalpostPayload.Bruker(id = "12312312311"),
-                            sak = JournalpostPayload.Sak(fagsakId = "123")
-                    )
+                correlationId = hendelseId,
+                journalpost = Journalpost(
+                    journalpostId = "123",
+                    identitetsnummer = "12312312311",
+                    saksnummer = "123"
+                )
             )
         }
 
@@ -58,12 +54,12 @@ internal class JoarkClientTest(
 
         val result = runBlocking {
             client.oppdaterJournalpost(
-                    correlationId = "400",
-                    journalpostPayload = JournalpostPayload(
-                            journalpostId = "400",
-                            bruker = JournalpostPayload.Bruker(id = "12312312311"),
-                            sak = JournalpostPayload.Sak(fagsakId = "123"),
-                    )
+                correlationId = "400",
+                journalpost = Journalpost(
+                    journalpostId = "400",
+                    identitetsnummer = "12312312311",
+                    saksnummer = "123"
+                )
             )
         }
 

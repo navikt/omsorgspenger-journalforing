@@ -5,6 +5,7 @@ val k9rapidVersion = "1.fe10445"
 val ktorVersion = "1.4.1"
 val dusseldorfKtorVersion = "1.4.1.4754df6"
 val jsonassertVersion = "1.5.0"
+val orgJsonVersion = "20200518"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
@@ -23,10 +24,9 @@ dependencies {
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
 
-    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
-
+    implementation("org.json:json:$orgJsonVersion")
 
     // Test
     testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")

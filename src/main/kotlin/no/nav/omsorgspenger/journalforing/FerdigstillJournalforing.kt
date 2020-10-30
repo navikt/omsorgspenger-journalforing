@@ -39,12 +39,12 @@ internal class FerdigstillJournalforing(
 
         journalpostIder.forEach {
             journalforingMediator.behandlaJournalpost(
-                    correlationId = packet["@correlationId"].asText(),
-                    journalpostPayload = JournalpostPayload(
-                            journalpostId = it,
-                            bruker = JournalpostPayload.Bruker(id = identitetsnummer),
-                            sak = JournalpostPayload.Sak(fagsakId = saksnummer)
-                    )
+                correlationId = packet["@correlationId"].asText(),
+                journalpost = Journalpost(
+                    journalpostId = it,
+                    identitetsnummer = identitetsnummer,
+                    saksnummer = saksnummer
+                )
             ).let { success ->
                 if (success) logger.info("Behandlet journalpostId: $it")
                 else {

@@ -1,13 +1,7 @@
 package no.nav.omsorgspenger
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.ktor.application.*
 import io.ktor.client.HttpClient
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.routing.*
@@ -73,9 +67,7 @@ internal class ApplicationContext(
         internal var journalforingMediator: JournalforingMediator? = null) {
         internal fun build() : ApplicationContext {
             val benyttetEnv = env?:System.getenv()
-            val benyttetHttpClient = httpClient?:HttpClient {
-                install(JsonFeature) { serializer = JacksonSerializer(objectMapper) }
-            }
+            val benyttetHttpClient = httpClient ?: HttpClient()
             val benyttetAccessTokenClient = accessTokenClient?: ClientSecretAccessTokenClient(
                     clientId = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_ID"),
                     clientSecret = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_SECRET"),
@@ -97,12 +89,6 @@ internal class ApplicationContext(
                     benyttetJoarkClient
                 ))
             )
-        }
-
-        private companion object {
-            val objectMapper: ObjectMapper = jacksonObjectMapper()
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .registerModule(JavaTimeModule())
         }
     }
 }

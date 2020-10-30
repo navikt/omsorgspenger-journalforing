@@ -5,26 +5,23 @@ import no.nav.omsorgspenger.JoarkClient
 import org.slf4j.LoggerFactory
 
 internal class JournalforingMediator(
-        private val joarkClient: JoarkClient
-) {
+        private val joarkClient: JoarkClient) {
 
-    internal val logger = LoggerFactory.getLogger(JournalforingMediator::class.java)
-
-    internal fun behandlaJournalpost(correlationId: String, journalpostPayload: JournalpostPayload): Boolean {
+    internal fun behandlaJournalpost(correlationId: String, journalpost: Journalpost): Boolean {
         var result = false
 
         // TODO: Hantera = uppdatering av post som redan är uppdaterat men inte färdigställt?
         runBlocking {
-            val journalpostId = journalpostPayload.journalpostId
+            val journalpostId = journalpost.journalpostId
             joarkClient.oppdaterJournalpost(
                     correlationId = correlationId,
-                    journalpostPayload = journalpostPayload
+                    journalpost = journalpost
             ).let { oppdaterJournalpostSuccess ->
                 if (oppdaterJournalpostSuccess) {
                     logger.info("Oppdatert journalpostid: $journalpostId")
                     joarkClient.ferdigstillJournalpost(
                             correlationId = correlationId,
-                            journalpostPayload
+                            journalpostId = journalpostId
                     ).let { ferdigstiltJournalpostSuccess ->
                         if (ferdigstiltJournalpostSuccess) {
                             result = true
@@ -41,4 +38,7 @@ internal class JournalforingMediator(
 
     }
 
+    private companion object {
+        private val logger = LoggerFactory.getLogger(JournalforingMediator::class.java)
+    }
 }
