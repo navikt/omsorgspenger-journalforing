@@ -16,7 +16,14 @@ import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import no.nav.omsorgspenger.journalforing.Journalpost
 import org.intellij.lang.annotations.Language
+import org.json.JSONObject
 import org.slf4j.LoggerFactory
+
+internal enum class JournalpostStatus {
+    Oppdatert,
+    Ferdigstilt,
+    Feilet
+}
 
 internal class JoarkClient(
         private val env: Environment,
@@ -27,7 +34,7 @@ internal class JoarkClient(
     private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
     private val pingUrl = "$baseUrl/isReady"
 
-    internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost): Boolean {
+    internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost): JournalpostStatus {
         val payload = journalpost.oppdatertJournalpostBody().also {
             secureLogger.info("Sendes til Dokarkiv for oppdatering av journalpost: $it")
         }
@@ -35,44 +42,57 @@ internal class JoarkClient(
         return kotlin.runCatching {
             httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpost.journalpostId}") {
                 header("Nav-Callid", correlationId)
-                header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-                header("Authorization", getAccessToken())
+                header("Nav-Consumer-Id", ConsumerId)
+                header("Authorization", getAuthorizationHeader())
                 contentType(ContentType.Application.Json)
                 body = payload
             }.execute()
-        }.håndterResponseFraJoark()
+        }.håndterResponseFraJoark(
+            http200Status = JournalpostStatus.Oppdatert,
+            håndterIkkeHttp200 = { when (it.alleredeFerdigsstilt()) {
+                true -> JournalpostStatus.Ferdigstilt
+                false -> it.secureLog()
+            }}
+        )
     }
 
-    internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostId: String): Boolean {
+    internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostId: String): JournalpostStatus {
         val payload = ferdigstillJournalpostBody.also {
-            secureLogger.info("Sendes til Joark for ferdigstilling av journalpost: $it")
+            secureLogger.info("Sendes til Dokarkiv for ferdigstilling av journalpost: $it")
         }
         return kotlin.runCatching {
             httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostId}/ferdigstill") {
                 header("Nav-Callid", correlationId)
-                header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-                header("Authorization", getAccessToken())
+                header("Nav-Consumer-Id", ConsumerId)
+                header("Authorization", getAuthorizationHeader())
                 contentType(ContentType.Application.Json)
                 body = payload
             }.execute()
-        }.håndterResponseFraJoark()
+        }.håndterResponseFraJoark(
+            http200Status = JournalpostStatus.Ferdigstilt,
+            håndterIkkeHttp200 = { it.secureLog() }
+        )
     }
 
-    private suspend fun Result<HttpResponse>.håndterResponseFraJoark() = fold(
+    private suspend fun Result<HttpResponse>.håndterResponseFraJoark(
+        http200Status: JournalpostStatus,
+        håndterIkkeHttp200: (pair: Pair<HttpStatusCode, String>) -> JournalpostStatus
+    ) = fold(
         onSuccess = { response -> when (response.status) {
-            HttpStatusCode.OK -> true
-            else -> response.secureLog()
+            HttpStatusCode.OK -> http200Status
+            else -> håndterIkkeHttp200(response.toPair())
         }},
         onFailure = { cause -> when (cause is ResponseException){
-            true -> cause.response.secureLog()
+            true -> cause.response.toPair().secureLog()
             else -> throw cause
         }}
     )
 
-    private suspend fun HttpResponse.secureLog() =
-        secureLogger.error("HTTP ${status.value} fra Joark, response: ${String(content.toByteArray())}").let { false }
+    private suspend fun HttpResponse.toPair() = status to String(content.toByteArray())
+    private fun Pair<HttpStatusCode, String>.secureLog() =
+        secureLogger.error("HTTP ${first.value} fra Dokarkiv, response: $second").let { JournalpostStatus.Feilet }
 
-    private fun getAccessToken() = cachedAccessTokenClient.getAccessToken(
+    private fun getAuthorizationHeader() = cachedAccessTokenClient.getAccessToken(
             setOf(env.hentRequiredEnv("DOKARKIV_SCOPES"))
     ).asAuthoriationHeader()
 
@@ -92,6 +112,23 @@ internal class JoarkClient(
 
     private companion object {
         private val secureLogger = LoggerFactory.getLogger("tjenestekall")
+
+        private const val ConsumerId = "omsorgspenger-journalforing"
+
+        private fun String.json() = kotlin.runCatching { JSONObject(this) }.fold(
+            onSuccess = { it },
+            onFailure = { JSONObject() }
+        )
+
+        private fun Pair<HttpStatusCode, String>.alleredeFerdigsstilt() = when {
+            first == HttpStatusCode.BadRequest -> {
+                second.json().let {
+                    it.has("message") && it.getString("message").contains("journalpostStatus=J")
+                }
+            }
+            else -> false
+        }
+
         private val ferdigstillJournalpostBody = {
             @Language("JSON")
             val json = """

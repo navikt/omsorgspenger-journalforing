@@ -2,40 +2,56 @@ package no.nav.omsorgspenger.journalforing
 
 import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.JoarkClient
+import no.nav.omsorgspenger.JournalpostStatus
 import org.slf4j.LoggerFactory
 
 internal class JournalforingMediator(
         private val joarkClient: JoarkClient) {
 
-    internal fun behandlaJournalpost(correlationId: String, journalpost: Journalpost): Boolean {
+    internal fun behandlaJournalpost(
+        correlationId: String,
+        journalpost: Journalpost): Boolean {
         var result = false
+        val journalpostId = journalpost.journalpostId
+        logger.info("Behandler journalpost $journalpostId for saksnummer ${journalpost.saksnummer}")
 
-        // TODO: Hantera = uppdatering av post som redan är uppdaterat men inte färdigställt?
+        // TODO: Håndtere når det går bra for en journalpost, men ikke alle..
+
         runBlocking {
-            val journalpostId = journalpost.journalpostId
             joarkClient.oppdaterJournalpost(
                     correlationId = correlationId,
                     journalpost = journalpost
-            ).let { oppdaterJournalpostSuccess ->
-                if (oppdaterJournalpostSuccess) {
-                    logger.info("Oppdatert journalpostid: $journalpostId")
-                    joarkClient.ferdigstillJournalpost(
+            ).let { statusEtterOppdatering ->
+                logger.info("Status etter oppdatering: $statusEtterOppdatering")
+                when (statusEtterOppdatering) {
+                    JournalpostStatus.Oppdatert -> {
+                        joarkClient.ferdigstillJournalpost(
                             correlationId = correlationId,
                             journalpostId = journalpostId
-                    ).let { ferdigstiltJournalpostSuccess ->
-                        if (ferdigstiltJournalpostSuccess) {
-                            result = true
-                            logger.info("Ferdigstillt journalpostid: $journalpostId")
+                        ).let { statusEtterFerdigstilling ->
+                            logger.info("Status etter ferdigstilling: $statusEtterFerdigstilling")
+                            when (statusEtterFerdigstilling) {
+                                JournalpostStatus.Ferdigstilt -> {
+                                    result = true
+                                }
+                                else -> {
+                                    logger.error("Feil ved ferdigstilling av journalpost.")
+                                }
+                            }
                         }
-                        else logger.warn("Feil vid ferdigstilling av journalpostid: $journalpostId")
+                    }
+                    JournalpostStatus.Ferdigstilt -> {
+                        logger.warn("Journalpost allerede ferdigstilt. Bør sjekkes om den er ferdigstilt mot rett saksnummer!")
+                        result = true
+                    }
+                    else -> {
+                        logger.error("Feil ved oppdatering av journalpost.")
                     }
                 }
-                else logger.warn("Feil vid oppdatering av journalpostid: $journalpostId")
             }
         }.also {
             return result
         }
-
     }
 
     private companion object {
