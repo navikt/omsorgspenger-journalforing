@@ -48,6 +48,7 @@ internal class FerdigstillJournalforing(
                     saksnummer = saksnummer
                 )
             ).let { success -> if (!success) {
+                incBehandlingFeil()
                 return false
             }}
         }
