@@ -1,11 +1,18 @@
 package no.nav.omsorgspenger
 
+import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.patch
+import io.ktor.client.request.put
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.HttpStatement
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.util.toByteArray
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
@@ -32,6 +39,7 @@ internal class JoarkClient(
 ) : HealthCheck {
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
+    private val dokarkivScopes = setOf(env.hentRequiredEnv("DOKARKIV_SCOPES"))
     private val pingUrl = "$baseUrl/isReady"
 
     internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost): JournalpostStatus {
@@ -92,11 +100,12 @@ internal class JoarkClient(
     private fun Pair<HttpStatusCode, String>.secureLog() =
         secureLogger.error("HTTP ${first.value} fra Dokarkiv, response: $second").let { JournalpostStatus.Feilet }
 
-    private fun getAuthorizationHeader() = cachedAccessTokenClient.getAccessToken(
-            setOf(env.hentRequiredEnv("DOKARKIV_SCOPES"))
-    ).asAuthoriationHeader()
+    private fun getAuthorizationHeader() = cachedAccessTokenClient.getAccessToken(dokarkivScopes).asAuthoriationHeader()
 
-    override suspend fun check() = kotlin.runCatching {
+    override suspend fun check() =
+            no.nav.helse.dusseldorf.ktor.health.Result.merge("JoarkClient", accessTokenCheck(), pingJoarkCheck())
+
+    private suspend fun pingJoarkCheck() = kotlin.runCatching {
         httpClient.get<HttpStatement>(pingUrl).execute().status
     }.fold(
         onSuccess = { statusCode ->
@@ -108,6 +117,17 @@ internal class JoarkClient(
         onFailure = {
             UnHealthy("JoarkClient", "Feil: ${it.message}")
         }
+    )
+
+    private fun accessTokenCheck() = kotlin.runCatching {
+        cachedAccessTokenClient.getAccessToken(dokarkivScopes).let {
+            (SignedJWT.parse(it.token).jwtClaimsSet.getStringArrayClaim("roles")?.toList()?: emptyList()).contains("access_as_application")
+        }}.fold(
+            onSuccess = { when (it) {
+                true -> Healthy("AccessTokenCheck", "OK")
+                false -> UnHealthy("AccessTokenCheck", "Feil: Mangler rettigheter")
+            }},
+            onFailure = { UnHealthy("AccessTokenCheck", "Feil: ${it.message}") }
     )
 
     private companion object {
