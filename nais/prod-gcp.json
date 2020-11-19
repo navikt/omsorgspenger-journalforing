@@ -19,6 +19,7 @@
     "KAFKA_CONSUMER_GROUP_ID": "omsorgspenger-journalforing",
     "JOARK_BASE_URL": "https://dokarkiv.prod-fss-pub.nais.io",
     "AZURE_APP_TOKEN_ENDPOINT": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/oauth2/v2.0/token",
-    "DOKARKIV_SCOPES": "162b3255-2f72-4399-8f7a-244add9ffaac/.default"
+    "DOKARKIV_SCOPES": "162b3255-2f72-4399-8f7a-244add9ffaac/.default",
+    "OPPGAVE_BASE_URL": "https://oppgave.nais.adeo.no"
   }
 }
