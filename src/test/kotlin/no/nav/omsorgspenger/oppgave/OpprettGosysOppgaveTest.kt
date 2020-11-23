@@ -1,8 +1,6 @@
 package no.nav.omsorgspenger.oppgave
 
-import java.time.ZonedDateTime
 import java.util.*
-import kotlin.test.assertNotNull
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
@@ -38,11 +36,11 @@ internal class OpprettGosysOppgaveTest(
         )
 
         rapid.sendTestMessage(behovssekvens)
-
         rapid.mockLøsningPåHentePersonopplysninger()
 
+
         Assertions.assertEquals(2, rapid.inspektør.size)
-        Assertions.assertTrue(rapid.inspektør.message(0).toString().contains("løsninger"))
+        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("5436732"))
     }
 
     internal companion object {

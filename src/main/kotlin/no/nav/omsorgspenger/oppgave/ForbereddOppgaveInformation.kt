@@ -1,21 +1,14 @@
 package no.nav.omsorgspenger.oppgave
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.node.TextNode
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
-import no.nav.helse.rapids_rivers.isMissingOrNull
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilBehov
-import no.nav.k9.rapid.river.leggTilBehovEtter
-import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
-import no.nav.k9.rapid.river.utenLøsningPåBehov
-import no.nav.omsorgspenger.OppgaveClient
-import no.nav.omsorgspenger.journalforing.incBehandlingUtfort
-import no.nav.omsorgspenger.journalforing.incMottattBehov
+import no.nav.omsorgspenger.incBehandlingUtfort
 import org.slf4j.LoggerFactory
 
 internal class ForbereddOppgaveInformation(

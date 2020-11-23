@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger
 
 import io.prometheus.client.Counter
 import org.slf4j.LoggerFactory

@@ -9,6 +9,9 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
+import no.nav.omsorgspenger.incBehandlingFeil
+import no.nav.omsorgspenger.incBehandlingUtfort
+import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class FerdigstillJournalforing(

@@ -6,21 +6,19 @@ import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
-import no.nav.helse.rapids_rivers.isMissingOrNull
 import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.harLøsningPåBehov
-import no.nav.k9.rapid.river.leggTilBehov
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.OppgaveClient
-import no.nav.omsorgspenger.journalforing.incBehandlingUtfort
-import no.nav.omsorgspenger.journalforing.incMottattBehov
+import no.nav.omsorgspenger.incBehandlingUtfort
+import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class OpprettGosysOppgave(
-        private val rapidsConnection: RapidsConnection,
+        rapidsConnection: RapidsConnection,
         private val oppgaveClient: OppgaveClient) : BehovssekvensPacketListener(
         logger = LoggerFactory.getLogger(OpprettGosysOppgave::class.java)
 ) {
@@ -45,20 +43,27 @@ internal class OpprettGosysOppgave(
                 .toSet()
         val journalpostType = packet[JOURNALPOSTTYPE].asText()
         val aktorId = packet[AKTOERID].asText()
+        val correlationId = packet[Behovsformat.CorrelationId].asText()
 
-        val losning = runBlocking {
-            return@runBlocking oppgaveClient.opprettOppgave("hantererbehov", Oppgave(
-                    journalpostType = journalpostType,
-                    journalpostId = journalpostIder,
-                    aktoerId = aktorId
-            )
-            ).id
+        val oppgave = Oppgave(
+                journalpostType = journalpostType,
+                journalpostId = journalpostIder,
+                aktoerId = aktorId)
+
+
+        var losning = runBlocking {
+            return@runBlocking oppgaveClient.hentOppgave(correlationId, oppgave)
+        }
+
+        if(losning.isEmpty()) {
+            losning = runBlocking {
+                return@runBlocking oppgaveClient.opprettOppgave(correlationId, oppgave)
+            }
         }
 
         packet.leggTilLøsning(BEHOV, mapOf(
-                "oppgaveIder" to setOf(losning))
+                "oppgaveIder" to losning)
         )
-
         return true
     }
 

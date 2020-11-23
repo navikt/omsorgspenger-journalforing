@@ -1,15 +1,25 @@
 package no.nav.omsorgspenger
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.HttpClient
+import io.ktor.client.features.ResponseException
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.HttpStatement
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.util.toByteArray
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
@@ -17,11 +27,9 @@ import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.hentRequiredEnv
-import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import no.nav.omsorgspenger.oppgave.Oppgave
 import no.nav.omsorgspenger.oppgave.OppgaveRespons
-import org.intellij.lang.annotations.Language
-import org.json.JSONObject
+import no.nav.omsorgspenger.oppgave.oppdatertOppgaveBody
 import org.slf4j.LoggerFactory
 
 internal class OppgaveClient(
@@ -34,19 +42,82 @@ internal class OppgaveClient(
     private val oppgaveScopes = setOf(env.hentRequiredEnv("OPPGAVE_SCOPES"))
     private val pingUrl = "$baseUrl/isReady"
 
-    internal suspend fun opprettOppgave(correlationId: String, oppgave: Oppgave): OppgaveRespons {
-        val payload = oppgave.oppdatertOppgaveBody().also {
-            secureLogger.info("[CorrelationId: $correlationId] Sendes til OppgaveApi for oppretting av oppgave")
-        }
-
-        return httpClient.post<HttpStatement>("$baseUrl/api/v1/oppgaver") {
-            header("Authorization", getAuthorizationHeader())
-            header("X-Correlation-ID", correlationId)
-            contentType(ContentType.Application.Json)
-            accept(ContentType.Application.Json)
-            body = payload
-        }.receive()
+    internal suspend fun hentOppgave(correlationId: String, oppgave: Oppgave): Set<String> {
+        // TODO: Søk på enbart aktørid?
+        val payload = """
+            {
+            "journalpostId": "${oppgave.journalpostId}",
+            "aktoerId":"${oppgave.aktoerId}"
+            }
+        """.trimIndent()
+        return kotlin.runCatching {
+            httpClient.get<HttpStatement>("$baseUrl/api/v1/oppgaver") {
+                header("Authorization", getAuthorizationHeader())
+                header("X-Correlation-ID", correlationId)
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                body = payload
+            }.execute()
+        }.håndterResponse()
     }
+
+    internal suspend fun opprettOppgave(correlationId: String, oppgave: Oppgave): Set<String> {
+        val payload = oppgave.oppdatertOppgaveBody()
+
+        return kotlin.runCatching {
+            httpClient.post<HttpStatement>("$baseUrl/api/v1/oppgaver") {
+                header("Authorization", getAuthorizationHeader())
+                header("X-Correlation-ID", correlationId)
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                body = payload
+            }.execute()
+        }.håndterResponse()
+    }
+
+    private suspend fun Result<HttpResponse>.håndterResponse(): Set<String> = fold(
+            onSuccess = { response ->
+                when (response.status) {
+                    HttpStatusCode.OK -> { // Håndter HentOppgave
+                        val response = objectMapper.readValue<JsonNode>(response.content.toByteArray())
+
+                        if (response["antallTreffTotalt"].asInt() == 0) {
+                            logger.info("Fann inga oppgaver")
+                            return emptySet()
+                        }
+
+                        return response["oppgaver"].elements().asSequence().toList().map {
+                            val id = it["id"].asText()
+                            id
+                        }.toSet()
+                    }
+                    HttpStatusCode.Created -> { // Håndter OpprettOppgave
+                        val response = objectMapper.readValue<OppgaveRespons>(response.content.toByteArray())
+
+                        if (response.id.isNullOrEmpty()) {
+                            throw RuntimeException("Uventet feil vid parsing av svar fra oppgave api, id er null")
+                        }
+                        return setOf(response.id)
+                    }
+                    else -> {
+                        response.logError()
+                        throw RuntimeException("Uventet response code (${response.status}) fra oppgave-api")
+                    }
+                }
+            },
+            onFailure = { cause ->
+                when (cause is ResponseException) {
+                    true -> {
+                        cause.response.logError()
+                        throw RuntimeException("Uventet feil ved kall till oppgave-api")
+                    }
+                    else -> throw cause
+                }
+            }
+    )
+
+    private suspend fun HttpResponse.logError() =
+            logger.error("HTTP ${status.value} fra oppgave-api, response: ${String(content.toByteArray())}")
 
     private fun getAuthorizationHeader() = cachedAccessTokenClient.getAccessToken(oppgaveScopes).asAuthoriationHeader()
 
@@ -84,27 +155,10 @@ internal class OppgaveClient(
 
     private companion object {
         private val secureLogger = LoggerFactory.getLogger("tjenestekall")
+        private val logger = LoggerFactory.getLogger(Oppgave::class.java)
 
-        private fun String.json() = kotlin.runCatching { JSONObject(this) }.fold(
-                onSuccess = { it },
-                onFailure = { JSONObject() }
-        )
+        val objectMapper: ObjectMapper = jacksonObjectMapper()
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .registerModule(JavaTimeModule())
     }
-}
-
-private fun Oppgave.oppdatertOppgaveBody(): String {
-    @Language("JSON")
-    val json = """
-        {
-          "tema": "OMS",
-          "journalpostId": "$journalpostId",
-          "journalpostType": "$journalpostType",
-          "prioritet": "NORM",
-          "aktivDato": "yyyy-mm-dd",
-          "oppgavetype": "",
-          "aktoerId": "$aktoerId"
-        }
-    """.trimIndent()
-    //TODO("Vad ær oppgavetype?)
-    return json.trimJson()
 }
