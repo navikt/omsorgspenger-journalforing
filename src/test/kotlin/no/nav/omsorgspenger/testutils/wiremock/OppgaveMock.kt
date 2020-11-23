@@ -37,8 +37,13 @@ private fun WireMockServer.stubHentOppgaveOK() = also {
       "oppgaver": [
         {
             "id": "5436732",
-            "tildeltEnhetsnr": "1234",
-            "behandlingsTema": "abc123"
+            "journalpostId": "1234",
+            "behandlingsTema": "test"
+        },
+        {
+            "id": "12341234",
+            "journalpostId": "12345",
+            "behandlingsTema": "test2"
         }
       ]
     }

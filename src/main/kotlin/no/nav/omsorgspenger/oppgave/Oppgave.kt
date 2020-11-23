@@ -14,14 +14,15 @@ Koder:  https://kodeverk-web.nais.preprod.local/kodeverksoversikt
 data class Oppgave(
     val journalpostId: Set<String>,
     val journalpostType: String,
-    val aktoerId: String
+    val aktoerId: String,
+    val tema: String? = "OMS"
 )
 
 internal fun Oppgave.oppdatertOppgaveBody(): String {
     @Language("JSON")
     val json = """
         {
-          "tema": "OMS",
+          "tema": "$tema",
           "journalpostId": "$journalpostId",
           "journalpostType": "$journalpostType",
           "behandlingsTema": "ab0149",

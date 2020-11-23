@@ -42,12 +42,12 @@ internal class OppgaveClient(
     private val oppgaveScopes = setOf(env.hentRequiredEnv("OPPGAVE_SCOPES"))
     private val pingUrl = "$baseUrl/isReady"
 
-    internal suspend fun hentOppgave(correlationId: String, oppgave: Oppgave): Set<String> {
-        // TODO: Søk på enbart aktørid?
+    internal suspend fun hentOppgave(correlationId: String, oppgave: Oppgave): OppgaveLøsning {
         val payload = """
             {
             "journalpostId": "${oppgave.journalpostId}",
-            "aktoerId":"${oppgave.aktoerId}"
+            "aktoerId":"${oppgave.aktoerId}",
+            "tema": "${oppgave.tema}"
             }
         """.trimIndent()
         return kotlin.runCatching {
@@ -61,7 +61,7 @@ internal class OppgaveClient(
         }.håndterResponse()
     }
 
-    internal suspend fun opprettOppgave(correlationId: String, oppgave: Oppgave): Set<String> {
+    internal suspend fun opprettOppgave(correlationId: String, oppgave: Oppgave): OppgaveLøsning {
         val payload = oppgave.oppdatertOppgaveBody()
 
         return kotlin.runCatching {
@@ -75,21 +75,21 @@ internal class OppgaveClient(
         }.håndterResponse()
     }
 
-    private suspend fun Result<HttpResponse>.håndterResponse(): Set<String> = fold(
+    private suspend fun Result<HttpResponse>.håndterResponse(): OppgaveLøsning = fold(
             onSuccess = { response ->
                 when (response.status) {
                     HttpStatusCode.OK -> { // Håndter HentOppgave
                         val response = objectMapper.readValue<JsonNode>(response.content.toByteArray())
-
                         if (response["antallTreffTotalt"].asInt() == 0) {
                             logger.info("Fann inga oppgaver")
-                            return emptySet()
+                            return emptyMap()
                         }
 
                         return response["oppgaver"].elements().asSequence().toList().map {
-                            val id = it["id"].asText()
-                            id
-                        }.toSet()
+                            val oppgaveid = it["id"].asText() // TODO: NPE-hantering?
+                            val journalpostId = it["journalpostId"].asText()
+                            journalpostId to oppgaveid
+                        }.toMap()
                     }
                     HttpStatusCode.Created -> { // Håndter OpprettOppgave
                         val response = objectMapper.readValue<OppgaveRespons>(response.content.toByteArray())
@@ -97,7 +97,7 @@ internal class OppgaveClient(
                         if (response.id.isNullOrEmpty()) {
                             throw RuntimeException("Uventet feil vid parsing av svar fra oppgave api, id er null")
                         }
-                        return setOf(response.id)
+                        return mapOf(response.journalpostId to response.id)
                     }
                     else -> {
                         response.logError()
@@ -162,3 +162,5 @@ internal class OppgaveClient(
                 .registerModule(JavaTimeModule())
     }
 }
+
+typealias OppgaveLøsning = Map<String, String>
