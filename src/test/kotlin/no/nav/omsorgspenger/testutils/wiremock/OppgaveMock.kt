@@ -73,8 +73,15 @@ private fun WireMockServer.stubOpprettOppgaveCreated() = also {
     )
 }
 
+private fun WireMockServer.stubIsReady() = also {
+    stubFor(WireMock.get("$basePath/isReady")
+            .willReturn(WireMock.aResponse()
+                    .withStatus(200)
+            )
+    )
+}
+
 internal fun WireMockServer.stubOppgaveMock() =
-        stubOpprettOppgaveCreated()
-        .stubHentOppgaveOK()
+        stubOpprettOppgaveCreated().stubHentOppgaveOK().stubIsReady()
 
 internal fun WireMockServer.oppgaveApiBaseUrl() = baseUrl() + basePath
