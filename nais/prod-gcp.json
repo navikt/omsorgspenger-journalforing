@@ -9,7 +9,8 @@
     "https://omsorgspenger-journalforing.intern.nav.no"
   ],
   "externalHosts": [
-    "dokarkiv.prod-fss-pub.nais.io"
+    "dokarkiv.prod-fss-pub.nais.io",
+    "omsorgspenger-proxy.prod-fss-pub.nais.io"
   ],
   "azureTenant": "nav.no",
   "env": {
@@ -20,7 +21,7 @@
     "JOARK_BASE_URL": "https://dokarkiv.prod-fss-pub.nais.io",
     "AZURE_APP_TOKEN_ENDPOINT": "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/oauth2/v2.0/token",
     "DOKARKIV_SCOPES": "162b3255-2f72-4399-8f7a-244add9ffaac/.default",
-    "OPPGAVE_BASE_URL": "https://oppgave.nais.adeo.no",
+    "OPPGAVE_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/oppgave",
     "OPPGAVE_SCOPES": "OPPGAVE_SCOPES/.default"
   }
 }
