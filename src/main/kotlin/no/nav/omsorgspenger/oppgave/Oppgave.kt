@@ -6,16 +6,17 @@ import no.nav.omsorgspenger.extensions.DateUtils
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import org.intellij.lang.annotations.Language
 
-/*
-REQUIRED per https://oppgave.nais.preprod.local/#/Oppgave/opprettOppgave:
-Koder:  https://kodeverk-web.nais.preprod.local/kodeverksoversikt
-*/
+// Koder:  https://kodeverk-web.nais.preprod.local/kodeverksoversikt
 
 data class Oppgave(
         var journalpostId: String,
         val journalpostType: String,
         val aktoerId: String,
-        val tema: String? = "OMS"
+        val tema: String? = "OMS",
+        val behandlingsTema: String? =
+                OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstema,
+        val behandlingsType: String? =
+                OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstype
 )
 
 internal fun Oppgave.oppdatertOppgaveBody(): String {
@@ -25,8 +26,8 @@ internal fun Oppgave.oppdatertOppgaveBody(): String {
           "tema": "$tema",
           "journalpostId": "$journalpostId",
           "journalpostType": "$journalpostType",
-          "behandlingsTema": "ab0149",
-          "behandlingsType": "ae0227",
+          "behandlingsTema": "$behandlingsTema",
+          "behandlingsType": "$behandlingsType",
           "prioritet": "NORM",
           "journalpostkilde": "AS36",
           "temagruppe": "FMLI",
