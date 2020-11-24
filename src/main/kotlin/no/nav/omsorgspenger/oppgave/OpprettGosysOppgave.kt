@@ -30,13 +30,13 @@ internal class OpprettGosysOppgave(
                 packet.harLøsningPåBehov("HentPersonopplysninger")
                 packet.require(JOURNALPOSTIDER) { it.requireArray { entry -> entry is TextNode } }
                 packet.require(JOURNALPOSTTYPE, JsonNode::asText)
-                packet.interestedIn(AKTOERID, JsonNode::asText)
+                packet.require(AKTOERID, JsonNode::asText)
             }
         }.register(this)
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV med id $id").also { incMottattBehov() }
+        logger.info("Skal løse behov $BEHOV").also { incMottattBehov() }
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -45,21 +45,27 @@ internal class OpprettGosysOppgave(
         val aktorId = packet[AKTOERID].asText()
         val correlationId = packet[Behovsformat.CorrelationId].asText()
 
-        val oppgave = Oppgave(
-                journalpostType = journalpostType,
-                journalpostId = journalpostIder,
-                aktoerId = aktorId)
-
-
+        logger.info("Henter oppgaver för ${journalpostIder.size} journal id(er)")
         var losning = runBlocking {
-            return@runBlocking oppgaveClient.hentOppgave(correlationId, oppgave)
-        }
+            return@runBlocking oppgaveClient.hentOppgave(correlationId, aktorId, journalpostIder)
+        }.filterKeys { journalpostIder.contains(it) }
+        logger.info("Hentet ${losning.size} oppgaver")
 
-        if(losning.isEmpty()) {
-            losning = runBlocking {
-                return@runBlocking oppgaveClient.opprettOppgave(correlationId, oppgave)
+        journalpostIder.filterNot {
+            losning.keys.contains(it)
+        }.forEach { jId ->
+            val result = runBlocking {
+                return@runBlocking oppgaveClient.opprettOppgave(correlationId, Oppgave(
+                        journalpostType = journalpostType,
+                        journalpostId = jId,
+                        aktoerId = aktorId))
+            }
+            if(result.containsKey(jId)) {
+                losning = losning.plus(result)
             }
         }
+
+        require(losning.keys.containsAll(journalpostIder)) { "Klarade inte att opprette eller hente oppgave för alla journalpostID"}
 
         packet.leggTilLøsning(BEHOV, mapOf(
                 "oppgaveIder" to losning)
@@ -68,13 +74,13 @@ internal class OpprettGosysOppgave(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV med id $id").also { incBehandlingUtfort() }
+        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort() }
     }
 
     internal companion object {
         const val BEHOV = "OpprettGosysJournalføringsoppgaver"
         const val JOURNALPOSTIDER = "@behov.$BEHOV.journalpostIder"
         const val JOURNALPOSTTYPE = "@behov.$BEHOV.journalpostType"
-        const val AKTOERID = "@løsninger.HentPersonopplysninger.aktørId"
+        const val AKTOERID = "@løsninger.HentPersonopplysninger.personopplysninger.attributer.aktørId"
     }
 }

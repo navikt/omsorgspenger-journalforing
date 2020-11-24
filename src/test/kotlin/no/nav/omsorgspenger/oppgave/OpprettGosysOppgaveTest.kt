@@ -29,10 +29,26 @@ internal class OpprettGosysOppgaveTest(
     }
 
     @Test
-    fun `Plockar upp och sender vidare behov før aktørid-opplysninger`() {
+    fun `Henter existerande oppgaver`() {
         val (_, behovssekvens) = nyBehovsSekvens(
                 id = "01BX5ZZKBKACTAV9WEVGEMMVS0",
-                identitetsnummer = "1111111111"
+                identitetsnummer = "1111111111",
+                journalpostIder = setOf("HentJournalpostId1", "HentJournalpostId2")
+        )
+
+        rapid.sendTestMessage(behovssekvens)
+        rapid.mockLøsningPåHentePersonopplysninger()
+
+        Assertions.assertEquals(2, rapid.inspektør.size)
+        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("HentOppgaveId1"))
+    }
+
+    @Test
+    fun `Behov med två journalpostId varav en existerande`() {
+        val (_, behovssekvens) = nyBehovsSekvens(
+                id = "01BX5ZZKBKACTAV9WEVGEMMVS0",
+                identitetsnummer = "1111111111",
+                journalpostIder = setOf("HentJournalpostId1", "OpprettJournalpostId1")
         )
 
         rapid.sendTestMessage(behovssekvens)
@@ -41,7 +57,8 @@ internal class OpprettGosysOppgaveTest(
         println(rapid.inspektør.message(1).toPrettyString())
 
         Assertions.assertEquals(2, rapid.inspektør.size)
-        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("5436732"))
+        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("HentOppgaveId1"))
+        Assertions.assertEquals(2, rapid.inspektør.message(1)["@løsninger"][BEHOV]["oppgaveIder"].size())
     }
 
     internal companion object {
@@ -50,6 +67,7 @@ internal class OpprettGosysOppgaveTest(
         private fun nyBehovsSekvens(
                 id: String,
                 identitetsnummer: String,
+                journalpostIder: Set<String>,
                 correlationId: String = UUID.randomUUID().toString()
         ) = Behovssekvens(
                 id = id,
@@ -60,7 +78,7 @@ internal class OpprettGosysOppgaveTest(
                                 input = mapOf(
                                         "identitetsnummer" to identitetsnummer,
                                         "journalpostType" to "testType",
-                                        "journalpostIder" to setOf("123123", "456456"),
+                                        "journalpostIder" to journalpostIder,
                                         "berørteIdentitetsnummer" to setOf("123","456")
                                 )
                         )

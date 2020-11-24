@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -42,12 +42,12 @@ internal class OppgaveClient(
     private val oppgaveScopes = setOf(env.hentRequiredEnv("OPPGAVE_SCOPES"))
     private val pingUrl = "$baseUrl/isReady"
 
-    internal suspend fun hentOppgave(correlationId: String, oppgave: Oppgave): OppgaveLøsning {
+    internal suspend fun hentOppgave(correlationId: String, aktoerId: String, journalpostIder: Set<String>): OppgaveLøsning {
         val payload = """
             {
-            "journalpostId": "${oppgave.journalpostId}",
-            "aktoerId":"${oppgave.aktoerId}",
-            "tema": "${oppgave.tema}"
+            "journalpostId": "$journalpostIder",
+            "aktoerId":"$aktoerId",
+            "tema": "OMS"
             }
         """.trimIndent()
         return kotlin.runCatching {
@@ -63,7 +63,6 @@ internal class OppgaveClient(
 
     internal suspend fun opprettOppgave(correlationId: String, oppgave: Oppgave): OppgaveLøsning {
         val payload = oppgave.oppdatertOppgaveBody()
-
         return kotlin.runCatching {
             httpClient.post<HttpStatement>("$baseUrl/api/v1/oppgaver") {
                 header("Authorization", getAuthorizationHeader())
@@ -87,6 +86,7 @@ internal class OppgaveClient(
 
                         return response["oppgaver"].elements().asSequence().toList().map {
                             val oppgaveid = it["id"].asText() // TODO: NPE-hantering?
+                            logger.info("Hentet existerande oppgave $oppgaveid")
                             val journalpostId = it["journalpostId"].asText()
                             journalpostId to oppgaveid
                         }.toMap()
@@ -97,6 +97,7 @@ internal class OppgaveClient(
                         if (response.id.isNullOrEmpty()) {
                             throw RuntimeException("Uventet feil vid parsing av svar fra oppgave api, id er null")
                         }
+                        logger.info("Opprettet oppgave ${response.id}")
                         return mapOf(response.journalpostId to response.id)
                     }
                     else -> {

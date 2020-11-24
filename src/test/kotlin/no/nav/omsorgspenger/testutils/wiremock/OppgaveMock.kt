@@ -2,8 +2,10 @@ package no.nav.omsorgspenger.testutils.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.containing
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.matching.AnythingPattern
 import com.github.tomakehurst.wiremock.matching.RegexPattern
@@ -33,16 +35,16 @@ private fun WireMockServer.stubHentOppgaveOK() = also {
     @Language("JSON")
     val json = """
     {
-      "antallTreffTotalt": "1",
+      "antallTreffTotalt": "2",
       "oppgaver": [
         {
-            "id": "5436732",
-            "journalpostId": "1234",
+            "id": "HentOppgaveId1",
+            "journalpostId": "HentJournalpostId1",
             "behandlingsTema": "test"
         },
         {
-            "id": "12341234",
-            "journalpostId": "12345",
+            "id": "HentOppgaveId2",
+            "journalpostId": "HentJournalpostId2",
             "behandlingsTema": "test2"
         }
       ]
@@ -61,9 +63,9 @@ private fun WireMockServer.stubOpprettOppgaveCreated() = also {
     @Language("JSON")
     val json = """
         	{
-        	  "id": "1",
+        	  "id": "OpprettOppgaveId1",
         	  "aktoerId": "11111111111",
-        	  "journalpostId": "1234567",
+        	  "journalpostId": "OpprettJournalpostId1",
         	  "tema": "OMS",
         	  "prioritet": "NORM",
         	  "aktivDato": "2000-01-01"

@@ -1,11 +1,10 @@
 package no.nav.omsorgspenger.oppgave
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class OppgaveRespons(
     val id: String,
-    val aktoerId: String,
     val journalpostId: String,
-    val tema: String,
-    val prioritet: String,
-    val aktivDato: String
 )
 

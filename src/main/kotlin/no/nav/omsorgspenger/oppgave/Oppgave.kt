@@ -12,10 +12,10 @@ Koder:  https://kodeverk-web.nais.preprod.local/kodeverksoversikt
 */
 
 data class Oppgave(
-    val journalpostId: Set<String>,
-    val journalpostType: String,
-    val aktoerId: String,
-    val tema: String? = "OMS"
+        var journalpostId: String,
+        val journalpostType: String,
+        val aktoerId: String,
+        val tema: String? = "OMS"
 )
 
 internal fun Oppgave.oppdatertOppgaveBody(): String {
@@ -33,14 +33,9 @@ internal fun Oppgave.oppdatertOppgaveBody(): String {
           "aktivDato": "${LocalDateTime.now(ZoneOffset.UTC)}",
           "frist": "${DateUtils.nWeekdaysFromToday(3)}",
           "oppgavetype": "JFR",
-          "aktoerId": "$aktoerId"
+          "aktoerId": "$aktoerId",
+          "behandlesAvApplikasjon": "IT00"
         }
     """.trimIndent()
     return json.trimJson()
 }
-
-/*
-        behandlendeEnhet = behandlendeEnhet,
-        sokerAktoerId = sokerAktoerId,
-        behandlesAv = INFOTRYGD_FAGSYSTEM,
-*/
