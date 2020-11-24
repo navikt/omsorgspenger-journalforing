@@ -54,8 +54,6 @@ internal class OpprettGosysOppgaveTest(
         rapid.sendTestMessage(behovssekvens)
         rapid.mockLøsningPåHentePersonopplysninger()
 
-        println(rapid.inspektør.message(1).toPrettyString())
-
         Assertions.assertEquals(2, rapid.inspektør.size)
         Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("HentOppgaveId1"))
         Assertions.assertEquals(2, rapid.inspektør.message(1)["@løsninger"][BEHOV]["oppgaveIder"].size())
@@ -77,7 +75,7 @@ internal class OpprettGosysOppgaveTest(
                                 navn = BEHOV,
                                 input = mapOf(
                                         "identitetsnummer" to identitetsnummer,
-                                        "journalpostType" to "testType",
+                                        "journalpostType" to "OverføreOmsorgsdager",
                                         "journalpostIder" to journalpostIder,
                                         "berørteIdentitetsnummer" to setOf("123","456")
                                 )
