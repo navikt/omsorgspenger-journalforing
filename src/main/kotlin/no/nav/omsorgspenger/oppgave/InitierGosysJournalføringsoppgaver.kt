@@ -37,7 +37,7 @@ internal class InitierGosysJournalføringsoppgaver(
                         Behov(
                                 navn = "HentPersonopplysninger",
                                 input = mapOf(
-                                        "identitetsnummer" to identitetsnummer,
+                                        "identitetsnummer" to setOf(identitetsnummer),
                                         "attributter" to setOf("aktørId")
                                 )
                         )
