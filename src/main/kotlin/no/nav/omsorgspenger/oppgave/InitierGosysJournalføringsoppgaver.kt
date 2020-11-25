@@ -8,26 +8,26 @@ import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilBehov
 import no.nav.k9.rapid.river.skalLøseBehov
-import no.nav.omsorgspenger.incBehandlingUtfort
+import no.nav.k9.rapid.river.utenLøsningPåBehov
 import org.slf4j.LoggerFactory
 
-internal class ForbereddOppgaveInformation(
+internal class InitierGosysJournalføringsoppgaver(
         rapidsConnection: RapidsConnection) : BehovssekvensPacketListener(
-        logger = LoggerFactory.getLogger(ForbereddOppgaveInformation::class.java)
+        logger = LoggerFactory.getLogger(InitierGosysJournalføringsoppgaver::class.java)
 ) {
 
     init {
         River(rapidsConnection).apply {
             validate { packet ->
                 packet.skalLøseBehov(BEHOV)
-                packet.rejectKey(HENTPERSONOPPLYSNINGER_LOESNING)
+                packet.utenLøsningPåBehov("HentPersonopplysninger")
                 packet.require(IDENTITETSNUMMER, JsonNode::asText)
             }
         }.register(this)
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Behøver aktørid før $BEHOV med id $id")
+        logger.info("Behøver aktørid før $BEHOV")
 
         val identitetsnummer = packet[IDENTITETSNUMMER].asText()
 
@@ -49,12 +49,11 @@ internal class ForbereddOppgaveInformation(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Sendt behov av personopplysninger før $BEHOV med id $id").also { incBehandlingUtfort() }
+        logger.info("Sendt behov av personopplysninger før $BEHOV")
     }
 
     internal companion object {
         const val BEHOV = "OpprettGosysJournalføringsoppgaver"
         const val IDENTITETSNUMMER = "@behov.$BEHOV.identitetsnummer"
-        const val HENTPERSONOPPLYSNINGER_LOESNING = "@løsninger.HentPersonopplysninger"
     }
 }

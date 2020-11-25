@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class ForbereddOppgaveInformationTest(
+internal class InitierGosysJournalføringsoppgaverTest(
         private val applicationContext: ApplicationContext) {
 
     private val rapid = TestRapid().apply {

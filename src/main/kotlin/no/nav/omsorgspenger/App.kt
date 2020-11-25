@@ -16,8 +16,8 @@ import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
-import no.nav.omsorgspenger.oppgave.ForbereddOppgaveInformation
-import no.nav.omsorgspenger.oppgave.OpprettGosysOppgave
+import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
+import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
 
 fun main() {
     val applicationContext = ApplicationContext.Builder().build()
@@ -33,11 +33,11 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
         rapidsConnection = this,
         journalforingMediator = applicationContext.journalforingMediator
     )
-    OpprettGosysOppgave(
+    OpprettGosysJournalføringsoppgaver(
             rapidsConnection = this,
             oppgaveClient = applicationContext.oppgaveClient
     )
-    ForbereddOppgaveInformation(
+    InitierGosysJournalføringsoppgaver(
             rapidsConnection = this
     )
     register(object : RapidsConnection.StatusListener {

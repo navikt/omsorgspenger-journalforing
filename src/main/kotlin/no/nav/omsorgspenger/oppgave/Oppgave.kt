@@ -7,19 +7,19 @@ import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import org.intellij.lang.annotations.Language
 
 // Koder:  https://kodeverk-web.nais.preprod.local/kodeverksoversikt
-
 data class Oppgave(
         var journalpostId: String,
         val journalpostType: String,
-        val aktoerId: String,
-        val tema: String? = "OMS",
-        val behandlingsTema: String? =
+        val aktørId: String,
+        val tema: String = "OMS",
+        val behandlingsTema: String =
                 OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstema,
-        val behandlingsType: String? =
+        val behandlingsType: String =
                 OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstype
 )
 
 internal fun Oppgave.oppdatertOppgaveBody(): String {
+    // Oppgave schema: https://oppgave.nais.preprod.local/#/Oppgave/opprettOppgave
     @Language("JSON")
     val json = """
         {
@@ -34,7 +34,7 @@ internal fun Oppgave.oppdatertOppgaveBody(): String {
           "aktivDato": "${LocalDateTime.now(ZoneOffset.UTC)}",
           "frist": "${DateUtils.nWeekdaysFromToday(3)}",
           "oppgavetype": "JFR",
-          "aktoerId": "$aktoerId",
+          "aktoerId": "$aktørId",
           "behandlesAvApplikasjon": "IT00"
         }
     """.trimIndent()

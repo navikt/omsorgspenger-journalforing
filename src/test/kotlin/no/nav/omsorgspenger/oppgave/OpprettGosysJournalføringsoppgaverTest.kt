@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class OpprettGosysOppgaveTest(
+internal class OpprettGosysJournalføringsoppgaverTest(
         private val applicationContext: ApplicationContext) {
 
     private val rapid = TestRapid().apply {
@@ -37,7 +37,7 @@ internal class OpprettGosysOppgaveTest(
         )
 
         rapid.sendTestMessage(behovssekvens)
-        rapid.mockLøsningPåHentePersonopplysninger()
+        rapid.mockLøsningPåHentePersonopplysninger("1111111111")
 
         Assertions.assertEquals(2, rapid.inspektør.size)
         Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("HentOppgaveId1"))
@@ -52,7 +52,7 @@ internal class OpprettGosysOppgaveTest(
         )
 
         rapid.sendTestMessage(behovssekvens)
-        rapid.mockLøsningPåHentePersonopplysninger()
+        rapid.mockLøsningPåHentePersonopplysninger("1111111111")
 
         Assertions.assertEquals(2, rapid.inspektør.size)
         Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("HentOppgaveId1"))
@@ -86,11 +86,11 @@ internal class OpprettGosysOppgaveTest(
 
 }
 
-internal fun TestRapid.mockLøsningPåHentePersonopplysninger() {
+internal fun TestRapid.mockLøsningPåHentePersonopplysninger(identitetsnummer: String) {
     sendTestMessage(
             sisteMelding()
                     .somJsonMessage()
-                    .leggTilLøsningPåHentePersonopplysninger()
+                    .leggTilLøsningPåHentePersonopplysninger(identitetsnummer)
                     .toJson()
     )
 }
@@ -99,11 +99,11 @@ private fun TestRapid.sisteMelding() = inspektør.message(inspektør.size - 1).t
 
 private fun String.somJsonMessage() = JsonMessage(toString(), MessageProblems(this)).also { it.interestedIn("@løsninger") }
 
-private fun JsonMessage.leggTilLøsningPåHentePersonopplysninger() = leggTilLøsning(
+private fun JsonMessage.leggTilLøsningPåHentePersonopplysninger(identitetsnummer: String) = leggTilLøsning(
         behov = "HentPersonopplysninger",
         løsning = mapOf(
                 "personopplysninger" to mapOf(
-                        "attributer" to mapOf(
+                        identitetsnummer to mapOf(
                                 "aktørId" to "11111",
                         )
                 )

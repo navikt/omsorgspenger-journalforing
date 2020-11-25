@@ -13,14 +13,12 @@ import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.OppgaveClient
-import no.nav.omsorgspenger.incBehandlingUtfort
-import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
-internal class OpprettGosysOppgave(
+internal class OpprettGosysJournalføringsoppgaver(
         rapidsConnection: RapidsConnection,
         private val oppgaveClient: OppgaveClient) : BehovssekvensPacketListener(
-        logger = LoggerFactory.getLogger(OpprettGosysOppgave::class.java)
+        logger = LoggerFactory.getLogger(OpprettGosysJournalføringsoppgaver::class.java)
 ) {
 
     init {
@@ -30,37 +28,40 @@ internal class OpprettGosysOppgave(
                 packet.harLøsningPåBehov("HentPersonopplysninger")
                 packet.require(JOURNALPOSTIDER) { it.requireArray { entry -> entry is TextNode } }
                 packet.require(JOURNALPOSTTYPE, JsonNode::asText)
-                packet.require(AKTOERID, JsonNode::asText)
+                packet.require(IDENTITETSNUMMER, JsonNode::asText)
+                packet.interestedIn(PERSONOPPLYSNINGER_LØSNING)
             }
         }.register(this)
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV").also { incMottattBehov() }
+        logger.info("Skal løse behov $BEHOV")
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
                 .toSet()
         val journalpostType = packet[JOURNALPOSTTYPE].asText()
-        val aktorId = packet[AKTOERID].asText()
+        val identitetsnummer = packet[IDENTITETSNUMMER].asText()
+
+        val aktørId = packet[PERSONOPPLYSNINGER_LØSNING][identitetsnummer]["aktørId"].asText()
         val correlationId = packet[Behovsformat.CorrelationId].asText()
 
         logger.info("Henter oppgaver för ${journalpostIder.size} journal id(er)")
         var losning = runBlocking {
-            return@runBlocking oppgaveClient.hentOppgave(correlationId, aktorId, journalpostIder)
+            return@runBlocking oppgaveClient.hentOppgave(correlationId, aktørId, journalpostIder)
         }.filterKeys { journalpostIder.contains(it) }
         logger.info("Hentet ${losning.size} oppgaver")
 
         journalpostIder.filterNot {
             losning.keys.contains(it)
-        }.forEach { jId ->
+        }.forEach { journalpostId ->
             val result = runBlocking {
                 return@runBlocking oppgaveClient.opprettOppgave(correlationId, Oppgave(
                         journalpostType = journalpostType,
-                        journalpostId = jId,
-                        aktoerId = aktorId))
+                        journalpostId = journalpostId,
+                        aktørId = aktørId))
             }
-            if(result.containsKey(jId)) {
+            if(result.containsKey(journalpostId)) {
                 losning = losning.plus(result)
             }
         }
@@ -74,13 +75,14 @@ internal class OpprettGosysOppgave(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort() }
+        logger.info("Løst behov $BEHOV")
     }
 
     internal companion object {
         const val BEHOV = "OpprettGosysJournalføringsoppgaver"
         const val JOURNALPOSTIDER = "@behov.$BEHOV.journalpostIder"
         const val JOURNALPOSTTYPE = "@behov.$BEHOV.journalpostType"
-        const val AKTOERID = "@løsninger.HentPersonopplysninger.personopplysninger.attributer.aktørId"
+        const val IDENTITETSNUMMER = "@behov.$BEHOV.identitetsnummer"
+        const val PERSONOPPLYSNINGER_LØSNING = "@løsninger.HentPersonopplysninger.personopplysninger"
     }
 }

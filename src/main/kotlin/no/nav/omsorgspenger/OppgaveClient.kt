@@ -19,6 +19,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.util.toByteArray
+import java.util.*
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
@@ -29,6 +30,7 @@ import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.oppgave.Oppgave
 import no.nav.omsorgspenger.oppgave.OppgaveRespons
 import no.nav.omsorgspenger.oppgave.oppdatertOppgaveBody
+import org.json.JSONArray
 import org.slf4j.LoggerFactory
 
 internal class OppgaveClient(
@@ -41,11 +43,12 @@ internal class OppgaveClient(
     private val oppgaveScopes = setOf(env.hentRequiredEnv("OPPGAVE_SCOPES"))
     private val pingUrl = "$baseUrl/isReady"
 
-    internal suspend fun hentOppgave(correlationId: String, aktoerId: String, journalpostIder: Set<String>): OppgaveLøsning {
+    internal suspend fun hentOppgave(correlationId: String, aktørId: String, journalpostIder: Set<String>): OppgaveLøsning {
+        val journalpostIdArray = JSONArray(journalpostIder.toTypedArray())
         val payload = """
             {
-            "journalpostId": "$journalpostIder",
-            "aktoerId":"$aktoerId",
+            "journalpostId": ${journalpostIdArray},
+            "aktoerId":"$aktørId",
             "tema": "OMS"
             }
         """.trimIndent()
