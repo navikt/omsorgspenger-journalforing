@@ -19,7 +19,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.util.toByteArray
-import java.util.*
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
@@ -30,7 +29,6 @@ import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.oppgave.Oppgave
 import no.nav.omsorgspenger.oppgave.OppgaveRespons
 import no.nav.omsorgspenger.oppgave.oppdatertOppgaveBody
-import org.json.JSONArray
 import org.slf4j.LoggerFactory
 
 internal class OppgaveClient(
@@ -120,7 +118,9 @@ internal class OppgaveClient(
             no.nav.helse.dusseldorf.ktor.health.Result.merge("OppgaveClient", accessTokenCheck(), pingOppgaveApiCheck())
 
     private suspend fun pingOppgaveApiCheck() = kotlin.runCatching {
-        httpClient.get<HttpStatement>(pingUrl).execute().status
+        httpClient.get<HttpStatement>(pingUrl) {
+            header("Authorization", getAuthorizationHeader())
+        }.execute().status
     }.fold(
             onSuccess = { statusCode ->
                 when (HttpStatusCode.OK == statusCode) {
