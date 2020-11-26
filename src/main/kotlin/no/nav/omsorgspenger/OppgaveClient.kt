@@ -44,21 +44,13 @@ internal class OppgaveClient(
     private val pingUrl = "$baseUrl/isReady"
 
     internal suspend fun hentOppgave(correlationId: String, aktørId: String, journalpostIder: Set<String>): OppgaveLøsning {
-        val journalpostIdArray = JSONArray(journalpostIder.toTypedArray())
-        val payload = """
-            {
-            "journalpostId": ${journalpostIdArray},
-            "aktoerId":"$aktørId",
-            "tema": "OMS"
-            }
-        """.trimIndent()
+        val journalpostId = journalpostIder.joinToString().replace(" ", "")
+        val oppgaveParams = "tema=OMS&aktoerId=$aktørId&journalpostId=$journalpostId&limit=10&offset=10"
         return kotlin.runCatching {
-            httpClient.get<HttpStatement>("$baseUrl/api/v1/oppgaver") {
+            httpClient.get<HttpStatement>("$baseUrl/api/v1/oppgaver?$oppgaveParams") {
                 header("Authorization", getAuthorizationHeader())
                 header("X-Correlation-ID", correlationId)
-                contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
-                body = payload
             }.execute()
         }.håndterResponse()
     }

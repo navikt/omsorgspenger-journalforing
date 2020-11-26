@@ -32,7 +32,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV med id $id").also { incMottattBehov() }
+        logger.info("Skal løse behov $BEHOV").also { incMottattBehov() }
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -61,7 +61,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV med id $id").also { incBehandlingUtfort() }
+        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort() }
     }
 
     internal companion object {

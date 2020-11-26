@@ -25,14 +25,13 @@ internal fun Oppgave.oppdatertOppgaveBody(): String {
         {
           "tema": "$tema",
           "journalpostId": "$journalpostId",
-          "journalpostType": "$journalpostType",
-          "behandlingsTema": "$behandlingsTema",
-          "behandlingsType": "$behandlingsType",
+          "behandlingstema": "$behandlingsTema",
+          "behandlingstype": "$behandlingsType",
           "prioritet": "NORM",
           "journalpostkilde": "AS36",
           "temagruppe": "FMLI",
-          "aktivDato": "${LocalDateTime.now(ZoneOffset.UTC)}",
-          "frist": "${DateUtils.nWeekdaysFromToday(3)}",
+          "aktivDato": "${DateUtils.nWeekdaysFromToday(0)}",
+          "fristFerdigstillelse": "${DateUtils.nWeekdaysFromToday(3)}",
           "oppgavetype": "JFR",
           "aktoerId": "$aktørId",
           "behandlesAvApplikasjon": "IT00"
