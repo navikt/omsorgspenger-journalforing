@@ -1,7 +1,5 @@
 package no.nav.omsorgspenger.oppgave
 
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import no.nav.omsorgspenger.extensions.DateUtils
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import org.intellij.lang.annotations.Language
@@ -15,7 +13,8 @@ data class Oppgave(
         val behandlingsTema: String =
                 OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstema,
         val behandlingsType: String =
-                OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstype
+                OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstype,
+        val enhetsNummer: String
 )
 
 internal fun Oppgave.oppdatertOppgaveBody(): String {
@@ -27,6 +26,7 @@ internal fun Oppgave.oppdatertOppgaveBody(): String {
           "journalpostId": "$journalpostId",
           "behandlingstema": "$behandlingsTema",
           "behandlingstype": "$behandlingsType",
+          "tildeltEnhetsnr": "$enhetsNummer",
           "prioritet": "NORM",
           "journalpostkilde": "AS36",
           "temagruppe": "FMLI",

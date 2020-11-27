@@ -22,6 +22,7 @@ internal class InitierGosysJournalføringsoppgaver(
                 packet.skalLøseBehov(BEHOV)
                 packet.utenLøsningPåBehov("HentPersonopplysninger")
                 packet.require(IDENTITETSNUMMER, JsonNode::asText)
+                packet.interestedIn(BERØRTEIDENTITETSNUMMER)
             }
         }.register(this)
     }
@@ -30,6 +31,9 @@ internal class InitierGosysJournalføringsoppgaver(
         logger.info("Behøver aktørid før $BEHOV")
 
         val identitetsnummer = packet[IDENTITETSNUMMER].asText()
+        val berørteIdentitetsnummer = packet[BERØRTEIDENTITETSNUMMER]
+                .map { it.asText() }
+                .toSet()
 
         packet.leggTilBehov(
                 aktueltBehov = "OpprettGosysJournalføringsoppgaver",
@@ -37,23 +41,23 @@ internal class InitierGosysJournalføringsoppgaver(
                         Behov(
                                 navn = "HentPersonopplysninger",
                                 input = mapOf(
-                                        "identitetsnummer" to setOf(identitetsnummer),
-                                        "attributter" to setOf("aktørId")
+                                        "identitetsnummer" to berørteIdentitetsnummer.plus(identitetsnummer),
+                                        "attributter" to setOf("aktørId", "enhetsnummer")
                                 )
                         )
                 )
-
         )
 
         return true
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Sendt behov av personopplysninger før $BEHOV")
+        logger.info("Sendt behov av personopplysninger åt $BEHOV")
     }
 
     internal companion object {
         const val BEHOV = "OpprettGosysJournalføringsoppgaver"
         const val IDENTITETSNUMMER = "@behov.$BEHOV.identitetsnummer"
+        const val BERØRTEIDENTITETSNUMMER = "@behov.$BEHOV.berørteIdentitetsnummer"
     }
 }

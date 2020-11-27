@@ -29,6 +29,7 @@ internal class OpprettGosysJournalføringsoppgaver(
                 packet.require(JOURNALPOSTIDER) { it.requireArray { entry -> entry is TextNode } }
                 packet.require(JOURNALPOSTTYPE, JsonNode::asText)
                 packet.require(IDENTITETSNUMMER, JsonNode::asText)
+                packet.require(ENHETSNUMMER, JsonNode::asText)
                 packet.interestedIn(PERSONOPPLYSNINGER_LØSNING)
             }
         }.register(this)
@@ -42,6 +43,7 @@ internal class OpprettGosysJournalføringsoppgaver(
                 .toSet()
         val journalpostType = packet[JOURNALPOSTTYPE].asText()
         val identitetsnummer = packet[IDENTITETSNUMMER].asText()
+        val enhetsnummer = packet[ENHETSNUMMER].asText()
 
         val aktørId = packet[PERSONOPPLYSNINGER_LØSNING][identitetsnummer]["aktørId"].asText()
         val correlationId = packet[Behovsformat.CorrelationId].asText()
@@ -59,11 +61,11 @@ internal class OpprettGosysJournalføringsoppgaver(
                 return@runBlocking oppgaveClient.opprettOppgave(correlationId, Oppgave(
                         journalpostType = journalpostType,
                         journalpostId = journalpostId,
-                        aktørId = aktørId))
+                        aktørId = aktørId,
+                        enhetsNummer = enhetsnummer)
+                )
             }
-            if(result.containsKey(journalpostId)) {
-                losning = losning.plus(result)
-            }
+            losning = losning.plus(result)
         }
 
         require(losning.keys.containsAll(journalpostIder)) { "Klarade inte att opprette eller hente oppgave för alla journalpostID"}
@@ -83,6 +85,7 @@ internal class OpprettGosysJournalføringsoppgaver(
         const val JOURNALPOSTIDER = "@behov.$BEHOV.journalpostIder"
         const val JOURNALPOSTTYPE = "@behov.$BEHOV.journalpostType"
         const val IDENTITETSNUMMER = "@behov.$BEHOV.identitetsnummer"
+        const val ENHETSNUMMER = "@løsninger.HentPersonopplysninger.fellesopplysninger.enhetsnummer"
         const val PERSONOPPLYSNINGER_LØSNING = "@løsninger.HentPersonopplysninger.personopplysninger"
     }
 }

@@ -30,6 +30,14 @@ private fun hentOppgaveMapping(
         .withHeader("Authorization", RegexPattern("^Bearer .+$"))
         .withHeader("X-Correlation-ID", callIdPattern)
 
+private fun opprettRiktigOppgaveMapping(
+        callIdPattern: StringValuePattern = AnythingPattern()
+) = get(WireMock
+        .urlPathMatching(".*$oppgaveApiPath.*"))
+        .withHeader("Authorization", RegexPattern("^Bearer .+$"))
+        .withHeader("X-Correlation-ID", equalTo("RiktigPattern"))
+
+
 private fun WireMockServer.stubHentOppgaveOK() = also {
     @Language("JSON")
     val json = """
@@ -79,7 +87,7 @@ private fun WireMockServer.stubOpprettOppgaveCreated() = also {
     )
 }
 
-private fun WireMockServer.stubOpprettCreated() = also {
+private fun WireMockServer.stubOpprettRiktigCreated() = also {
     @Language("JSON")
     val json = """
         {
@@ -104,6 +112,13 @@ private fun WireMockServer.stubOpprettCreated() = also {
             "opprettetTidspunkt": "2020-11-26T08:08:42.768+01:00"
         }
     """.trimIndent()
+    stubFor(opprettRiktigOppgaveMapping()
+            .willReturn(
+                    WireMock.aResponse()
+                            .withStatus(200)
+                            .withBody(json)
+            )
+    )
 }
 
 private fun WireMockServer.stubHentTomtSvar() = also {
@@ -125,6 +140,6 @@ private fun WireMockServer.stubIsReady() = also {
 }
 
 internal fun WireMockServer.stubOppgaveMock() =
-        stubOpprettOppgaveCreated().stubHentOppgaveOK().stubIsReady()
+        stubOpprettOppgaveCreated().stubHentOppgaveOK().stubIsReady().stubOpprettRiktigCreated()
 
 internal fun WireMockServer.oppgaveApiBaseUrl() = baseUrl() + basePath

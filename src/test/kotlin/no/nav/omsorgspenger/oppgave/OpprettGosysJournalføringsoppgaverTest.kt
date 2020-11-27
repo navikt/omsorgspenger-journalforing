@@ -78,7 +78,7 @@ internal class OpprettGosysJournalføringsoppgaverTest(
                                         "journalpostType" to "OverføreOmsorgsdager",
                                         "journalpostIder" to journalpostIder,
                                         "berørteIdentitetsnummer" to setOf("123","456")
-                                )
+                                ),
                         )
                 )
         ).keyValue
@@ -106,6 +106,9 @@ private fun JsonMessage.leggTilLøsningPåHentePersonopplysninger(identitetsnumm
                         identitetsnummer to mapOf(
                                 "aktørId" to "11111",
                         )
+                ),
+                "fellesopplysninger" to mapOf(
+                        "enhetsnummer" to "4487"
                 )
         )
 )
