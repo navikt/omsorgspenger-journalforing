@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
 import io.ktor.client.request.accept
@@ -39,7 +38,7 @@ internal class OppgaveClient(
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("OPPGAVE_BASE_URL")
     private val oppgaveScopes = setOf(env.hentRequiredEnv("OPPGAVE_SCOPES"))
-    private val pingUrl = "$baseUrl/isReady"
+    private val pingUrl = "$baseUrl/internal/ready"
 
     internal suspend fun hentOppgave(correlationId: String, aktørId: String, journalpostIder: Set<String>): OppgaveLøsning {
         val journalpostId = journalpostIder.joinToString().replace(" ", "")
@@ -134,17 +133,9 @@ internal class OppgaveClient(
     )
 
     private fun accessTokenCheck() = kotlin.runCatching {
-        cachedAccessTokenClient.getAccessToken(oppgaveScopes).let {
-            (SignedJWT.parse(it.token).jwtClaimsSet.getStringArrayClaim("roles")?.toList()
-                    ?: emptyList()).contains("access_as_application")
-        }
+        cachedAccessTokenClient.getAccessToken(oppgaveScopes)
     }.fold(
-            onSuccess = {
-                when (it) {
-                    true -> Healthy("AccessTokenCheck", "OK")
-                    false -> UnHealthy("AccessTokenCheck", "Feil: Mangler rettigheter")
-                }
-            },
+            onSuccess = { Healthy("AccessTokenCheck", "OK") },
             onFailure = { UnHealthy("AccessTokenCheck", "Feil: ${it.message}") }
     )
 
