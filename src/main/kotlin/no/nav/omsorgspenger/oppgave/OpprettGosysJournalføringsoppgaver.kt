@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
+import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.k9.rapid.behov.Behovsformat
@@ -13,6 +14,9 @@ import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.OppgaveClient
+import no.nav.omsorgspenger.incBehandlingFeil
+import no.nav.omsorgspenger.incBehandlingUtfort
+import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class OpprettGosysJournalføringsoppgaver(
@@ -36,7 +40,7 @@ internal class OpprettGosysJournalføringsoppgaver(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV")
+        logger.info("Skal løse behov $BEHOV").also { incMottattBehov(BEHOV) }
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -68,7 +72,10 @@ internal class OpprettGosysJournalføringsoppgaver(
             losning = losning.plus(result)
         }
 
-        require(losning.keys.containsAll(journalpostIder)) { "Klarade inte att opprette eller hente oppgave för alla journalpostID"}
+        require(losning.keys.containsAll(journalpostIder)) {
+            "Klarade inte att opprette eller hente oppgave för alla journalpostID"
+                    .also { incBehandlingFeil(BEHOV) }
+        }
 
         packet.leggTilLøsning(BEHOV, mapOf(
                 "oppgaveIder" to losning)
@@ -77,7 +84,7 @@ internal class OpprettGosysJournalføringsoppgaver(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV")
+        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort(BEHOV) }
     }
 
     internal companion object {

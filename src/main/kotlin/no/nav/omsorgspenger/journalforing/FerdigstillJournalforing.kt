@@ -32,7 +32,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV").also { incMottattBehov() }
+        logger.info("Skal løse behov $BEHOV").also { incMottattBehov(BEHOV) }
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -52,7 +52,7 @@ internal class FerdigstillJournalforing(
                 )
             ).let { success -> if (!success) {
                 // TODO: Failar en så failar allt, behandla?
-                incBehandlingFeil()
+                incBehandlingFeil(BEHOV)
                 return false
             }}
         }
@@ -61,7 +61,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort() }
+        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort(BEHOV) }
     }
 
     internal companion object {

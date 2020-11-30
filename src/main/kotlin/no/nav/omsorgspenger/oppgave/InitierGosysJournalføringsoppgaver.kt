@@ -9,6 +9,8 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilBehov
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.k9.rapid.river.utenLøsningPåBehov
+import no.nav.omsorgspenger.incBehandlingUtfort
+import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class InitierGosysJournalføringsoppgaver(
@@ -29,6 +31,7 @@ internal class InitierGosysJournalføringsoppgaver(
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
         logger.info("Behøver aktørid før $BEHOV")
+                .also { incMottattBehov("InitierGosysJournalføringsoppgaver") }
 
         val identitetsnummer = packet[IDENTITETSNUMMER].asText()
         val berørteIdentitetsnummer = packet[BERØRTEIDENTITETSNUMMER]
@@ -53,6 +56,7 @@ internal class InitierGosysJournalføringsoppgaver(
 
     override fun onSent(id: String, packet: JsonMessage) {
         logger.info("Sendt behov av personopplysninger åt $BEHOV")
+                .also { incBehandlingUtfort("InitierGosysJournalføringsoppgaver") }
     }
 
     internal companion object {
