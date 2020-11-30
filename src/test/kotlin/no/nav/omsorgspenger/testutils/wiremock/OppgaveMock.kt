@@ -132,7 +132,7 @@ private fun WireMockServer.stubHentTomtSvar() = also {
 }
 
 private fun WireMockServer.stubIsReady() = also {
-    stubFor(WireMock.get("$basePath/isReady")
+    stubFor(WireMock.get("$basePath/internal/ready")
             .willReturn(WireMock.aResponse()
                     .withStatus(200)
             )
