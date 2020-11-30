@@ -16,6 +16,8 @@ import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
+import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
+import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
 
 fun main() {
     val applicationContext = ApplicationContext.Builder().build()
@@ -30,6 +32,13 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     FerdigstillJournalforing(
         rapidsConnection = this,
         journalforingMediator = applicationContext.journalforingMediator
+    )
+    OpprettGosysJournalføringsoppgaver(
+            rapidsConnection = this,
+            oppgaveClient = applicationContext.oppgaveClient
+    )
+    InitierGosysJournalføringsoppgaver(
+            rapidsConnection = this
     )
     register(object : RapidsConnection.StatusListener {
         override fun onStartup(rapidsConnection: RapidsConnection) {
@@ -54,6 +63,7 @@ internal class ApplicationContext(
     internal val env: Environment,
     internal val joarkClient: JoarkClient,
     internal val journalforingMediator: JournalforingMediator,
+    internal val oppgaveClient: OppgaveClient,
     internal val healthService: HealthService) {
 
     internal fun start() {}
@@ -62,9 +72,10 @@ internal class ApplicationContext(
     internal class Builder(
         internal var env: Environment? = null,
         internal var httpClient: HttpClient? = null,
-        internal val accessTokenClient: AccessTokenClient? = null,
+        internal var accessTokenClient: AccessTokenClient? = null,
         internal var joarkClient: JoarkClient? = null,
-        internal var journalforingMediator: JournalforingMediator? = null) {
+        internal var journalforingMediator: JournalforingMediator? = null,
+        internal var oppgaveClient: OppgaveClient? = null) {
         internal fun build() : ApplicationContext {
             val benyttetEnv = env?:System.getenv()
             val benyttetHttpClient = httpClient ?: HttpClient()
@@ -78,6 +89,11 @@ internal class ApplicationContext(
                 accessTokenClient = benyttetAccessTokenClient,
                 httpClient = benyttetHttpClient
             )
+            val benyttetOppgaveClient = oppgaveClient?: OppgaveClient(
+                    env = benyttetEnv,
+                    accessTokenClient = benyttetAccessTokenClient,
+                    httpClient = benyttetHttpClient
+            )
 
             return ApplicationContext(
                 env = benyttetEnv,
@@ -86,8 +102,10 @@ internal class ApplicationContext(
                     joarkClient = benyttetJoarkClient
                 ),
                 healthService = HealthService(healthChecks = setOf(
-                    benyttetJoarkClient
-                ))
+                    benyttetJoarkClient,
+                    benyttetOppgaveClient
+                )),
+                oppgaveClient = benyttetOppgaveClient
             )
         }
     }

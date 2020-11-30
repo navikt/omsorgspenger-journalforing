@@ -9,6 +9,9 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
+import no.nav.omsorgspenger.incBehandlingFeil
+import no.nav.omsorgspenger.incBehandlingUtfort
+import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class FerdigstillJournalforing(
@@ -29,7 +32,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV med id $id").also { incMottattBehov() }
+        logger.info("Skal løse behov $BEHOV").also { incMottattBehov(BEHOV) }
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -48,7 +51,8 @@ internal class FerdigstillJournalforing(
                     saksnummer = saksnummer
                 )
             ).let { success -> if (!success) {
-                incBehandlingFeil()
+                // TODO: Failar en så failar allt, behandla?
+                incBehandlingFeil(BEHOV)
                 return false
             }}
         }
@@ -57,7 +61,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV med id $id").also { incBehandlingUtfort() }
+        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort(BEHOV) }
     }
 
     internal companion object {
