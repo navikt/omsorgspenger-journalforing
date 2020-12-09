@@ -9,6 +9,14 @@ internal object OppgaveAttributter {
             "MidlertidigAlene" to Attributter(
                     behandlingstype = Behandlingstype.DigitalSøknad.kodeverdi,
                     behandlingstema = Behandlingstema.Omsorgspenger.kodeverdi
+            ),
+            "FordeleOmsorgsdager" to Attributter(
+                    behandlingstype = Behandlingstype.Overføring.kodeverdi,
+                    behandlingstema = Behandlingstema.Omsorgspenger.kodeverdi
+            ),
+            "OverføreKoronaOmsorgsdager" to Attributter(
+                    behandlingstype = Behandlingstype.Overføring.kodeverdi,
+                    behandlingstema = Behandlingstema.Omsorgspenger.kodeverdi
             )
     )
 
