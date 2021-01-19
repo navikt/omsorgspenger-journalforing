@@ -76,7 +76,7 @@ internal class OppgaveClient(
                         }
 
                         return response["oppgaver"].elements().asSequence().toList().map {
-                            val oppgaveid = it["id"].asText() // TODO: NPE-hantering?
+                            val oppgaveid = it["id"].asText()
                             logger.info("Hentet existerande oppgave $oppgaveid")
                             val journalpostId = it["journalpostId"].asText()
                             journalpostId to oppgaveid

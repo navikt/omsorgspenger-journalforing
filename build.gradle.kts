@@ -1,16 +1,17 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val junitJupiterVersion = "5.7.0"
-val k9rapidVersion = "1.6d743f4"
-val ktorVersion = "1.4.3"
-val dusseldorfKtorVersion = "1.4.3.1978e78"
+val k9rapidVersion = "1.0e6a99e"
+val ktorVersion = "1.5.0"
+val dusseldorfKtorVersion = "1.5.0.0d3bd1e"
 val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20200518"
+val mockkVersion = "1.10.5"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.21"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
@@ -29,9 +30,10 @@ dependencies {
     implementation("org.json:json:$orgJsonVersion")
 
     // Test
-    testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")
+    testImplementation("org.skyscreamer:jsonassert:$jsonassertVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
@@ -67,9 +69,9 @@ tasks {
         archiveClassifier.set("")
         manifest {
             attributes(
-                    mapOf(
-                            "Main-Class" to mainClass
-                    )
+                mapOf(
+                    "Main-Class" to mainClass
+                )
             )
         }
     }
