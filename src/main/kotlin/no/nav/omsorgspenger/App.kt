@@ -79,6 +79,7 @@ internal class ApplicationContext(
         internal fun build() : ApplicationContext {
             val benyttetEnv = env?:System.getenv()
             val benyttetHttpClient = httpClient ?: HttpClient()
+                .config { expectSuccess = false }
             val benyttetAccessTokenClient = accessTokenClient?: ClientSecretAccessTokenClient(
                     clientId = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_ID"),
                     clientSecret = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_SECRET"),
