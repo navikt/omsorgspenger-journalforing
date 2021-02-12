@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 val junitJupiterVersion = "5.7.0"
 val k9rapidVersion = "1.0e6a99e"
 val ktorVersion = "1.5.1"
-val dusseldorfKtorVersion = "1.5.1.9b0fee0"
+val dusseldorfKtorVersion = "1.5.1.fa7db77"
 val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20200518"
 val mockkVersion = "1.10.5"
@@ -11,7 +11,7 @@ val mockkVersion = "1.10.5"
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.4.30"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
@@ -52,7 +52,6 @@ repositories {
         }
     }
     mavenCentral()
-    jcenter()
 }
 
 tasks {
@@ -77,7 +76,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "6.7.1"
+        gradleVersion = "6.8.2"
     }
 
 }
