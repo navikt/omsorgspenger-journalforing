@@ -1,10 +1,5 @@
 {
-  "app": "omsorgspenger-journalforing",
   "cluster": "dev-gcp",
-  "namespace": "omsorgspenger",
-  "team": "omsorgspenger",
-  "minReplicas": "1",
-  "maxReplicas": "1",
   "ingresses": [
     "https://omsorgspenger-journalforing.dev.intern.nav.no"
   ],
@@ -15,9 +10,6 @@
   "azureTenant": "trygdeetaten.no",
   "env": {
     "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
-    "KAFKA_PROPERTIES_SECURITY_PROTOCOL": "SASL_SSL",
-    "KAFKA_RAPID_TOPIC": "k9-rapid-v2",
-    "KAFKA_CONSUMER_GROUP_ID": "omsorgspenger-journalforing",
     "JOARK_BASE_URL": "https://dokarkiv.dev-fss-pub.nais.io",
     "AZURE_APP_TOKEN_ENDPOINT": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
     "DOKARKIV_SCOPES": "972814f3-8bdf-44f8-a191-c2ed00020b54/.default",
