@@ -9,14 +9,11 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilBehov
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.k9.rapid.river.utenLøsningPåBehov
-import no.nav.omsorgspenger.incBehandlingUtfort
-import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class InitierGosysJournalføringsoppgaver(
-        rapidsConnection: RapidsConnection) : BehovssekvensPacketListener(
-        logger = LoggerFactory.getLogger(InitierGosysJournalføringsoppgaver::class.java)
-) {
+    rapidsConnection: RapidsConnection) : BehovssekvensPacketListener(
+    logger = LoggerFactory.getLogger(InitierGosysJournalføringsoppgaver::class.java)) {
 
     init {
         River(rapidsConnection).apply {
@@ -31,7 +28,6 @@ internal class InitierGosysJournalføringsoppgaver(
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
         logger.info("Behøver aktørid før $BEHOV")
-                .also { incMottattBehov("InitierGosysJournalføringsoppgaver") }
 
         val identitetsnummer = packet[IDENTITETSNUMMER].asText()
         val berørteIdentitetsnummer = packet[BERØRTEIDENTITETSNUMMER]
@@ -39,16 +35,16 @@ internal class InitierGosysJournalføringsoppgaver(
                 .toSet()
 
         packet.leggTilBehov(
-                aktueltBehov = "OpprettGosysJournalføringsoppgaver",
-                behov = arrayOf(
-                        Behov(
-                                navn = "HentPersonopplysninger",
-                                input = mapOf(
-                                        "identitetsnummer" to berørteIdentitetsnummer.plus(identitetsnummer),
-                                        "attributter" to setOf("aktørId", "enhetsnummer")
-                                )
-                        )
+            aktueltBehov = "OpprettGosysJournalføringsoppgaver",
+            behov = arrayOf(
+                Behov(
+                    navn = "HentPersonopplysninger",
+                    input = mapOf(
+                        "identitetsnummer" to berørteIdentitetsnummer.plus(identitetsnummer),
+                        "attributter" to setOf("aktørId", "enhetsnummer")
+                    )
                 )
+            )
         )
 
         return true
@@ -56,7 +52,6 @@ internal class InitierGosysJournalføringsoppgaver(
 
     override fun onSent(id: String, packet: JsonMessage) {
         logger.info("Sendt behov av personopplysninger åt $BEHOV")
-                .also { incBehandlingUtfort("InitierGosysJournalføringsoppgaver") }
     }
 
     internal companion object {

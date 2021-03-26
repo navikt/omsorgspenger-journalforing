@@ -14,9 +14,6 @@ internal class JournalforingMediator(
         var result = false
         val journalpostId = journalpost.journalpostId
 
-        // TODO: Håndtere når det går bra for en journalpost, men ikke alle..
-        // https://github.com/navikt/omsorgspenger-journalforing/issues/5
-
         runBlocking {
             joarkClient.oppdaterJournalpost(
                     correlationId = correlationId,

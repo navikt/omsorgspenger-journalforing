@@ -31,9 +31,9 @@ import no.nav.omsorgspenger.oppgave.oppdatertOppgaveBody
 import org.slf4j.LoggerFactory
 
 internal class OppgaveClient(
-        private val env: Environment,
-        accessTokenClient: AccessTokenClient,
-        private val httpClient: HttpClient
+    env: Environment,
+    accessTokenClient: AccessTokenClient,
+    private val httpClient: HttpClient
 ) : HealthCheck {
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("OPPGAVE_BASE_URL")

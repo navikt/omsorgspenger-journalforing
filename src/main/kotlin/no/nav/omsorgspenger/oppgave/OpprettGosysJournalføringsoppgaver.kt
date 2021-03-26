@@ -14,16 +14,12 @@ import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.OppgaveClient
-import no.nav.omsorgspenger.incBehandlingFeil
-import no.nav.omsorgspenger.incBehandlingUtfort
-import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class OpprettGosysJournalføringsoppgaver(
-        rapidsConnection: RapidsConnection,
-        private val oppgaveClient: OppgaveClient) : BehovssekvensPacketListener(
-        logger = LoggerFactory.getLogger(OpprettGosysJournalføringsoppgaver::class.java)
-) {
+    rapidsConnection: RapidsConnection,
+    private val oppgaveClient: OppgaveClient) : BehovssekvensPacketListener(
+    logger = LoggerFactory.getLogger(OpprettGosysJournalføringsoppgaver::class.java)) {
 
     init {
         River(rapidsConnection).apply {
@@ -40,7 +36,7 @@ internal class OpprettGosysJournalføringsoppgaver(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV").also { incMottattBehov(BEHOV) }
+        logger.info("Skal løse behov $BEHOV")
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -74,17 +70,16 @@ internal class OpprettGosysJournalføringsoppgaver(
 
         require(losning.keys.containsAll(journalpostIder)) {
             "Klarade inte att opprette eller hente oppgave för alla journalpostID"
-                    .also { incBehandlingFeil(BEHOV) }
         }
 
         packet.leggTilLøsning(BEHOV, mapOf(
-                "oppgaveIder" to losning)
+            "oppgaveIder" to losning)
         )
         return true
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort(BEHOV) }
+        logger.info("Løst behov $BEHOV")
     }
 
     internal companion object {
