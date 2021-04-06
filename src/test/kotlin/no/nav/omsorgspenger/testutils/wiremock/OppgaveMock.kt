@@ -30,9 +30,7 @@ private fun hentOppgaveMapping(
         .withHeader("Authorization", RegexPattern("^Bearer .+$"))
         .withHeader("X-Correlation-ID", callIdPattern)
 
-private fun opprettRiktigOppgaveMapping(
-        callIdPattern: StringValuePattern = AnythingPattern()
-) = get(WireMock
+private fun opprettRiktigOppgaveMapping() = get(WireMock
         .urlPathMatching(".*$oppgaveApiPath.*"))
         .withHeader("Authorization", RegexPattern("^Bearer .+$"))
         .withHeader("X-Correlation-ID", equalTo("RiktigPattern"))
@@ -121,18 +119,8 @@ private fun WireMockServer.stubOpprettRiktigCreated() = also {
     )
 }
 
-private fun WireMockServer.stubHentTomtSvar() = also {
-    @Language("JSON")
-    val json = """
-        {
-            "antallTreffTotalt": 1,
-            "oppgaver": []
-        }
-    """.trimIndent()
-}
-
 private fun WireMockServer.stubIsReady() = also {
-    stubFor(WireMock.get("$basePath/internal/ready")
+    stubFor(get("$basePath/internal/ready")
             .willReturn(WireMock.aResponse()
                     .withStatus(200)
             )
