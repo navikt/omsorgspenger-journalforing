@@ -75,6 +75,8 @@ internal class OpprettGosysJournalføringsoppgaver(
         packet.leggTilLøsning(BEHOV, mapOf(
             "oppgaveIder" to losning)
         )
+
+        // TODO: journalpostType metric
         return true
     }
 
