@@ -34,11 +34,11 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
         journalforingMediator = applicationContext.journalforingMediator
     )
     OpprettGosysJournalføringsoppgaver(
-            rapidsConnection = this,
-            oppgaveClient = applicationContext.oppgaveClient
+        rapidsConnection = this,
+        oppgaveClient = applicationContext.oppgaveClient
     )
     InitierGosysJournalføringsoppgaver(
-            rapidsConnection = this
+        rapidsConnection = this
     )
     register(object : RapidsConnection.StatusListener {
         override fun onStartup(rapidsConnection: RapidsConnection) {

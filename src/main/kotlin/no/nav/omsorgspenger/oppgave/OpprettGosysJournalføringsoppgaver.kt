@@ -2,6 +2,7 @@ package no.nav.omsorgspenger.oppgave
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
+import io.prometheus.client.Counter
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageProblems
@@ -14,6 +15,7 @@ import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.OppgaveClient
+import no.nav.omsorgspenger.extensions.PrometheusExt.ensureRegistered
 import org.slf4j.LoggerFactory
 
 internal class OpprettGosysJournalføringsoppgaver(
@@ -76,7 +78,7 @@ internal class OpprettGosysJournalføringsoppgaver(
             "oppgaveIder" to losning)
         )
 
-        // TODO: journalpostType metric
+        gosysJournalforingsoppgaveCounter.labels(journalpostType).inc(journalpostIder.size.toDouble())
         return true
     }
 
@@ -91,5 +93,11 @@ internal class OpprettGosysJournalføringsoppgaver(
         const val IDENTITETSNUMMER = "@behov.$BEHOV.identitetsnummer"
         const val ENHETSNUMMER = "@løsninger.HentPersonopplysninger.fellesopplysninger.enhetsnummer"
         const val PERSONOPPLYSNINGER_LØSNING = "@løsninger.HentPersonopplysninger.personopplysninger"
+
+        val gosysJournalforingsoppgaveCounter = Counter
+            .build("gosysJournalforingsoppgave", "Antall Gosys journalføringsoppgaver opprettet per journalposttype")
+            .labelNames("journalpostType")
+            .create()
+            .ensureRegistered()
     }
 }
