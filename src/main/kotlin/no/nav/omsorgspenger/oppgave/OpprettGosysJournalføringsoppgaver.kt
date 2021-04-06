@@ -2,6 +2,7 @@ package no.nav.omsorgspenger.oppgave
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
+import io.prometheus.client.Counter
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageProblems
@@ -14,16 +15,13 @@ import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.OppgaveClient
-import no.nav.omsorgspenger.incBehandlingFeil
-import no.nav.omsorgspenger.incBehandlingUtfort
-import no.nav.omsorgspenger.incMottattBehov
+import no.nav.omsorgspenger.extensions.PrometheusExt.ensureRegistered
 import org.slf4j.LoggerFactory
 
 internal class OpprettGosysJournalføringsoppgaver(
-        rapidsConnection: RapidsConnection,
-        private val oppgaveClient: OppgaveClient) : BehovssekvensPacketListener(
-        logger = LoggerFactory.getLogger(OpprettGosysJournalføringsoppgaver::class.java)
-) {
+    rapidsConnection: RapidsConnection,
+    private val oppgaveClient: OppgaveClient) : BehovssekvensPacketListener(
+    logger = LoggerFactory.getLogger(OpprettGosysJournalføringsoppgaver::class.java)) {
 
     init {
         River(rapidsConnection).apply {
@@ -40,7 +38,7 @@ internal class OpprettGosysJournalføringsoppgaver(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV").also { incMottattBehov(BEHOV) }
+        logger.info("Skal løse behov $BEHOV")
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -74,17 +72,18 @@ internal class OpprettGosysJournalføringsoppgaver(
 
         require(losning.keys.containsAll(journalpostIder)) {
             "Klarade inte att opprette eller hente oppgave för alla journalpostID"
-                    .also { incBehandlingFeil(BEHOV) }
         }
 
         packet.leggTilLøsning(BEHOV, mapOf(
-                "oppgaveIder" to losning)
+            "oppgaveIder" to losning)
         )
+
+        gosysJournalforingsoppgaveCounter.labels(journalpostType).inc(journalpostIder.size.toDouble())
         return true
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort(BEHOV) }
+        logger.info("Løst behov $BEHOV")
     }
 
     internal companion object {
@@ -94,5 +93,11 @@ internal class OpprettGosysJournalføringsoppgaver(
         const val IDENTITETSNUMMER = "@behov.$BEHOV.identitetsnummer"
         const val ENHETSNUMMER = "@løsninger.HentPersonopplysninger.fellesopplysninger.enhetsnummer"
         const val PERSONOPPLYSNINGER_LØSNING = "@løsninger.HentPersonopplysninger.personopplysninger"
+
+        val gosysJournalforingsoppgaveCounter = Counter
+            .build("gosysJournalforingsoppgave", "Antall Gosys journalføringsoppgaver opprettet per journalposttype")
+            .labelNames("journalpostType")
+            .create()
+            .ensureRegistered()
     }
 }

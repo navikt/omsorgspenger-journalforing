@@ -31,9 +31,9 @@ import no.nav.omsorgspenger.oppgave.oppdatertOppgaveBody
 import org.slf4j.LoggerFactory
 
 internal class OppgaveClient(
-        private val env: Environment,
-        accessTokenClient: AccessTokenClient,
-        private val httpClient: HttpClient
+    env: Environment,
+    accessTokenClient: AccessTokenClient,
+    private val httpClient: HttpClient
 ) : HealthCheck {
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("OPPGAVE_BASE_URL")
@@ -69,13 +69,13 @@ internal class OppgaveClient(
             onSuccess = { response ->
                 when (response.status) {
                     HttpStatusCode.OK -> { // Håndter HentOppgave
-                        val response = objectMapper.readValue<JsonNode>(response.content.toByteArray())
-                        if (response["antallTreffTotalt"].asInt() == 0) {
+                        val jsonResponse = objectMapper.readValue<JsonNode>(response.content.toByteArray())
+                        if (jsonResponse["antallTreffTotalt"].asInt() == 0) {
                             logger.info("Fann inga oppgaver")
                             return emptyMap()
                         }
 
-                        return response["oppgaver"].elements().asSequence().toList().map {
+                        return jsonResponse["oppgaver"].elements().asSequence().toList().map {
                             val oppgaveid = it["id"].asText()
                             logger.info("Hentet existerande oppgave $oppgaveid")
                             val journalpostId = it["journalpostId"].asText()
@@ -83,13 +83,13 @@ internal class OppgaveClient(
                         }.toMap()
                     }
                     HttpStatusCode.Created -> { // Håndter OpprettOppgave
-                        val response = objectMapper.readValue<OppgaveRespons>(response.content.toByteArray())
+                        val oppgaveResponse = objectMapper.readValue<OppgaveRespons>(response.content.toByteArray())
 
-                        if (response.id.isNullOrEmpty()) {
+                        if (oppgaveResponse.id.isEmpty()) {
                             throw RuntimeException("Uventet feil vid parsing av svar fra oppgave api, id er null")
                         }
-                        logger.info("Opprettet oppgave ${response.id}")
-                        return mapOf(response.journalpostId to response.id)
+                        logger.info("Opprettet oppgave ${oppgaveResponse.id}")
+                        return mapOf(oppgaveResponse.journalpostId to oppgaveResponse.id)
                     }
                     else -> {
                         response.logError()
@@ -135,12 +135,11 @@ internal class OppgaveClient(
     private fun accessTokenCheck() = kotlin.runCatching {
         cachedAccessTokenClient.getAccessToken(oppgaveScopes)
     }.fold(
-            onSuccess = { Healthy("AccessTokenCheck", "OK") },
-            onFailure = { UnHealthy("AccessTokenCheck", "Feil: ${it.message}") }
+        onSuccess = { Healthy("AccessTokenCheck", "OK") },
+        onFailure = { UnHealthy("AccessTokenCheck", "Feil: ${it.message}") }
     )
 
     private companion object {
-        private val secureLogger = LoggerFactory.getLogger("tjenestekall")
         private val logger = LoggerFactory.getLogger(Oppgave::class.java)
 
         val objectMapper: ObjectMapper = jacksonObjectMapper()

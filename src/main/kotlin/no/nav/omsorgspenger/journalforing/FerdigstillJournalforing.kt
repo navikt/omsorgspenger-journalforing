@@ -9,16 +9,12 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
-import no.nav.omsorgspenger.incBehandlingFeil
-import no.nav.omsorgspenger.incBehandlingUtfort
-import no.nav.omsorgspenger.incMottattBehov
 import org.slf4j.LoggerFactory
 
 internal class FerdigstillJournalforing(
-        rapidsConnection: RapidsConnection,
-        private val journalforingMediator: JournalforingMediator) : BehovssekvensPacketListener(
-        logger = LoggerFactory.getLogger(FerdigstillJournalforing::class.java)
-) {
+    rapidsConnection: RapidsConnection,
+    private val journalforingMediator: JournalforingMediator) : BehovssekvensPacketListener(
+    logger = LoggerFactory.getLogger(FerdigstillJournalforing::class.java)) {
 
     init {
         River(rapidsConnection).apply {
@@ -32,7 +28,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV").also { incMottattBehov(BEHOV) }
+        logger.info("Skal løse behov $BEHOV")
 
         val journalpostIder = packet[JOURNALPOSTIDER]
                 .map { it.asText() }
@@ -51,7 +47,6 @@ internal class FerdigstillJournalforing(
                     saksnummer = saksnummer
                 )
             ).let { success -> if (!success) {
-                incBehandlingFeil(BEHOV)
                 return false
             }}
         }
@@ -60,7 +55,7 @@ internal class FerdigstillJournalforing(
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV").also { incBehandlingUtfort(BEHOV) }
+        logger.info("Løst behov $BEHOV")
     }
 
     internal companion object {

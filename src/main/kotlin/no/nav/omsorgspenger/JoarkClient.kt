@@ -33,9 +33,9 @@ internal enum class JournalpostStatus {
 }
 
 internal class JoarkClient(
-        private val env: Environment,
-        accessTokenClient: AccessTokenClient,
-        private val httpClient: HttpClient
+    env: Environment,
+    accessTokenClient: AccessTokenClient,
+    private val httpClient: HttpClient
 ) : HealthCheck {
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
     private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
