@@ -33,7 +33,9 @@ dependencies {
     // Test
     testImplementation("org.skyscreamer:jsonassert:$jsonassertVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
+    testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion") {
+        exclude(group = "com.github.jknack")
+    }
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
