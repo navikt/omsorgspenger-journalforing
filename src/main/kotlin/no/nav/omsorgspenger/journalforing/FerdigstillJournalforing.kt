@@ -11,15 +11,21 @@ import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
 import org.slf4j.LoggerFactory
 
-internal class FerdigstillJournalforing(
+internal abstract class FerdigstillJournalforing(
     rapidsConnection: RapidsConnection,
-    private val journalforingMediator: JournalforingMediator) : BehovssekvensPacketListener(
+    private val journalforingMediator: JournalforingMediator,
+    private val behov: String,
+    private val fagsystem: String) : BehovssekvensPacketListener(
     logger = LoggerFactory.getLogger(FerdigstillJournalforing::class.java)) {
+
+    private val JOURNALPOSTIDER = "@behov.$behov.journalpostIder"
+    private val IDENTITETSNUMMER = "@behov.$behov.identitetsnummer"
+    private val SAKSNUMMER = "@behov.$behov.saksnummer"
 
     init {
         River(rapidsConnection).apply {
             validate { packet ->
-                packet.skalLøseBehov(BEHOV)
+                packet.skalLøseBehov(behov)
                 packet.require(JOURNALPOSTIDER) { it.requireArray { entry -> entry is TextNode } }
                 packet.require(IDENTITETSNUMMER, JsonNode::asText)
                 packet.require(SAKSNUMMER, JsonNode::asText)
@@ -28,11 +34,11 @@ internal class FerdigstillJournalforing(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        logger.info("Skal løse behov $BEHOV")
+        logger.info("Skal løse behov $behov")
 
         val journalpostIder = packet[JOURNALPOSTIDER]
-                .map { it.asText() }
-                .toSet()
+            .map { it.asText() }
+            .toSet()
         val identitetsnummer = packet[IDENTITETSNUMMER].asText()
         val saksnummer = packet[SAKSNUMMER].asText()
 
@@ -44,24 +50,18 @@ internal class FerdigstillJournalforing(
                 journalpost = Journalpost(
                     journalpostId = it,
                     identitetsnummer = identitetsnummer,
-                    saksnummer = saksnummer
+                    saksnummer = saksnummer,
+                    fagsaksystem = fagsystem
                 )
             ).let { success -> if (!success) {
                 return false
             }}
         }
-        packet.leggTilLøsning(BEHOV)
+        packet.leggTilLøsning(behov)
         return true
     }
 
     override fun onSent(id: String, packet: JsonMessage) {
-        logger.info("Løst behov $BEHOV")
-    }
-
-    internal companion object {
-        const val BEHOV = "FerdigstillJournalføringForOmsorgspenger"
-        const val JOURNALPOSTIDER = "@behov.$BEHOV.journalpostIder"
-        const val IDENTITETSNUMMER = "@behov.$BEHOV.identitetsnummer"
-        const val SAKSNUMMER = "@behov.$BEHOV.saksnummer"
+        logger.info("Løst behov $behov")
     }
 }
