@@ -69,14 +69,16 @@ internal class JournalforingFeilhandteringTest {
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
             journalpostId = "1111",
             identitetsnummer = identitetsnummer,
-            saksnummer = saksnummer
+            saksnummer = saksnummer,
+            fagsaksystem = "OMSORGSPENGER"
         ))
         }.returns(JournalpostStatus.Ferdigstilt)
 
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
             journalpostId = "2222",
             identitetsnummer = identitetsnummer,
-            saksnummer = saksnummer
+            saksnummer = saksnummer,
+            fagsaksystem = "OMSORGSPENGER"
         ))
         }.returns(JournalpostStatus.Oppdatert)
 

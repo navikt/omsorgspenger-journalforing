@@ -41,7 +41,8 @@ internal class JoarkClientTest(
                 journalpost = Journalpost(
                     journalpostId = "123",
                     identitetsnummer = "12312312311",
-                    saksnummer = "123"
+                    saksnummer = "123",
+                    fagsaksystem = "OMSORGSPENGER"
                 )
             )
         }
@@ -56,7 +57,8 @@ internal class JoarkClientTest(
                 journalpost = Journalpost(
                     journalpostId = "400",
                     identitetsnummer = "12312312311",
-                    saksnummer = "123"
+                    saksnummer = "123",
+                    fagsaksystem = "OMSORGSPENGER"
                 )
             )
         }
@@ -84,7 +86,8 @@ internal class JoarkClientTest(
                 journalpost = Journalpost(
                     journalpostId = "123123",
                     identitetsnummer = "12312312311",
-                    saksnummer = "123"
+                    saksnummer = "123",
+                    fagsaksystem = "OMSORGSPENGER"
                 )
             )
         }

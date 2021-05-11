@@ -172,7 +172,7 @@ private fun Journalpost.oppdatertJournalpostBody() : String {
           },
           "sak": {
             "sakstype": "FAGSAK",
-            "fagsaksystem": "OMSORGSPENGER",
+            "fagsaksystem": "$fagsaksystem",
             "fagsakId": "$saksnummer"
           }
         }

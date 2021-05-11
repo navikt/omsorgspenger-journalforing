@@ -14,7 +14,8 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.RapidsStateListener
 import no.nav.k9.rapid.river.hentRequiredEnv
-import no.nav.omsorgspenger.journalforing.FerdigstillJournalforing
+import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForK9
+import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForOmsorgspenger
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
 import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
@@ -29,7 +30,11 @@ fun main() {
 }
 
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
-    FerdigstillJournalforing(
+    FerdigstillJournalføringForOmsorgspenger(
+        rapidsConnection = this,
+        journalforingMediator = applicationContext.journalforingMediator
+    )
+    FerdigstillJournalføringForK9(
         rapidsConnection = this,
         journalforingMediator = applicationContext.journalforingMediator
     )
