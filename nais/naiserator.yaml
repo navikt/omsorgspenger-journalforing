@@ -12,6 +12,8 @@ spec:
     application:
       enabled: true
       tenant: {{azureTenant}}
+  kafka:
+    pool: {{kafkaPool}}
   strategy:
     type: RollingUpdate
   accessPolicy:
@@ -50,17 +52,12 @@ spec:
     path: /metrics
   secureLogs:
     enabled: true
-  filesFrom:
-    - secret: omsorgspenger-journalforing-srvusercredentials
-      mountPath: /var/run/secrets/nais.io/service_user # Behov fra rapids-and-rivers.
   env:
   {{#each env}}
     - name: {{@key}}
       value: {{this}}
   {{/each}}
-    - name: KAFKA_PROPERTIES_SECURITY_PROTOCOL
-      value: SASL_SSL
     - name: KAFKA_RAPID_TOPIC
-      value: k9-rapid-v2
+      value: omsorgspenger.k9-rapid-v2
     - name: KAFKA_CONSUMER_GROUP_ID
       value: omsorgspenger-journalforing

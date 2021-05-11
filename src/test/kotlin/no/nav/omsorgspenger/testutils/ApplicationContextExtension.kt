@@ -2,8 +2,6 @@ package no.nav.omsorgspenger.testutils
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import io.ktor.util.KtorExperimentalAPI
-import java.net.URI
-import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2TokenUrl
 import no.nav.omsorgspenger.ApplicationContext
@@ -27,15 +25,13 @@ internal class ApplicationContextExtension : ParameterResolver {
 
         private val applicationContextBuilder = ApplicationContext.Builder(
                 env = mapOf(
-                        "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
-                        "DOKARKIV_SCOPES" to "testScope/.default",
-                        "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
-                        "OPPGAVE_SCOPES" to "test/.default"
-                ),
-                accessTokenClient =  ClientSecretAccessTokenClient(
-                        clientId = "omsorgspenger-journalforing",
-                        clientSecret = "azureSecret",
-                        tokenEndpoint = URI(wireMockServer.getAzureV2TokenUrl())
+                    "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
+                    "DOKARKIV_SCOPES" to "testScope/.default",
+                    "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
+                    "OPPGAVE_SCOPES" to "test/.default",
+                    "AZURE_APP_CLIENT_ID" to "omsorgspenger-journalforing",
+                    "AZURE_APP_CLIENT_SECRET" to "azureSecret",
+                    "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to wireMockServer.getAzureV2TokenUrl()
                 )
         )
 
