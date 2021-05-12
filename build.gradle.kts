@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.7.1"
-val k9rapidVersion = "1.9f7f619"
+val k9rapidVersion = "1.39a97e9"
 val ktorVersion = "1.5.4"
 val dusseldorfKtorVersion = "1.5.4.f9a29f3"
 val jsonassertVersion = "1.5.0"
@@ -90,7 +90,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.0"
+        gradleVersion = "7.0.1"
     }
 
 }
