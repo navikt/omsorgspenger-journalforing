@@ -149,15 +149,15 @@ internal class JoarkClient(
             else -> false
         }
 
-        private val ferdigstillJournalpostBody = {
+        private val ferdigstillJournalpostBody = run {
             @Language("JSON")
             val json = """
-                {
-                    "journalfoerendeEnhet": "9999"
-                }
-            """.trimIndent().trimJson()
+                    {
+                        "journalfoerendeEnhet": "9999"
+                    }
+                """.trimIndent()
             json.trimJson()
-        }()
+        }
     }
 }
 
