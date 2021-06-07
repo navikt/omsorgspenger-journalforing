@@ -13,10 +13,12 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.RapidsStateListener
+import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForK9
 import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForOmsorgspenger
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
+import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
 import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
 
@@ -45,6 +47,13 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     InitierGosysJournalføringsoppgaver(
         rapidsConnection = this
     )
+
+    KopierJournalpostForK9(
+        rapidsConnection = this,
+        journalforingMediator = applicationContext.journalforingMediator,
+        dokarkivproxyClient = applicationContext.dokarkivproxyClient
+    )
+
     register(object : RapidsConnection.StatusListener {
         override fun onStartup(rapidsConnection: RapidsConnection) {
             applicationContext.start()
@@ -86,6 +95,7 @@ internal fun Application.omsorgspengerJournalføring(applicationContext: Applica
 internal class ApplicationContext(
     internal val env: Environment,
     internal val joarkClient: JoarkClient,
+    internal val dokarkivproxyClient: DokarkivproxyClient,
     internal val journalforingMediator: JournalforingMediator,
     internal val oppgaveClient: OppgaveClient,
     internal val healthChecks: Set<HealthCheck>) {
@@ -99,6 +109,7 @@ internal class ApplicationContext(
         internal var httpClient: HttpClient? = null,
         internal var accessTokenClient: AccessTokenClient? = null,
         internal var joarkClient: JoarkClient? = null,
+        internal var dokarkivproxyClient: DokarkivproxyClient? = null,
         internal var journalforingMediator: JournalforingMediator? = null,
         internal var oppgaveClient: OppgaveClient? = null) {
         internal fun build() : ApplicationContext {
@@ -121,6 +132,12 @@ internal class ApplicationContext(
                 httpClient = benyttetHttpClient
             )
 
+            val benyttetDokarkivproxyClient = dokarkivproxyClient ?: DokarkivproxyClient(
+                accessTokenClient = benyttetAccessTokenClient,
+                baseUrl = URI(benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_BASE_URL")),
+                scopes = benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_SCOPES").csvTilSet()
+            )
+
             return ApplicationContext(
                 env = benyttetEnv,
                 joarkClient = benyttetJoarkClient,
@@ -129,9 +146,11 @@ internal class ApplicationContext(
                 ),
                 healthChecks = setOf(
                     benyttetJoarkClient,
-                    benyttetOppgaveClient
+                    benyttetOppgaveClient,
+                    benyttetDokarkivproxyClient
                 ),
-                oppgaveClient = benyttetOppgaveClient
+                oppgaveClient = benyttetOppgaveClient,
+                dokarkivproxyClient = benyttetDokarkivproxyClient
             )
         }
     }

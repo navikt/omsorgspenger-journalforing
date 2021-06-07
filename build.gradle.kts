@@ -1,10 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.7.1"
-val k9rapidVersion = "1.39a97e9"
+val junitJupiterVersion = "5.7.2"
+val k9rapidVersion = "1.f20388f"
 val ktorVersion = "1.5.4"
-val dusseldorfKtorVersion = "1.5.4.f9a29f3"
+val dusseldorfKtorVersion = "2.1.6.0-d31132e"
 val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20210307"
 val mockkVersion = "1.11.0"
@@ -12,7 +12,7 @@ val mockkVersion = "1.11.0"
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -25,6 +25,8 @@ dependencies {
     implementation("no.nav.k9.rapid:river:$k9rapidVersion")
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
+    implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
+
 
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")

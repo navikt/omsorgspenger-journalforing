@@ -18,7 +18,7 @@ private const val oppgaveApiPath = "$basePath/api/v1/oppgaver"
 private fun opprettOppgaveMapping(
         callIdPattern: StringValuePattern = AnythingPattern()
 ) = post(WireMock
-        .urlPathMatching(".*$oppgaveApiPath.*"))
+        .urlMatching(".*$oppgaveApiPath.*"))
         .withHeader("Authorization", RegexPattern("^Bearer .+$"))
         .withHeader("Content-Type", equalTo("application/json"))
         .withHeader("X-Correlation-ID", callIdPattern)

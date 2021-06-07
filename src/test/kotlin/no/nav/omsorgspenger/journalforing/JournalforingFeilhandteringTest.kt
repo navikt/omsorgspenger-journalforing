@@ -6,10 +6,7 @@ import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
-import no.nav.omsorgspenger.ApplicationContext
-import no.nav.omsorgspenger.JoarkClient
-import no.nav.omsorgspenger.JournalpostStatus
-import no.nav.omsorgspenger.registerApplicationContext
+import no.nav.omsorgspenger.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.net.URI
@@ -34,7 +31,8 @@ internal class JournalforingFeilhandteringTest {
                     clientSecret = "azureSecret",
                     tokenEndpoint = URI("test")
                 ),
-                joarkClient = mockJoarkClient
+                joarkClient = mockJoarkClient,
+                dokarkivproxyClient = mockk()
         ).build())
     }
 
@@ -70,7 +68,7 @@ internal class JournalforingFeilhandteringTest {
             journalpostId = "1111",
             identitetsnummer = identitetsnummer,
             saksnummer = saksnummer,
-            fagsaksystem = "OMSORGSPENGER"
+            fagsaksystem = Fagsystem.OMSORGSPENGER
         ))
         }.returns(JournalpostStatus.Ferdigstilt)
 
@@ -78,7 +76,7 @@ internal class JournalforingFeilhandteringTest {
             journalpostId = "2222",
             identitetsnummer = identitetsnummer,
             saksnummer = saksnummer,
-            fagsaksystem = "OMSORGSPENGER"
+            fagsaksystem = Fagsystem.OMSORGSPENGER
         ))
         }.returns(JournalpostStatus.Oppdatert)
 

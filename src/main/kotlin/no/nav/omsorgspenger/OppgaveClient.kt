@@ -18,34 +18,32 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.util.toByteArray
-import no.nav.helse.dusseldorf.ktor.health.HealthCheck
-import no.nav.helse.dusseldorf.ktor.health.Healthy
-import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
-import no.nav.helse.dusseldorf.oauth2.client.CachedAccessTokenClient
 import no.nav.k9.rapid.river.Environment
+import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.oppgave.Oppgave
 import no.nav.omsorgspenger.oppgave.OppgaveRespons
 import no.nav.omsorgspenger.oppgave.oppdatertOppgaveBody
 import org.slf4j.LoggerFactory
+import java.net.URI
 
 internal class OppgaveClient(
     env: Environment,
     accessTokenClient: AccessTokenClient,
-    private val httpClient: HttpClient
-) : HealthCheck {
-    private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
+    private val httpClient: HttpClient) : AzureAwareClient(
+        navn = "OppgaveClient",
+        accessTokenClient = accessTokenClient,
+        scopes = env.hentRequiredEnv("OPPGAVE_SCOPES").csvTilSet(),
+        pingUrl = URI("${env.hentRequiredEnv("OPPGAVE_BASE_URL")}/internal/ready")) {
     private val baseUrl = env.hentRequiredEnv("OPPGAVE_BASE_URL")
-    private val oppgaveScopes = setOf(env.hentRequiredEnv("OPPGAVE_SCOPES"))
-    private val pingUrl = "$baseUrl/internal/ready"
 
     internal suspend fun hentOppgave(correlationId: String, aktørId: String, journalpostIder: Set<String>): OppgaveLøsning {
         val journalpostId = journalpostIder.joinToString().replace(" ", "")
         val oppgaveParams = "tema=OMS&aktoerId=$aktørId&journalpostId=$journalpostId&limit=20"
         return kotlin.runCatching {
             httpClient.get<HttpStatement>("$baseUrl/api/v1/oppgaver?$oppgaveParams") {
-                header("Authorization", getAuthorizationHeader())
+                header("Authorization", authorizationHeader())
                 header("X-Correlation-ID", correlationId)
                 accept(ContentType.Application.Json)
             }.execute()
@@ -56,7 +54,7 @@ internal class OppgaveClient(
         val payload = oppgave.oppdatertOppgaveBody()
         return kotlin.runCatching {
             httpClient.post<HttpStatement>("$baseUrl/api/v1/oppgaver") {
-                header("Authorization", getAuthorizationHeader())
+                header("Authorization", authorizationHeader())
                 header("X-Correlation-ID", correlationId)
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
@@ -110,34 +108,6 @@ internal class OppgaveClient(
 
     private suspend fun HttpResponse.logError() =
             logger.error("HTTP ${status.value} fra oppgave-api, response: ${String(content.toByteArray())}")
-
-    private fun getAuthorizationHeader() = cachedAccessTokenClient.getAccessToken(oppgaveScopes).asAuthoriationHeader()
-
-    override suspend fun check() =
-            no.nav.helse.dusseldorf.ktor.health.Result.merge("OppgaveClient", accessTokenCheck(), pingOppgaveApiCheck())
-
-    private suspend fun pingOppgaveApiCheck() = kotlin.runCatching {
-        httpClient.get<HttpStatement>(pingUrl) {
-            header("Authorization", getAuthorizationHeader())
-        }.execute().status
-    }.fold(
-            onSuccess = { statusCode ->
-                when (HttpStatusCode.OK == statusCode) {
-                    true -> Healthy("OppgaveApi", "OK")
-                    false -> UnHealthy("OppgaveApi", "Feil: Mottok Http Status Code ${statusCode.value}")
-                }
-            },
-            onFailure = {
-                UnHealthy("OppgaveApi", "Feil: ${it.message}")
-            }
-    )
-
-    private fun accessTokenCheck() = kotlin.runCatching {
-        cachedAccessTokenClient.getAccessToken(oppgaveScopes)
-    }.fold(
-        onSuccess = { Healthy("AccessTokenCheck", "OK") },
-        onFailure = { UnHealthy("AccessTokenCheck", "Feil: ${it.message}") }
-    )
 
     private companion object {
         private val logger = LoggerFactory.getLogger(Oppgave::class.java)
