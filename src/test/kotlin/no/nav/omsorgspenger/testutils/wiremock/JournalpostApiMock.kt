@@ -16,13 +16,13 @@ private const val journalpostPath = "$basePath/rest/journalpostapi/v1/journalpos
 private fun oppdaterJournalpostMapping(
     callIdPattern: StringValuePattern = AnythingPattern()
 ) = WireMock.put(WireMock
-    .urlPathMatching(".*$journalpostPath.*"))
+    .urlMatching(".*$journalpostPath.*"))
     .withHeader("Authorization", RegexPattern("^Bearer .+$"))
     .withHeader("Content-Type", equalTo("application/json"))
     .withHeader("Nav-Consumer-Id", equalTo("omsorgspenger-journalforing"))
     .withHeader("Nav-Callid", callIdPattern)
     .withRequestBody(matchingJsonPath("$.sak.sakstype", equalTo("FAGSAK")))
-    .withRequestBody(matchingJsonPath("$.sak.fagsaksystem", equalTo("OMSORGSPENGER")))
+    .withRequestBody(matchingJsonPath("$.sak.fagsaksystem", WireMock.matching("K9|OMSORGSPENGER")))
     .withRequestBody(matchingJsonPath("$.tema", equalTo("OMS")))
     .withRequestBody(matchingJsonPath("$.bruker.idType", equalTo("FNR")))
     .withRequestBody(matchingJsonPath("$.bruker.id"))

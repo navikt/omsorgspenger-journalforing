@@ -9,7 +9,7 @@ private const val basePath = "/dokarkivproxy-mock"
 private const val journalpostPath = "$basePath/rest/journalpostapi/v1/journalpost/.*"
 
 private fun WireMockServer.stubKnyttTilAnnenSakK9() = also { wireMockServer ->
-    wireMockServer.stubFor(WireMock.put(WireMock.urlPathMatching(".*$journalpostPath.*"))
+    wireMockServer.stubFor(WireMock.put(WireMock.urlMatching(".*$journalpostPath.*"))
         .withHeader("Authorization", RegexPattern("^Bearer .+$"))
         .withHeader("Content-Type", WireMock.equalTo("application/json"))
         .withHeader("Accept", WireMock.equalTo("application/json"))

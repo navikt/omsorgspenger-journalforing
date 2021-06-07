@@ -24,6 +24,7 @@ internal abstract class KopierJournalpost(
     logger = LoggerFactory.getLogger(KopierJournalpost::class.java)) {
 
     private val JournalpostIdKey = "@behov.$behov.journalpostId"
+    private val VersjonKey = "@behov.$behov.versjon"
     private fun identitetsnummerKey(part: String) = "@behov.$behov.$part.identitetsnummer"
     private fun saksnummerKey(part: String) = "@behov.$behov.$part.saksnummer"
 
@@ -31,6 +32,7 @@ internal abstract class KopierJournalpost(
         River(rapidsConnection).apply {
             validate { packet ->
                 packet.skalLøseBehov(behov)
+                packet.interestedIn(VersjonKey)
                 packet.require(JournalpostIdKey, JsonNode::asText)
                 packet.require(identitetsnummerKey("fra"), JsonNode::asText)
                 packet.require(saksnummerKey("fra"), JsonNode::asText)
@@ -38,6 +40,12 @@ internal abstract class KopierJournalpost(
                 packet.require(saksnummerKey("til"), JsonNode::asText)
             }
         }.register(this)
+    }
+
+    override fun doHandlePacket(id: String, packet: JsonMessage): Boolean {
+        return (packet[VersjonKey].asText() == "1.0.0").also { støttet -> if (!støttet) {
+            logger.warn("Støtter ikke versjon ${packet[VersjonKey].asText()}")
+        }}
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
@@ -49,6 +57,8 @@ internal abstract class KopierJournalpost(
             saksnummer = packet[saksnummerKey("fra")].asText(),
             fagsaksystem = fagsystem
         )
+
+        logger.info("Kopierer JournalpostId=[${journalpost.journalpostId}] for Fagsystem=[${journalpost.fagsaksystem.name}]")
 
         val erFerdigstilt = journalforingMediator.behandlaJournalpost(
             correlationId = correlationId,
@@ -70,6 +80,8 @@ internal abstract class KopierJournalpost(
         packet.leggTilLøsning(behov, mapOf(
             "journalpostId" to nyJournalpostId
         ))
+
+        logger.info("Kopiert JournalpostId=[$nyJournalpostId]")
 
         return true
     }

@@ -132,6 +132,12 @@ internal class ApplicationContext(
                 httpClient = benyttetHttpClient
             )
 
+            val benyttetDokarkivproxyClient = dokarkivproxyClient ?: DokarkivproxyClient(
+                accessTokenClient = benyttetAccessTokenClient,
+                baseUrl = URI(benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_BASE_URL")),
+                scopes = benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_SCOPES").csvTilSet()
+            )
+
             return ApplicationContext(
                 env = benyttetEnv,
                 joarkClient = benyttetJoarkClient,
@@ -140,14 +146,11 @@ internal class ApplicationContext(
                 ),
                 healthChecks = setOf(
                     benyttetJoarkClient,
-                    benyttetOppgaveClient
+                    benyttetOppgaveClient,
+                    benyttetDokarkivproxyClient
                 ),
                 oppgaveClient = benyttetOppgaveClient,
-                dokarkivproxyClient = dokarkivproxyClient ?: DokarkivproxyClient(
-                    accessTokenClient = benyttetAccessTokenClient,
-                    baseUrl = URI(benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_BASE_URL")),
-                    scopes = benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_SCOPES").csvTilSet()
-                )
+                dokarkivproxyClient = benyttetDokarkivproxyClient
             )
         }
     }
