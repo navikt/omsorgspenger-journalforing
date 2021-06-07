@@ -31,7 +31,8 @@ internal class JournalforingFeilhandteringTest {
                     clientSecret = "azureSecret",
                     tokenEndpoint = URI("test")
                 ),
-                joarkClient = mockJoarkClient
+                joarkClient = mockJoarkClient,
+                dokarkivproxyClient = mockk()
         ).build())
     }
 

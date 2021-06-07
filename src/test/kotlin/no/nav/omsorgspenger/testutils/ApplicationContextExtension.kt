@@ -5,6 +5,7 @@ import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2TokenUrl
 import no.nav.omsorgspenger.ApplicationContext
+import no.nav.omsorgspenger.testutils.wiremock.*
 import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl
 import no.nav.omsorgspenger.testutils.wiremock.oppgaveApiBaseUrl
 import no.nav.omsorgspenger.testutils.wiremock.stubJournalpostApi
@@ -18,17 +19,20 @@ internal class ApplicationContextExtension : ParameterResolver {
     @KtorExperimentalAPI
     internal companion object {
         private val wireMockServer = WireMockBuilder()
-                .withAzureSupport()
-                .build()
-                .stubJournalpostApi()
-                .stubOppgaveMock()
+            .withAzureSupport()
+            .build()
+            .stubJournalpostApi()
+            .stubOppgaveMock()
+            .stubDokarkivproxy()
 
         private val applicationContextBuilder = ApplicationContext.Builder(
                 env = mapOf(
                     "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
-                    "DOKARKIV_SCOPES" to "testScope/.default",
+                    "DOKARKIV_SCOPES" to "dokarkiv/.default",
                     "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
-                    "OPPGAVE_SCOPES" to "test/.default",
+                    "OPPGAVE_SCOPES" to "oppgave/.default",
+                    "DOKARKIVPROXY_BASE_URL" to wireMockServer.dokarkivproxyBaseUrl(),
+                    "DOKARKIVPROXY_SCOPES" to "dokarkivproxy/.default",
                     "AZURE_APP_CLIENT_ID" to "omsorgspenger-journalforing",
                     "AZURE_APP_CLIENT_SECRET" to "azureSecret",
                     "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to wireMockServer.getAzureV2TokenUrl()
