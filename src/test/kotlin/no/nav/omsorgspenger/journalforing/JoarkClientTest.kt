@@ -3,6 +3,7 @@ package no.nav.omsorgspenger.journalforing
 import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.ApplicationContext
+import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.JournalpostStatus
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -42,7 +43,7 @@ internal class JoarkClientTest(
                     journalpostId = "123",
                     identitetsnummer = "12312312311",
                     saksnummer = "123",
-                    fagsaksystem = "OMSORGSPENGER"
+                    fagsaksystem = Fagsystem.OMSORGSPENGER
                 )
             )
         }
@@ -58,7 +59,7 @@ internal class JoarkClientTest(
                     journalpostId = "400",
                     identitetsnummer = "12312312311",
                     saksnummer = "123",
-                    fagsaksystem = "OMSORGSPENGER"
+                    fagsaksystem = Fagsystem.OMSORGSPENGER
                 )
             )
         }
@@ -87,7 +88,7 @@ internal class JoarkClientTest(
                     journalpostId = "123123",
                     identitetsnummer = "12312312311",
                     saksnummer = "123",
-                    fagsaksystem = "OMSORGSPENGER"
+                    fagsaksystem = Fagsystem.OMSORGSPENGER
                 )
             )
         }

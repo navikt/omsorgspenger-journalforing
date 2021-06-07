@@ -9,13 +9,14 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
+import no.nav.omsorgspenger.Fagsystem
 import org.slf4j.LoggerFactory
 
 internal abstract class FerdigstillJournalforing(
     rapidsConnection: RapidsConnection,
     private val journalforingMediator: JournalforingMediator,
     private val behov: String,
-    private val fagsystem: String) : BehovssekvensPacketListener(
+    private val fagsystem: Fagsystem) : BehovssekvensPacketListener(
     logger = LoggerFactory.getLogger(FerdigstillJournalforing::class.java)) {
 
     private val JOURNALPOSTIDER = "@behov.$behov.journalpostIder"
