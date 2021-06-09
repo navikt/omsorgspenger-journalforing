@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 internal class SafGateway(
     accessTokenClient: AccessTokenClient,
-    private val baseUrl: URI,
+    baseUrl: URI,
     scopes: Set<String>) : AzureAwareClient(
         navn = "SafGateway",
         accessTokenClient = accessTokenClient,
@@ -41,12 +41,11 @@ internal class SafGateway(
         }.readTextOrThrow()
 
         require(httpStatusCode.isSuccess()) {
-            "Feil fra Dokarkivproxy. URL=[$GraphQlUrl], HttpStatusCode=[${httpStatusCode.value}], Response=[$response]"
+            "Feil fra SAF. URL=[$GraphQlUrl], HttpStatusCode=[${httpStatusCode.value}], Response=[$response]"
         }
 
         return response.mapOriginaleJournalpostIderResponse()
     }
-
 
     internal companion object {
         private const val MaksAntallJournalposter = 50
