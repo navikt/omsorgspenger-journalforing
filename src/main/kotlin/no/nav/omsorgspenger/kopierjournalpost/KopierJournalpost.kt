@@ -8,16 +8,25 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.skalLøseBehov
+import no.nav.omsorgspenger.CorrelationId.Companion.correlationId
 import no.nav.omsorgspenger.DokarkivproxyClient
 import no.nav.omsorgspenger.Fagsystem
+import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
+import no.nav.omsorgspenger.JournalpostId
+import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
+import no.nav.omsorgspenger.SafGateway
+import no.nav.omsorgspenger.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
+import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
 import no.nav.omsorgspenger.journalforing.Journalpost
 import org.slf4j.LoggerFactory
+import java.time.ZonedDateTime
 
 internal abstract class KopierJournalpost(
     rapidsConnection: RapidsConnection,
     private val journalforingMediator: JournalforingMediator,
     private val dokarkivproxyClient: DokarkivproxyClient,
+    private val safGateway: SafGateway,
     private val fagsystem: Fagsystem,
     private val behov: String
 ) : BehovssekvensPacketListener(
@@ -49,40 +58,60 @@ internal abstract class KopierJournalpost(
     }
 
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
-        val correlationId = packet["@correlationId"].asText()
+        val correlationId = packet.correlationId()
+        val journalpostId = packet[JournalpostIdKey].asText().somJournalpostId()
+        val fraIdentitetsnummer = packet[identitetsnummerKey("fra")].asText().somIdentitetsnummer()
+        val tilIdentitetsnummer = packet[identitetsnummerKey("til")].asText().somIdentitetsnummer()
+        val fraSaksnummer = packet[saksnummerKey("fra")].asText().somSaksnummer()
+        val tilSaksnummer = packet[saksnummerKey("til")].asText().somSaksnummer()
 
         val journalpost = Journalpost(
-            journalpostId = packet[JournalpostIdKey].asText(),
-            identitetsnummer = packet[identitetsnummerKey("fra")].asText(),
-            saksnummer = packet[saksnummerKey("fra")].asText(),
+            journalpostId = "$journalpostId",
+            identitetsnummer = "$fraIdentitetsnummer",
+            saksnummer = "$fraSaksnummer",
             fagsaksystem = fagsystem
         )
 
-        logger.info("Kopierer JournalpostId=[${journalpost.journalpostId}] for Fagsystem=[${journalpost.fagsaksystem.name}]")
+        logger.info("Kopierer JournalpostId=[${journalpostId}] for Fagsystem=[${fagsystem.name}]")
+
+        val alleredeKopiertJournalpostId = runBlocking { safGateway.hentOriginaleJournalpostIder(
+            fagsystem = fagsystem,
+            saksnummer = tilSaksnummer,
+            fraOgMed = ZonedDateTime.parse(packet["@opprettet"].asText()).minusWeeks(1).toLocalDate(),
+            correlationId = correlationId
+        )}.førsteJournalpostIdSomHarOriginalJournalpostId(journalpostId)
+
+        if (alleredeKopiertJournalpostId != null) {
+            logger.info("Journalpost allerede kopiert.")
+            return packet.løsMed(alleredeKopiertJournalpostId)
+        }
 
         val erFerdigstilt = journalforingMediator.behandlaJournalpost(
-            correlationId = correlationId,
+            correlationId = "$correlationId",
             journalpost = journalpost
         )
 
         if (!erFerdigstilt) {
+            logger.error("Journalpost ikke ferdigstilt etter journalføring.")
             return false
         }
 
         val nyJournalpostId = runBlocking { dokarkivproxyClient.knyttTilAnnenSak(
             correlationId = correlationId,
             journalpost = journalpost.copy(
-                identitetsnummer = packet[identitetsnummerKey("til")].asText(),
-                saksnummer = packet[saksnummerKey("til")].asText()
+                identitetsnummer = "$tilIdentitetsnummer",
+                saksnummer = "$tilSaksnummer"
             )
         )}
 
-        packet.leggTilLøsning(behov, mapOf(
-            "journalpostId" to nyJournalpostId
+        return packet.løsMed(nyJournalpostId)
+    }
+
+    private fun JsonMessage.løsMed(journalpostId: JournalpostId) : Boolean {
+        leggTilLøsning(behov, mapOf(
+            "journalpostId" to "$journalpostId"
         ))
-
-        logger.info("Kopiert JournalpostId=[$nyJournalpostId]")
-
+        logger.info("Kopiert JournalpostId=[$journalpostId]")
         return true
     }
 }

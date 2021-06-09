@@ -51,7 +51,8 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     KopierJournalpostForK9(
         rapidsConnection = this,
         journalforingMediator = applicationContext.journalforingMediator,
-        dokarkivproxyClient = applicationContext.dokarkivproxyClient
+        dokarkivproxyClient = applicationContext.dokarkivproxyClient,
+        safGateway = applicationContext.safGateway
     )
 
     register(object : RapidsConnection.StatusListener {
@@ -96,6 +97,7 @@ internal class ApplicationContext(
     internal val env: Environment,
     internal val joarkClient: JoarkClient,
     internal val dokarkivproxyClient: DokarkivproxyClient,
+    internal val safGateway: SafGateway,
     internal val journalforingMediator: JournalforingMediator,
     internal val oppgaveClient: OppgaveClient,
     internal val healthChecks: Set<HealthCheck>) {
@@ -110,6 +112,7 @@ internal class ApplicationContext(
         internal var accessTokenClient: AccessTokenClient? = null,
         internal var joarkClient: JoarkClient? = null,
         internal var dokarkivproxyClient: DokarkivproxyClient? = null,
+        internal var safGateway: SafGateway? = null,
         internal var journalforingMediator: JournalforingMediator? = null,
         internal var oppgaveClient: OppgaveClient? = null) {
         internal fun build() : ApplicationContext {
@@ -138,6 +141,12 @@ internal class ApplicationContext(
                 scopes = benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_SCOPES").csvTilSet()
             )
 
+            val benyttetSafGateway = safGateway ?: SafGateway(
+                accessTokenClient = benyttetAccessTokenClient,
+                baseUrl = URI(benyttetEnv.hentRequiredEnv("SAF_BASE_URL")),
+                scopes = benyttetEnv.hentRequiredEnv("SAF_SCOPES").csvTilSet()
+            )
+
             return ApplicationContext(
                 env = benyttetEnv,
                 joarkClient = benyttetJoarkClient,
@@ -147,10 +156,12 @@ internal class ApplicationContext(
                 healthChecks = setOf(
                     benyttetJoarkClient,
                     benyttetOppgaveClient,
-                    benyttetDokarkivproxyClient
+                    benyttetDokarkivproxyClient,
+                    benyttetSafGateway
                 ),
                 oppgaveClient = benyttetOppgaveClient,
-                dokarkivproxyClient = benyttetDokarkivproxyClient
+                dokarkivproxyClient = benyttetDokarkivproxyClient,
+                safGateway = benyttetSafGateway
             )
         }
     }

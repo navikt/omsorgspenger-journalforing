@@ -20,19 +20,20 @@ internal class JournalforingFeilhandteringTest {
 
     private val rapid = TestRapid().apply {
         this.registerApplicationContext(ApplicationContext.Builder(
-                env = mapOf(
-                    "JOARK_BASE_URL" to "test",
-                    "DOKARKIV_SCOPES" to "testScope/.default",
-                    "OPPGAVE_BASE_URL" to "test",
-                    "OPPGAVE_SCOPES" to "test/.default"
-                ),
-                accessTokenClient =  ClientSecretAccessTokenClient(
-                    clientId = "omsorgspenger-journalforing",
-                    clientSecret = "azureSecret",
-                    tokenEndpoint = URI("test")
-                ),
-                joarkClient = mockJoarkClient,
-                dokarkivproxyClient = mockk()
+            env = mapOf(
+                "JOARK_BASE_URL" to "test",
+                "DOKARKIV_SCOPES" to "testScope/.default",
+                "OPPGAVE_BASE_URL" to "test",
+                "OPPGAVE_SCOPES" to "test/.default"
+            ),
+            accessTokenClient =  ClientSecretAccessTokenClient(
+                clientId = "omsorgspenger-journalforing",
+                clientSecret = "azureSecret",
+                tokenEndpoint = URI("test")
+            ),
+            joarkClient = mockJoarkClient,
+            dokarkivproxyClient = mockk(),
+            safGateway = mockk()
         ).build())
     }
 
