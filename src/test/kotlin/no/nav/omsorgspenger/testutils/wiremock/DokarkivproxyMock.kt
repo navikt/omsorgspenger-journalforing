@@ -21,7 +21,7 @@ private fun WireMockServer.stubKnyttTilAnnenSakK9() = also { wireMockServer ->
         .withRequestBody(WireMock.matchingJsonPath("$.journalfoerendeEnhet", WireMock.equalTo("9999")))
         .withRequestBody(WireMock.matchingJsonPath("$.bruker.idType", WireMock.equalTo("FNR")))
         .withRequestBody(WireMock.matchingJsonPath("$.bruker.id"))
-        .willReturn(WireMock.aResponse().withStatus(200).withBody("""{"nyJournalpostId":"1234"}""")))
+        .willReturn(WireMock.aResponse().withStatus(200).withBody("""{"nyJournalpostId":"123412341234"}""")))
 }
 
 private fun WireMockServer.stubIsReady() = also { wireMockServer ->

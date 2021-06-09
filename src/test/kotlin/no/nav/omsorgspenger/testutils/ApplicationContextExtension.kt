@@ -1,7 +1,6 @@
 package no.nav.omsorgspenger.testutils
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import io.ktor.util.KtorExperimentalAPI
 import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2TokenUrl
 import no.nav.omsorgspenger.ApplicationContext
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.extension.ParameterResolver
 
 internal class ApplicationContextExtension : ParameterResolver {
 
-    @KtorExperimentalAPI
     internal companion object {
         private val wireMockServer = WireMockBuilder()
             .withAzureSupport()
@@ -24,6 +22,7 @@ internal class ApplicationContextExtension : ParameterResolver {
             .stubJournalpostApi()
             .stubOppgaveMock()
             .stubDokarkivproxy()
+            .stubSaf()
 
         private val applicationContextBuilder = ApplicationContext.Builder(
                 env = mapOf(
@@ -33,6 +32,8 @@ internal class ApplicationContextExtension : ParameterResolver {
                     "OPPGAVE_SCOPES" to "oppgave/.default",
                     "DOKARKIVPROXY_BASE_URL" to wireMockServer.dokarkivproxyBaseUrl(),
                     "DOKARKIVPROXY_SCOPES" to "dokarkivproxy/.default",
+                    "SAF_BASE_URL" to wireMockServer.safBaseUrl(),
+                    "SAF_SCOPES" to "saf/.default",
                     "AZURE_APP_CLIENT_ID" to "omsorgspenger-journalforing",
                     "AZURE_APP_CLIENT_SECRET" to "azureSecret",
                     "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to wireMockServer.getAzureV2TokenUrl()
@@ -54,12 +55,10 @@ internal class ApplicationContextExtension : ParameterResolver {
         )
     }
 
-    @KtorExperimentalAPI
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
         return støttedeParametre.contains(parameterContext.parameter.type)
     }
 
-    @KtorExperimentalAPI
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
         return when (parameterContext.parameter.type) {
             ApplicationContext::class.java -> applicationContext

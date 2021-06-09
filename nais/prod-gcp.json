@@ -15,6 +15,8 @@
     "OPPGAVE_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/oppgave",
     "OPPGAVE_SCOPES": "e816bb42-bf62-4be9-a1cc-a9be70fe4403/.default",
     "DOKARKIVPROXY_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/dokarkivproxy",
-    "DOKARKIVPROXY_SCOPES": "e816bb42-bf62-4be9-a1cc-a9be70fe4403/.default"
+    "DOKARKIVPROXY_SCOPES": "e816bb42-bf62-4be9-a1cc-a9be70fe4403/.default",
+    "SAF_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/saf",
+    "SAF_SCOPES": "e816bb42-bf62-4be9-a1cc-a9be70fe4403/.default"
   }
 }

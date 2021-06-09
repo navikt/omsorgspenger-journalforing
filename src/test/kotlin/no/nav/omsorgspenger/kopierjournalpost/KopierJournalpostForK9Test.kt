@@ -35,7 +35,7 @@ internal class KopierJournalpostForK9Test(
         rapid.sendTestMessage(behovssekvens)
         val sisteMelding = rapid.sisteMelding()
         val kopiertJournalpostId = sisteMelding.getJSONObject("@løsninger").getJSONObject(BEHOV).getString("journalpostId")
-        assertEquals("1234", kopiertJournalpostId)
+        assertEquals("123412341234", kopiertJournalpostId)
     }
 
     private companion object {
@@ -54,7 +54,7 @@ internal class KopierJournalpostForK9Test(
                     navn = BEHOV,
                     input = mapOf(
                         "versjon" to "1.0.0",
-                        "journalpostId" to "1111",
+                        "journalpostId" to "33333333333",
                         "fra" to mapOf(
                             "identitetsnummer" to "11111111111",
                             "saksnummer" to "SAK1"
