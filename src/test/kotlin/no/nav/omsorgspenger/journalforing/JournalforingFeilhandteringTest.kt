@@ -7,6 +7,7 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.*
+import org.json.JSONObject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.net.URI
@@ -63,33 +64,47 @@ internal class JournalforingFeilhandteringTest {
 
         rapid.sendTestMessage(behovssekvens)
 
-        assert(rapid.inspektør.size == 0)
+        assert(rapid.inspektør.size == 1)
 
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
             journalpostId = "1111",
             identitetsnummer = identitetsnummer,
             saksnummer = saksnummer,
             fagsaksystem = Fagsystem.OMSORGSPENGER
-        ))
-        }.returns(JournalpostStatus.Ferdigstilt)
+        ))}.returns(JournalpostStatus.Ferdigstilt)
 
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
             journalpostId = "2222",
             identitetsnummer = identitetsnummer,
             saksnummer = saksnummer,
             fagsaksystem = Fagsystem.OMSORGSPENGER
-        ))
-        }.returns(JournalpostStatus.Oppdatert)
+        ))}.returns(JournalpostStatus.Oppdatert)
 
-        coEvery { mockJoarkClient.ferdigstillJournalpost(any(), any()) }
-            .returns(JournalpostStatus.Ferdigstilt)
+        coEvery { mockJoarkClient.ferdigstillJournalpost(any(), any()) }.returns(JournalpostStatus.Ferdigstilt)
 
-        rapid.sendTestMessage(behovssekvens)
+        val behovssekvensMedNavn = JSONObject(rapid.inspektør.message(0).toString()).also { b ->
+            val løsninger = """
+            {
+                "HentPersonopplysninger@journalføring": {
+                    "personopplysninger": {
+                        "$identitetsnummer": {
+                            "navn": {
+                                "sammensatt": "LITEN MASKIN"
+                            }
+                        }
+                    }
+                }
+            }
+            """.trimIndent().let { JSONObject(it) }
+            b.put("@løsninger", løsninger)
+        }.toString()
+
+        rapid.sendTestMessage(behovssekvensMedNavn)
 
         assertNotNull(rapid.løst())
     }
 
-    private fun TestRapid.løst() = inspektør.message(0)
+    private fun TestRapid.løst() = inspektør.message(1)
         .get("@løsninger")
         .get(BEHOV)
         .get("løst")

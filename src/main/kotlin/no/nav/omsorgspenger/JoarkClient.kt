@@ -142,6 +142,9 @@ private fun Journalpost.oppdatertJournalpostBody() : String {
             "fagsaksystem": "${fagsaksystem.name}",
             "fagsakId": "$saksnummer"
           }
+          ${if(navn != null) {
+              ""","avsenderMottaker": {"navn": "$navn"}"""
+          } else ""}
         }
     """.trimIndent()
     return json.trimJson()
