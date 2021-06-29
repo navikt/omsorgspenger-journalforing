@@ -19,6 +19,8 @@ import no.nav.omsorgspenger.SafGateway.Companion.førsteJournalpostIdSomHarOrigi
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import no.nav.omsorgspenger.journalforing.JournalforingMediator
 import no.nav.omsorgspenger.journalforing.Journalpost
+import no.nav.omsorgspenger.journalforing.JournalpostManglerNavn
+import no.nav.omsorgspenger.journalforing.JournalpostManglerNavn.behandlaJournalpostHåndterManglerNavn
 import org.slf4j.LoggerFactory
 import java.time.ZonedDateTime
 
@@ -47,6 +49,7 @@ internal abstract class KopierJournalpost(
                 packet.require(saksnummerKey("fra"), JsonNode::asText)
                 packet.require(identitetsnummerKey("til"), JsonNode::asText)
                 packet.require(saksnummerKey("til"), JsonNode::asText)
+                packet.interestedIn(JournalpostManglerNavn.PersonopplysningerKey)
             }
         }.register(this)
     }
@@ -86,25 +89,25 @@ internal abstract class KopierJournalpost(
             return packet.løsMed(alleredeKopiertJournalpostId)
         }
 
-        val erFerdigstilt = journalforingMediator.behandlaJournalpost(
-            correlationId = "$correlationId",
-            journalpost = journalpost
+        return journalforingMediator.behandlaJournalpostHåndterManglerNavn(
+            packet = packet,
+            aktueltBehov = behov,
+            identitetsnummer = fraIdentitetsnummer,
+            saksnummer = fraSaksnummer,
+            fagsystem = fagsystem,
+            journalpostIder = setOf(journalpostId),
+            onOk = {
+                val nyJournalpostId = runBlocking { dokarkivproxyClient.knyttTilAnnenSak(
+                    correlationId = correlationId,
+                    journalpost = journalpost.copy(
+                        identitetsnummer = "$tilIdentitetsnummer",
+                        saksnummer = "$tilSaksnummer"
+                    )
+                )}
+
+                packet.løsMed(nyJournalpostId)
+            }
         )
-
-        if (!erFerdigstilt) {
-            logger.error("Journalpost ikke ferdigstilt etter journalføring.")
-            return false
-        }
-
-        val nyJournalpostId = runBlocking { dokarkivproxyClient.knyttTilAnnenSak(
-            correlationId = correlationId,
-            journalpost = journalpost.copy(
-                identitetsnummer = "$tilIdentitetsnummer",
-                saksnummer = "$tilSaksnummer"
-            )
-        )}
-
-        return packet.løsMed(nyJournalpostId)
     }
 
     private fun JsonMessage.løsMed(journalpostId: JournalpostId) : Boolean {
