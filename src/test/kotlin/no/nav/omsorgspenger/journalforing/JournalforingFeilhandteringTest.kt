@@ -1,8 +1,10 @@
 package no.nav.omsorgspenger.journalforing
 
+import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
+import no.nav.helse.rapids_rivers.isMissingOrNull
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
@@ -13,7 +15,9 @@ import org.junit.jupiter.api.Test
 import java.net.URI
 import java.time.ZonedDateTime
 import java.util.*
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 internal class JournalforingFeilhandteringTest {
 
@@ -47,7 +51,7 @@ internal class JournalforingFeilhandteringTest {
     fun `Håndterer feil i ferdigstilling och går igenom etter nytt försök`() {
         val (_, behovssekvens) = nyBehovsSekvens(
                 id = "01BX5ZZKBKACTAV9WEVGEMMVS0",
-                journalpostIder = setOf("1111", "2222")
+                journalpostIder = setOf("11111", "22222")
         )
 
         val identitetsnummer = "11111111111"
@@ -56,28 +60,35 @@ internal class JournalforingFeilhandteringTest {
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), any()) }
             .returns(JournalpostStatus.Oppdatert)
 
-        coEvery { mockJoarkClient.ferdigstillJournalpost(any(), journalpostId = "1111") }
+        coEvery { mockJoarkClient.ferdigstillJournalpost(any(), journalpostId = "11111") }
             .returns(JournalpostStatus.Ferdigstilt)
 
-        coEvery { mockJoarkClient.ferdigstillJournalpost(any(), journalpostId = "2222") }
+        coEvery { mockJoarkClient.ferdigstillJournalpost(any(), journalpostId = "22222") }
             .returns(JournalpostStatus.Feilet)
 
         rapid.sendTestMessage(behovssekvens)
 
         assert(rapid.inspektør.size == 1)
+        assertFalse(rapid.inspektør.message(0).get("@behov").get("HentPersonopplysninger@journalføring").isMissingOrNull())
+        assertNull(rapid.inspektør.message(0).get("@løsninger"))
+
+        clearMocks(mockJoarkClient)
+        val navn = "LITEN MASKIN"
 
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
-            journalpostId = "1111",
+            journalpostId = "11111",
             identitetsnummer = identitetsnummer,
             saksnummer = saksnummer,
-            fagsaksystem = Fagsystem.OMSORGSPENGER
+            fagsaksystem = Fagsystem.OMSORGSPENGER,
+            navn = navn
         ))}.returns(JournalpostStatus.Ferdigstilt)
 
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
-            journalpostId = "2222",
+            journalpostId = "22222",
             identitetsnummer = identitetsnummer,
             saksnummer = saksnummer,
-            fagsaksystem = Fagsystem.OMSORGSPENGER
+            fagsaksystem = Fagsystem.OMSORGSPENGER,
+            navn = navn
         ))}.returns(JournalpostStatus.Oppdatert)
 
         coEvery { mockJoarkClient.ferdigstillJournalpost(any(), any()) }.returns(JournalpostStatus.Ferdigstilt)
@@ -89,7 +100,7 @@ internal class JournalforingFeilhandteringTest {
                     "personopplysninger": {
                         "$identitetsnummer": {
                             "navn": {
-                                "sammensatt": "LITEN MASKIN"
+                                "sammensatt": "$navn"
                             }
                         }
                     }

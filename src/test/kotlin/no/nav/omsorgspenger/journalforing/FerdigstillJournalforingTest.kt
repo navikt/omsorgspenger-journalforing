@@ -30,7 +30,7 @@ internal class FerdigstillJournalforingTest(
     fun `Håndterer flere journalpostIder`() {
         val (_, behovssekvens) = nyBehovsSekvens(
                 id = "01BX5ZZKBKACTAV9WEVGEMMVS0",
-                journalpostIder = setOf("123abc", "345def")
+                journalpostIder = setOf("12345", "678910")
         )
         rapid.sendTestMessage(behovssekvens)
 
@@ -41,7 +41,7 @@ internal class FerdigstillJournalforingTest(
     fun `Håndterer om journalpost allerede er ferdigstilt`() {
         val (_, behovssekvens) = nyBehovsSekvens(
             id = "01ENX3XB5S98AMKRX2JV638YNN",
-            journalpostIder = setOf("123"),
+            journalpostIder = setOf("12345"),
             correlationId = "allerede-ferdigstilt"
         )
         rapid.sendTestMessage(behovssekvens)
