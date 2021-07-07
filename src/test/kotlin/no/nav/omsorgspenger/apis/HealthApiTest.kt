@@ -5,9 +5,9 @@ import io.ktor.server.testing.*
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.omsorgspengerJournalføring
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.test.assertEquals
 
 @ExtendWith(ApplicationContextExtension::class)
 internal class HealthApiTest(
