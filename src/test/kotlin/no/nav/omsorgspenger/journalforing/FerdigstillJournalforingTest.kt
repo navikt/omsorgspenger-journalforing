@@ -7,11 +7,11 @@ import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.registerApplicationContext
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.time.ZonedDateTime
-import kotlin.test.assertNotNull
 
 @ExtendWith(ApplicationContextExtension::class)
 internal class FerdigstillJournalforingTest(
