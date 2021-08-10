@@ -15,9 +15,9 @@ import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.RapidsStateListener
 import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
-import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForK9
-import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForOmsorgspenger
-import no.nav.omsorgspenger.journalforing.JournalforingMediator
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForK9
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForOmsorgspenger
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
 import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
 import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
@@ -34,11 +34,11 @@ fun main() {
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
     FerdigstillJournalføringForOmsorgspenger(
         rapidsConnection = this,
-        journalforingMediator = applicationContext.journalforingMediator
+        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator
     )
     FerdigstillJournalføringForK9(
         rapidsConnection = this,
-        journalforingMediator = applicationContext.journalforingMediator
+        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator
     )
     OpprettGosysJournalføringsoppgaver(
         rapidsConnection = this,
@@ -50,7 +50,7 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
 
     KopierJournalpostForK9(
         rapidsConnection = this,
-        journalforingMediator = applicationContext.journalforingMediator,
+        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator,
         dokarkivproxyClient = applicationContext.dokarkivproxyClient,
         safGateway = applicationContext.safGateway
     )
@@ -98,7 +98,7 @@ internal class ApplicationContext(
     internal val joarkClient: JoarkClient,
     internal val dokarkivproxyClient: DokarkivproxyClient,
     internal val safGateway: SafGateway,
-    internal val journalforingMediator: JournalforingMediator,
+    internal val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     internal val oppgaveClient: OppgaveClient,
     internal val healthChecks: Set<HealthCheck>) {
     internal var rapidsState = RapidsStateListener.RapidsState.initialState()
@@ -113,7 +113,7 @@ internal class ApplicationContext(
         internal var joarkClient: JoarkClient? = null,
         internal var dokarkivproxyClient: DokarkivproxyClient? = null,
         internal var safGateway: SafGateway? = null,
-        internal var journalforingMediator: JournalforingMediator? = null,
+        internal var ferdigstillJournalføringMediator: FerdigstillJournalføringMediator? = null,
         internal var oppgaveClient: OppgaveClient? = null) {
         internal fun build() : ApplicationContext {
             val benyttetEnv = env?:System.getenv()
@@ -150,7 +150,7 @@ internal class ApplicationContext(
             return ApplicationContext(
                 env = benyttetEnv,
                 joarkClient = benyttetJoarkClient,
-                journalforingMediator = journalforingMediator?: JournalforingMediator(
+                ferdigstillJournalføringMediator = ferdigstillJournalføringMediator?: FerdigstillJournalføringMediator(
                     joarkClient = benyttetJoarkClient
                 ),
                 healthChecks = setOf(

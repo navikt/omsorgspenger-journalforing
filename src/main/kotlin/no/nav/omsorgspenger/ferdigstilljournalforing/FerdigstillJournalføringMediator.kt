@@ -1,16 +1,17 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.JoarkClient
 import no.nav.omsorgspenger.JournalpostStatus
 import org.slf4j.LoggerFactory
 
-internal class JournalforingMediator(
+internal class FerdigstillJournalføringMediator(
         private val joarkClient: JoarkClient) {
 
     internal fun behandlaJournalpost(
         correlationId: String,
-        journalpost: Journalpost): Boolean {
+        journalpost: Journalpost
+    ): Boolean {
         var result = false
         val journalpostId = journalpost.journalpostId
 
@@ -54,6 +55,6 @@ internal class JournalforingMediator(
     private fun Journalpost.log(log: String) = "[JournalpostId=$journalpostId] $log"
 
     private companion object {
-        private val logger = LoggerFactory.getLogger(JournalforingMediator::class.java)
+        private val logger = LoggerFactory.getLogger(FerdigstillJournalføringMediator::class.java)
     }
 }

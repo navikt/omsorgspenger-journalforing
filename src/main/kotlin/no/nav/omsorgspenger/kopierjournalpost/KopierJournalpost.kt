@@ -17,16 +17,16 @@ import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.SafGateway
 import no.nav.omsorgspenger.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
-import no.nav.omsorgspenger.journalforing.JournalforingMediator
-import no.nav.omsorgspenger.journalforing.Journalpost
-import no.nav.omsorgspenger.journalforing.JournalpostManglerNavn
-import no.nav.omsorgspenger.journalforing.JournalpostManglerNavn.behandlaJournalpostHåndterManglerNavn
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
+import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
+import no.nav.omsorgspenger.ferdigstilljournalforing.JournalpostManglerNavn
+import no.nav.omsorgspenger.ferdigstilljournalforing.JournalpostManglerNavn.behandlaJournalpostHåndterManglerNavn
 import org.slf4j.LoggerFactory
 import java.time.ZonedDateTime
 
 internal abstract class KopierJournalpost(
     rapidsConnection: RapidsConnection,
-    private val journalforingMediator: JournalforingMediator,
+    private val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     private val dokarkivproxyClient: DokarkivproxyClient,
     private val safGateway: SafGateway,
     private val fagsystem: Fagsystem,
@@ -89,7 +89,7 @@ internal abstract class KopierJournalpost(
             return packet.løsMed(alleredeKopiertJournalpostId)
         }
 
-        return journalforingMediator.behandlaJournalpostHåndterManglerNavn(
+        return ferdigstillJournalføringMediator.behandlaJournalpostHåndterManglerNavn(
             packet = packet,
             aktueltBehov = behov,
             identitetsnummer = fraIdentitetsnummer,

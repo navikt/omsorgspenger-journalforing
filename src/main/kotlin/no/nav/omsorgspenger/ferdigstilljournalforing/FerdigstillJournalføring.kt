@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
@@ -10,15 +10,15 @@ import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
-import no.nav.omsorgspenger.journalforing.JournalpostManglerNavn.behandlaJournalpostHåndterManglerNavn
+import no.nav.omsorgspenger.ferdigstilljournalforing.JournalpostManglerNavn.behandlaJournalpostHåndterManglerNavn
 import org.slf4j.LoggerFactory
 
-internal abstract class FerdigstillJournalforing(
+internal abstract class FerdigstillJournalføring(
     rapidsConnection: RapidsConnection,
-    private val journalforingMediator: JournalforingMediator,
+    private val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     private val behov: String,
     private val fagsystem: Fagsystem) : BehovssekvensPacketListener(
-    logger = LoggerFactory.getLogger(FerdigstillJournalforing::class.java)) {
+    logger = LoggerFactory.getLogger(FerdigstillJournalføring::class.java)) {
 
     private val JOURNALPOSTIDER = "@behov.$behov.journalpostIder"
     private val IDENTITETSNUMMER = "@behov.$behov.identitetsnummer"
@@ -47,7 +47,7 @@ internal abstract class FerdigstillJournalforing(
 
         logger.info("Saksnummer: $saksnummer, JournalpostIder: $journalpostIder")
 
-        return journalforingMediator.behandlaJournalpostHåndterManglerNavn(
+        return ferdigstillJournalføringMediator.behandlaJournalpostHåndterManglerNavn(
             packet = packet,
             aktueltBehov = behov,
             identitetsnummer = identitetsnummer,

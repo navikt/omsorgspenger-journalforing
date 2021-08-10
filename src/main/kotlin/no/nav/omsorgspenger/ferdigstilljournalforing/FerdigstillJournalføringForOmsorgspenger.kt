@@ -1,14 +1,14 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.omsorgspenger.Fagsystem
 
 internal class FerdigstillJournalføringForOmsorgspenger(
     rapidsConnection: RapidsConnection,
-    journalforingMediator: JournalforingMediator
-) : FerdigstillJournalforing(
+    ferdigstillJournalføringMediator: FerdigstillJournalføringMediator
+) : FerdigstillJournalføring(
     rapidsConnection = rapidsConnection,
-    journalforingMediator = journalforingMediator,
+    ferdigstillJournalføringMediator = ferdigstillJournalføringMediator,
     behov = "FerdigstillJournalføringForOmsorgspenger",
     fagsystem = Fagsystem.OMSORGSPENGER
 )

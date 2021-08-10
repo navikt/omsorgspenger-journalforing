@@ -9,6 +9,7 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.*
+import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -81,7 +82,8 @@ internal class JournalforingFeilhandteringTest {
             saksnummer = saksnummer,
             fagsaksystem = Fagsystem.OMSORGSPENGER,
             navn = navn
-        ))}.returns(JournalpostStatus.Ferdigstilt)
+        )
+        )}.returns(JournalpostStatus.Ferdigstilt)
 
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
             journalpostId = "22222",
@@ -89,7 +91,8 @@ internal class JournalforingFeilhandteringTest {
             saksnummer = saksnummer,
             fagsaksystem = Fagsystem.OMSORGSPENGER,
             navn = navn
-        ))}.returns(JournalpostStatus.Oppdatert)
+        )
+        )}.returns(JournalpostStatus.Oppdatert)
 
         coEvery { mockJoarkClient.ferdigstillJournalpost(any(), any()) }.returns(JournalpostStatus.Ferdigstilt)
 

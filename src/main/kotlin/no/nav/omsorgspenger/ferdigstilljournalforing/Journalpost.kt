@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import no.nav.omsorgspenger.Fagsystem
 

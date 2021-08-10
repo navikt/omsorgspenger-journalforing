@@ -16,7 +16,7 @@ import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
-import no.nav.omsorgspenger.journalforing.Journalpost
+import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
 import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import org.slf4j.LoggerFactory

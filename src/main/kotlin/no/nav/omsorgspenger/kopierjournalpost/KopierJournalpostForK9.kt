@@ -4,16 +4,16 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.omsorgspenger.DokarkivproxyClient
 import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.SafGateway
-import no.nav.omsorgspenger.journalforing.JournalforingMediator
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
 
 internal class KopierJournalpostForK9(
     rapidsConnection: RapidsConnection,
-    journalforingMediator: JournalforingMediator,
+    ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     dokarkivproxyClient: DokarkivproxyClient,
     safGateway: SafGateway
 ) : KopierJournalpost(
     rapidsConnection = rapidsConnection,
-    journalforingMediator = journalforingMediator,
+    ferdigstillJournalføringMediator = ferdigstillJournalføringMediator,
     dokarkivproxyClient = dokarkivproxyClient,
     safGateway = safGateway,
     fagsystem = Fagsystem.K9,
