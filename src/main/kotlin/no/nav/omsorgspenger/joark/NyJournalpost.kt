@@ -18,7 +18,7 @@ internal data class NyJournalpost(
     internal val fagsystem: Fagsystem,
     internal val saksnummer: Saksnummer,
     internal val identitetsnummer: Identitetsnummer,
-    internal val navn: String,
+    internal val avsenderNavn: String,
     internal val pdf: ByteArray,
     internal val json: ObjectNode) {
 
@@ -30,7 +30,7 @@ internal data class NyJournalpost(
               "datoMottatt": "${mottatt.withZoneSameInstant(UTC).iso8601()}",
               "tittel": "$tittel",
               "avsenderMottaker": {
-                "navn": "$navn"
+                "navn": "$avsenderNavn"
               },
               "bruker": {
                 "id": "$identitetsnummer",

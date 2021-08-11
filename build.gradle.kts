@@ -35,6 +35,7 @@ dependencies {
 
     implementation("com.openhtmltopdf:openhtmltopdf-core:$openhtmltopdfVersion")
     implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:$openhtmltopdfVersion")
+    implementation("com.openhtmltopdf:openhtmltopdf-slf4j:$openhtmltopdfVersion")
 
     // Test
     testImplementation("org.skyscreamer:jsonassert:$jsonassertVersion")

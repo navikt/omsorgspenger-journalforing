@@ -1,20 +1,18 @@
 package no.nav.omsorgspenger.journalforjson
 
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.*
 import no.nav.k9.rapid.river.*
 import no.nav.omsorgspenger.CorrelationId.Companion.correlationId
 import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.NyJournalpost
 import org.slf4j.LoggerFactory
 
-internal class JournalførJsonSteg2River(
+internal class JournalførJsonRiver(
     rapidsConnection: RapidsConnection,
     private val dokarkivClient: DokarkivClient
 ) : BehovssekvensPacketListener(
-    logger = LoggerFactory.getLogger(JournalførJsonSteg2River::class.java)) {
+    logger = LoggerFactory.getLogger(JournalførJsonRiver::class.java)) {
 
     init {
         River(rapidsConnection).apply {
@@ -22,8 +20,6 @@ internal class JournalførJsonSteg2River(
                 packet.skalLøseBehov(JournalførJsonMelding.BehovNavn)?.also { aktueltBehov ->
                     JournalførJsonMelding.validateBehov(packet, aktueltBehov)
                 }
-                packet.harLøsningPåBehov(HentNavnMelding.BehovNavn)
-                HentNavnMelding.validateLøsning(packet)
             }
         }.register(this)
     }
@@ -31,9 +27,8 @@ internal class JournalførJsonSteg2River(
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
         val aktueltBehov = packet.aktueltBehov()
         val journalførJson = JournalførJsonMelding.hentBehov(packet, aktueltBehov)
-        val navn = HentNavnMelding.hentLøsning(packet, journalførJson.identitetsnummer)
 
-        logger.info("Journalfører Json for Fagsystem=[${journalførJson.fagsystem.name}] på Saksnummer=[${journalførJson.saksnummer}] med Brevkode=[${journalførJson.brevkode}] & Farge=[${journalførJson.farge}]]")
+        logger.info("Journalfører Json for Fagsystem=[${journalførJson.fagsystem.name}] på Saksnummer=[${journalførJson.saksnummer}] med Brevkode=[${journalførJson.brevkode}] & Farge=[${journalførJson.farge}]")
 
         val pdf = PdfGenerator.genererPdf(
             html = HtmlGenerator.genererHtml(
@@ -53,7 +48,7 @@ internal class JournalførJsonSteg2River(
                 fagsystem = journalførJson.fagsystem,
                 saksnummer = journalførJson.saksnummer,
                 identitetsnummer = journalførJson.identitetsnummer,
-                navn = navn,
+                avsenderNavn = journalførJson.avsenderNavn,
                 pdf = pdf,
                 json = journalførJson.json
             )

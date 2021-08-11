@@ -26,8 +26,9 @@ internal object JournalførJsonMelding {
         packet.require(aktueltBehov.tittel()) { it.requireText() }
         packet.require(aktueltBehov.fagsystem()) { it.requireText() }
         packet.require(aktueltBehov.saksnummer()) { it.requireText() }
-        packet.require(aktueltBehov.identitesnummer()) { it.requireText() }
+        packet.require(aktueltBehov.identitetsnummer()) { it.requireText() }
         packet.require(aktueltBehov.brevkode()) { it.requireText() }
+        packet.require(aktueltBehov.avsenderNavn()) { it.requireText() }
         packet.require(aktueltBehov.mottatt()) { ZonedDateTime.parse(it.asText()) }
         packet.interestedIn(aktueltBehov.farge())
     }
@@ -37,10 +38,11 @@ internal object JournalførJsonMelding {
         tittel = packet[aktueltBehov.tittel()].asText(),
         farge = packet[aktueltBehov.farge()].farge(),
         fagsystem = Fagsystem.valueOf(packet[aktueltBehov.fagsystem()].asText()),
-        identitetsnummer = packet[aktueltBehov.identitesnummer()].asText().somIdentitetsnummer(),
+        identitetsnummer = packet[aktueltBehov.identitetsnummer()].asText().somIdentitetsnummer(),
         saksnummer = packet[aktueltBehov.saksnummer()].asText().somSaksnummer(),
         brevkode = packet[aktueltBehov.brevkode()].asText(),
-        mottatt = packet[aktueltBehov.mottatt()].let { ZonedDateTime.parse(it.asText()) }
+        mottatt = packet[aktueltBehov.mottatt()].let { ZonedDateTime.parse(it.asText()) },
+        avsenderNavn = packet[aktueltBehov.avsenderNavn()].asText()
     )
 
     internal fun leggTilLøsning(packet: JsonMessage, aktueltBehov: String, journalpostId: JournalpostId) {
@@ -68,7 +70,8 @@ internal object JournalførJsonMelding {
         internal val farge: String,
         internal val fagsystem: Fagsystem,
         internal val identitetsnummer: Identitetsnummer,
-        internal val saksnummer: Saksnummer
+        internal val saksnummer: Saksnummer,
+        internal val avsenderNavn: String
     )
 
     private val logger = LoggerFactory.getLogger(JournalførJsonMelding::class.java)
@@ -80,6 +83,7 @@ internal object JournalførJsonMelding {
     private fun String.tittel() = "@behov.$this.tittel"
     private fun String.farge() = "@behov.$this.farge"
     private fun String.fagsystem() = "@behov.$this.fagsystem"
-    private fun String.identitesnummer() = "@behov.$this.identitesnummer"
+    private fun String.identitetsnummer() = "@behov.$this.identitetsnummer"
     private fun String.saksnummer() = "@behov.$this.saksnummer"
+    private fun String.avsenderNavn() = "@behov.$this.avsender.navn"
 }
