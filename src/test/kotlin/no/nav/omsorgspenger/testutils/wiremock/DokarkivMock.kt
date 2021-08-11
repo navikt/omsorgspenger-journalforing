@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.matching.RegexPattern
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.intellij.lang.annotations.Language
 
-private const val basePath = "/journalpostapi-mock"
+private const val basePath = "/dokarkiv-mock"
 private const val journalpostPath = "$basePath/rest/journalpostapi/v1/journalpost"
 
 private fun oppdaterJournalpostMapping(
@@ -26,6 +26,18 @@ private fun oppdaterJournalpostMapping(
     .withRequestBody(matchingJsonPath("$.tema", equalTo("OMS")))
     .withRequestBody(matchingJsonPath("$.bruker.idType", equalTo("FNR")))
     .withRequestBody(matchingJsonPath("$.bruker.id"))
+
+private fun opprettJournalpostMapping(
+    callIdPattern: StringValuePattern = AnythingPattern()
+) = WireMock.post(WireMock
+    .urlMatching(".*$journalpostPath.*"))
+    .withQueryParam("foersoekFerdigstill", equalTo("true"))
+    .withHeader("Authorization", RegexPattern("^Bearer .+$"))
+    .withHeader("Content-Type", equalTo("application/json"))
+    .withHeader("Nav-Consumer-Id", equalTo("omsorgspenger-journalforing"))
+    .withHeader("Nav-Callid", callIdPattern)
+    .withRequestBody(matchingJsonPath("$.sak.fagsaksystem", WireMock.matching("K9|OMSORGSPENGER")))
+    // Tester formatet på denn JSON'en i NyJournalpostTest, sjekker derfor her bare en prop
 
 private fun ferdigstillJournalpostMapping(
     callIdPattern: StringValuePattern = AnythingPattern()
@@ -94,6 +106,26 @@ private fun WireMockServer.stubFerdigstillJournalpostUventetFeil() = also {
     )
 }
 
+private fun WireMockServer.stubOpprettJournalpostOk() = also {
+    stubFor(opprettJournalpostMapping().willReturn(WireMock.aResponse()
+        .withStatus(200)
+        .withBody("""{"journalpostId":"12345678", "journalpostferdigstilt": true}""")
+    ))
+}
+
+private fun WireMockServer.stubOpprettJournalpostAlleredeOpprettet() = also {
+    stubFor(opprettJournalpostMapping(callIdPattern = equalTo("allerede-opprettet")).willReturn(WireMock.aResponse()
+        .withStatus(200)
+        .withBody("""{"journalpostId":"910111213", "journalpostferdigstilt": true}""")
+    ))
+}
+
+private fun WireMockServer.stubOpprettJournalpostIkkeFerdigstilt() = also {
+    stubFor(opprettJournalpostMapping(callIdPattern = equalTo("ikke-ferdigstilt")).willReturn(WireMock.aResponse()
+        .withStatus(200)
+        .withBody("""{"journalpostId":"1415161718", "journalpostferdigstilt": false}""")
+    ))
+}
 
 private fun WireMockServer.stubIsReady() = also {
     stubFor(WireMock.get("$basePath/isReady")
@@ -103,12 +135,15 @@ private fun WireMockServer.stubIsReady() = also {
     )
 }
 
-internal fun WireMockServer.stubJournalpostApi() =
+internal fun WireMockServer.stubDokarkiv() =
     stubOppdaterJournalpostOk()
     .stubOppdaterJournalpostUventetFeil()
     .stubOppdaterJournalpostAlleredeFerdigstilt()
     .stubFerdigstillJournalpostOk()
     .stubFerdigstillJournalpostUventetFeil()
+    .stubOpprettJournalpostOk()
+    .stubOpprettJournalpostAlleredeOpprettet()
+    .stubOpprettJournalpostIkkeFerdigstilt()
     .stubIsReady()
 
-internal fun WireMockServer.journalpostApiBaseUrl() = baseUrl() + basePath
+internal fun WireMockServer.dokarkivBaseUrl() = baseUrl() + basePath

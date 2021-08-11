@@ -14,8 +14,12 @@ internal class NyJournalpostTest {
 
     @Test
     fun `genrerer payload til dokarkiv`() {
+        JSONAssert.assertEquals(forventetPayload, nyJournalpost.dokarkivPayload(), true)
+    }
+
+    internal companion object {
         @Language("JSON")
-        val enJson = """
+        private val json = """
         {
           "søknad": {
             "id": "1",
@@ -25,7 +29,7 @@ internal class NyJournalpostTest {
         }
         """.trimIndent().let { jacksonObjectMapper().readTree(it) as ObjectNode }
 
-        val nyJournalpost = NyJournalpost(
+        internal val nyJournalpost = NyJournalpost(
             behovssekvensId = "01FCTKFCGACDNTBH7V56VZ598X",
             tittel = "Test tittel",
             brevkode = "NAV brevkode 007",
@@ -34,15 +38,10 @@ internal class NyJournalpostTest {
             saksnummer = "ABC123".somSaksnummer(),
             identitetsnummer = "11111111111".somIdentitetsnummer(),
             navn = "Ola Nordmann",
-            json = enJson,
+            json = json,
             pdf = "LiksomPdf".toByteArray()
         )
-        println(nyJournalpost.dokarkivPayload())
 
-        JSONAssert.assertEquals(forventetPayload, nyJournalpost.dokarkivPayload(), true)
-    }
-
-    private companion object {
         @Language("JSON")
         private val forventetPayload = """
         {

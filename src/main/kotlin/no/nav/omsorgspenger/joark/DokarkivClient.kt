@@ -100,7 +100,7 @@ internal class DokarkivClient(
         return when (httpStatus == HttpStatusCode.OK || httpStatus == HttpStatusCode.Conflict)  {
             true -> JSONObject(responseBody).let { json ->
                 val journalpostId = json.getString("journalpostId").somJournalpostId()
-                require(json.getBoolean("journalpostferdigstilt")) {
+                check(json.getBoolean("journalpostferdigstilt")) {
                     "Journalposten $journalpostId er ikke ferdigstilt"
                 }
                 journalpostId
