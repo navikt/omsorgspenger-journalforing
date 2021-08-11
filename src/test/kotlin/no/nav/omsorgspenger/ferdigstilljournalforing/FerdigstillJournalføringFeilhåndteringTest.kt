@@ -10,6 +10,7 @@ import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.*
 import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.Journalpost
 import no.nav.omsorgspenger.joark.JournalpostStatus
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -21,7 +22,7 @@ import java.net.URI
 import java.time.ZonedDateTime
 import java.util.*
 
-internal class JournalforingFeilhandteringTest {
+internal class FerdigstillJournalføringFeilhåndteringTest {
 
     private val mockJoarkClient = mockk<DokarkivClient>()
 

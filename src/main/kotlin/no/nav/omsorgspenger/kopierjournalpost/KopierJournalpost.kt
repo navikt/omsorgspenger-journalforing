@@ -18,7 +18,7 @@ import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.joark.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
-import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
+import no.nav.omsorgspenger.joark.Journalpost
 import no.nav.omsorgspenger.ferdigstilljournalforing.JournalpostManglerNavn
 import no.nav.omsorgspenger.ferdigstilljournalforing.JournalpostManglerNavn.behandlaJournalpostHåndterManglerNavn
 import org.slf4j.LoggerFactory

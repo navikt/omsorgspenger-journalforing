@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.TextNode
 import io.prometheus.client.Counter
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.k9.rapid.behov.Behovsformat
@@ -14,7 +13,6 @@ import no.nav.k9.rapid.river.harLøsningPåBehov
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.skalLøseBehov
-import no.nav.omsorgspenger.OppgaveClient
 import no.nav.omsorgspenger.extensions.PrometheusExt.ensureRegistered
 import org.slf4j.LoggerFactory
 

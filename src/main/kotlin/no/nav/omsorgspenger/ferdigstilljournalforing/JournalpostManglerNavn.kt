@@ -9,6 +9,7 @@ import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.Identitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.Saksnummer
+import no.nav.omsorgspenger.joark.Journalpost
 import org.slf4j.LoggerFactory
 
 internal object JournalpostManglerNavn {

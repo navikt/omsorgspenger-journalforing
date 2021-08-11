@@ -2,6 +2,7 @@ package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.Journalpost
 import no.nav.omsorgspenger.joark.JournalpostStatus
 import org.slf4j.LoggerFactory
 

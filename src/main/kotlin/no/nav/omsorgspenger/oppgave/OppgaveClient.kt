@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.oppgave
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -22,9 +22,7 @@ import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
-import no.nav.omsorgspenger.oppgave.Oppgave
-import no.nav.omsorgspenger.oppgave.OppgaveRespons
-import no.nav.omsorgspenger.oppgave.oppdatertOppgaveBody
+import no.nav.omsorgspenger.AzureAwareClient
 import org.slf4j.LoggerFactory
 import java.net.URI
 

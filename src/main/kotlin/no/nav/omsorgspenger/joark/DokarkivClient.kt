@@ -23,7 +23,6 @@ import no.nav.omsorgspenger.CorrelationId
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
-import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
 import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import org.slf4j.LoggerFactory

@@ -23,6 +23,7 @@ import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
+import no.nav.omsorgspenger.oppgave.OppgaveClient
 import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
 
 fun main() {

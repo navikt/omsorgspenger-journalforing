@@ -10,7 +10,6 @@ import no.nav.omsorgspenger.AzureAwareClient
 import no.nav.omsorgspenger.CorrelationId
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
-import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
 import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import java.net.URI

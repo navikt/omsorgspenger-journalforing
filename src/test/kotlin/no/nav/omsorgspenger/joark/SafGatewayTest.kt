@@ -1,5 +1,6 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.joark
 
+import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.joark.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
 import no.nav.omsorgspenger.joark.SafGateway.Companion.hentOriginalJournalpostIderQuery
