@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import java.util.UUID
 import no.nav.helse.rapids_rivers.testsupport.TestRapid

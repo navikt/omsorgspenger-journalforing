@@ -1,11 +1,10 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.JournalpostStatus
-import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

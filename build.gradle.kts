@@ -8,6 +8,7 @@ val dusseldorfKtorVersion = "2.1.6.0-1516d10"
 val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20210307"
 val mockkVersion = "1.12.0"
+val openhtmltopdfVersion = "1.0.9"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
@@ -31,6 +32,9 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("org.json:json:$orgJsonVersion")
+
+    implementation("com.openhtmltopdf:openhtmltopdf-core:$openhtmltopdfVersion")
+    implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:$openhtmltopdfVersion")
 
     // Test
     testImplementation("org.skyscreamer:jsonassert:$jsonassertVersion")
