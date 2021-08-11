@@ -18,6 +18,9 @@ import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForK9
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForOmsorgspenger
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
+import no.nav.omsorgspenger.joark.DokarkivproxyClient
+import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
 import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
@@ -95,7 +98,7 @@ internal fun Application.omsorgspengerJournalføring(applicationContext: Applica
 
 internal class ApplicationContext(
     internal val env: Environment,
-    internal val joarkClient: JoarkClient,
+    internal val dokarkivClient: DokarkivClient,
     internal val dokarkivproxyClient: DokarkivproxyClient,
     internal val safGateway: SafGateway,
     internal val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
@@ -110,7 +113,7 @@ internal class ApplicationContext(
         internal var env: Environment? = null,
         internal var httpClient: HttpClient? = null,
         internal var accessTokenClient: AccessTokenClient? = null,
-        internal var joarkClient: JoarkClient? = null,
+        internal var dokarkivClient: DokarkivClient? = null,
         internal var dokarkivproxyClient: DokarkivproxyClient? = null,
         internal var safGateway: SafGateway? = null,
         internal var ferdigstillJournalføringMediator: FerdigstillJournalføringMediator? = null,
@@ -124,7 +127,7 @@ internal class ApplicationContext(
                 clientSecret = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_SECRET"),
                 tokenEndpoint = URI(benyttetEnv.hentRequiredEnv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"))
             )
-            val benyttetJoarkClient = joarkClient?: JoarkClient(
+            val benyttetDokarkivClient = dokarkivClient?: DokarkivClient(
                 env = benyttetEnv,
                 accessTokenClient = benyttetAccessTokenClient,
                 httpClient = benyttetHttpClient
@@ -149,12 +152,12 @@ internal class ApplicationContext(
 
             return ApplicationContext(
                 env = benyttetEnv,
-                joarkClient = benyttetJoarkClient,
+                dokarkivClient = benyttetDokarkivClient,
                 ferdigstillJournalføringMediator = ferdigstillJournalføringMediator?: FerdigstillJournalføringMediator(
-                    joarkClient = benyttetJoarkClient
+                    dokarkivClient = benyttetDokarkivClient
                 ),
                 healthChecks = setOf(
-                    benyttetJoarkClient,
+                    benyttetDokarkivClient,
                     benyttetOppgaveClient,
                     benyttetDokarkivproxyClient,
                     benyttetSafGateway

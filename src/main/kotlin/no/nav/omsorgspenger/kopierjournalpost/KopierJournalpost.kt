@@ -9,13 +9,13 @@ import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.CorrelationId.Companion.correlationId
-import no.nav.omsorgspenger.DokarkivproxyClient
+import no.nav.omsorgspenger.joark.DokarkivproxyClient
 import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
-import no.nav.omsorgspenger.SafGateway
-import no.nav.omsorgspenger.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
+import no.nav.omsorgspenger.joark.SafGateway
+import no.nav.omsorgspenger.joark.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
 import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost

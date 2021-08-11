@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.joark
 
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
@@ -11,10 +11,17 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.util.toByteArray
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPost
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.jsonBody
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.readTextOrThrow
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
+import no.nav.omsorgspenger.AzureAwareClient
+import no.nav.omsorgspenger.CorrelationId
+import no.nav.omsorgspenger.JournalpostId
+import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import no.nav.omsorgspenger.ferdigstilljournalforing.Journalpost
 import org.intellij.lang.annotations.Language
@@ -28,18 +35,19 @@ internal enum class JournalpostStatus {
     Feilet
 }
 
-internal class JoarkClient(
+internal class DokarkivClient(
     env: Environment,
     accessTokenClient: AccessTokenClient,
     private val httpClient: HttpClient) : AzureAwareClient(
-        navn = "JoarkClient",
+        navn = "DokarkivClient",
         accessTokenClient = accessTokenClient,
         scopes = env.hentRequiredEnv("DOKARKIV_SCOPES").csvTilSet(),
-        pingUrl = URI("${env.hentRequiredEnv("JOARK_BASE_URL")}/isReady")) {
+        pingUrl = URI("${env.hentRequiredEnv("DOKARKIV_BASE_URL")}/isReady")) {
 
-    private val baseUrl = env.hentRequiredEnv("JOARK_BASE_URL")
+    private val baseUrl = env.hentRequiredEnv("DOKARKIV_BASE_URL")
+    private val opprettJournalpostUrl = "$baseUrl/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=true"
 
-    internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost): JournalpostStatus {
+    internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost) : JournalpostStatus {
         val payload = journalpost.oppdatertJournalpostBody().also {
             secureLogger.info("[JournalpostId=${journalpost.journalpostId}] Sendes til Dokarkiv for oppdatering: $it")
         }
@@ -61,7 +69,7 @@ internal class JoarkClient(
         )
     }
 
-    internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostId: String): JournalpostStatus {
+    internal suspend fun ferdigstillJournalpost(correlationId: String, journalpostId: String) : JournalpostStatus {
         val payload = ferdigstillJournalpostBody.also {
             secureLogger.info("[JournalpostId=${journalpostId}] Sendes til Dokarkiv for ferdigstilling: $it")
         }
@@ -77,6 +85,29 @@ internal class JoarkClient(
             http200Status = JournalpostStatus.Ferdigstilt,
             håndterIkkeHttp200 = { it.secureLog() }
         )
+    }
+
+    internal suspend fun opprettJournalpost(
+        correlationId: CorrelationId,
+        nyJournalpost: NyJournalpost
+    ): JournalpostId {
+        val (httpStatus, responseBody) = opprettJournalpostUrl.httpPost { builder ->
+            builder.header("Nav-Callid", "$correlationId")
+            builder.header("Nav-Consumer-Id", ConsumerId)
+            builder.header("Authorization", authorizationHeader())
+            builder.jsonBody(nyJournalpost.dokarkivPayload())
+        }.readTextOrThrow()
+
+        return when (httpStatus == HttpStatusCode.OK || httpStatus == HttpStatusCode.Conflict)  {
+            true -> JSONObject(responseBody).let { json ->
+                val journalpostId = json.getString("journalpostId").somJournalpostId()
+                require(json.getBoolean("journalpostferdigstilt")) {
+                    "Journalposten $journalpostId er ikke ferdigstilt"
+                }
+                journalpostId
+            }
+            false -> throw IllegalStateException("Feil ved opprettelse av journalpost. HttpStatus=[${httpStatus.value}], Response=[$responseBody]")
+        }
     }
 
     private suspend fun Result<HttpResponse>.håndterResponseFraJoark(

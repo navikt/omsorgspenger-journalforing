@@ -1,9 +1,9 @@
 package no.nav.omsorgspenger.kopierjournalpost
 
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.omsorgspenger.DokarkivproxyClient
+import no.nav.omsorgspenger.joark.DokarkivproxyClient
 import no.nav.omsorgspenger.Fagsystem
-import no.nav.omsorgspenger.SafGateway
+import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
 
 internal class KopierJournalpostForK9(

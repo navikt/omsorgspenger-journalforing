@@ -4,17 +4,17 @@ import java.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.Fagsystem
-import no.nav.omsorgspenger.JournalpostStatus
+import no.nav.omsorgspenger.joark.JournalpostStatus
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class JoarkClientTest(
+internal class DokarkivClientTest(
         applicationContext: ApplicationContext) {
 
-    private val client = applicationContext.joarkClient
+    private val client = applicationContext.dokarkivClient
 
     @Test
     fun `ferdigstill journalpost`() {

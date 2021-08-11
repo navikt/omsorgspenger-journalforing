@@ -1,13 +1,18 @@
 package no.nav.omsorgspenger.journalforjson
 
+import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.k9.rapid.river.*
+import no.nav.omsorgspenger.CorrelationId.Companion.correlationId
+import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.NyJournalpost
 import org.slf4j.LoggerFactory
 
 internal class JournalførJsonSteg2River(
-    rapidsConnection: RapidsConnection
+    rapidsConnection: RapidsConnection,
+    private val dokarkivClient: DokarkivClient
 ) : BehovssekvensPacketListener(
     logger = LoggerFactory.getLogger(JournalførJsonSteg2River::class.java)) {
 
@@ -28,9 +33,8 @@ internal class JournalførJsonSteg2River(
         val journalførJson = JournalførJsonMelding.hentBehov(packet, aktueltBehov)
         val navn = HentNavnMelding.hentLøsning(packet, journalførJson.identitetsnummer)
 
-        logger.info("Journalfører Json for Fagsystem=[${journalførJson.fagsystem.name}] på Saksnummer=[${journalførJson.saksnummer}] med Farge=[${journalførJson.farge}] & Tittel=[${journalførJson.tittel}]")
+        logger.info("Journalfører Json for Fagsystem=[${journalførJson.fagsystem.name}] på Saksnummer=[${journalførJson.saksnummer}] med Brevkode=[${journalførJson.brevkode}] & Farge=[${journalførJson.farge}]]")
 
-        logger.info("Genrerer PDF")
         val pdf = PdfGenerator.genererPdf(
             html = HtmlGenerator.genererHtml(
                 tittel = journalførJson.tittel,
@@ -39,11 +43,27 @@ internal class JournalførJsonSteg2River(
             )
         )
 
-        // https://confluence.adeo.no/display/BOA/opprettJournalpost
+        val journalpostId = runBlocking { dokarkivClient.opprettJournalpost(
+            correlationId = packet.correlationId(),
+            nyJournalpost = NyJournalpost(
+                behovssekvensId = id,
+                tittel = journalførJson.tittel,
+                mottatt = journalførJson.mottatt,
+                brevkode = journalførJson.brevkode,
+                fagsystem = journalførJson.fagsystem,
+                saksnummer = journalførJson.saksnummer,
+                identitetsnummer = journalførJson.identitetsnummer,
+                navn = navn,
+                pdf = pdf,
+                json = journalførJson.json
+            )
+        )}
 
-        packet.leggTilLøsning(aktueltBehov, mapOf(
-            "journalpostId" to "123"
-        ))
+        JournalførJsonMelding.leggTilLøsning(
+            packet = packet,
+            aktueltBehov = aktueltBehov,
+            journalpostId = journalpostId
+        )
 
         return true
     }

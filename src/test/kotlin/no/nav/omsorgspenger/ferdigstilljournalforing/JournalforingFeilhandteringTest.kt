@@ -9,6 +9,8 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.*
+import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.JournalpostStatus
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -21,12 +23,12 @@ import java.util.*
 
 internal class JournalforingFeilhandteringTest {
 
-    private val mockJoarkClient = mockk<JoarkClient>()
+    private val mockJoarkClient = mockk<DokarkivClient>()
 
     private val rapid = TestRapid().apply {
         this.registerApplicationContext(ApplicationContext.Builder(
             env = mapOf(
-                "JOARK_BASE_URL" to "test",
+                "DOKARKIV_BASE_URL" to "test",
                 "DOKARKIV_SCOPES" to "testScope/.default",
                 "OPPGAVE_BASE_URL" to "test",
                 "OPPGAVE_SCOPES" to "test/.default"
@@ -36,7 +38,7 @@ internal class JournalforingFeilhandteringTest {
                 clientSecret = "azureSecret",
                 tokenEndpoint = URI("test")
             ),
-            joarkClient = mockJoarkClient,
+            dokarkivClient = mockJoarkClient,
             dokarkivproxyClient = mockk(),
             safGateway = mockk()
         ).build())

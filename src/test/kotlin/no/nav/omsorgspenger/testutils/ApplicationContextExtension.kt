@@ -26,7 +26,7 @@ internal class ApplicationContextExtension : ParameterResolver {
 
         private val applicationContextBuilder = ApplicationContext.Builder(
                 env = mapOf(
-                    "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
+                    "DOKARKIV_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
                     "DOKARKIV_SCOPES" to "dokarkiv/.default",
                     "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
                     "OPPGAVE_SCOPES" to "oppgave/.default",
