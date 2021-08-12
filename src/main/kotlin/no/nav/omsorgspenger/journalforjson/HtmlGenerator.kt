@@ -3,7 +3,6 @@ package no.nav.omsorgspenger.journalforjson
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.BooleanNode
-import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.intellij.lang.annotations.Language
 import java.time.Duration
@@ -17,6 +16,7 @@ internal object HtmlGenerator {
         tittel: String,
         farge: String,
         json: ObjectNode) : String {
+
         @Language("HTML")
         val html = """
             <html lang="no">
@@ -47,33 +47,39 @@ internal object HtmlGenerator {
                 </head>
                 <body>
                     <div id="header">$tittel</div>
-                    <div id="json">${json.toHtmlDiv()}</div>
+                    <div id="json">${json.toHtml()}</div>
                 </body>
             </html>
         """.trimIndent().replace("\n", "").replace("  ", "")
         return html
     }
 
-    private fun JsonNode.toHtmlDiv() : String {
+    private fun JsonNode.toHtml() : String {
+        if (!inneholderData()) { return "" }
+
         var html = ""
 
         when (this) {
             is ObjectNode -> {
-                html += """<div class="json_object">"""
-                fields().forEach { (navn, jsonNode) -> if (jsonNode !is NullNode) {
-                    html += """<div><span class="json_key">${navn.prettyKey()}</span>: ${jsonNode.toHtmlDiv()}</div>"""
+                var objectHtml = ""
+                fields().forEach { (navn, jsonNode) -> if (jsonNode.inneholderData()) {
+                    objectHtml += """<div><span class="json_key">${navn.prettyKey()}</span>: ${jsonNode.toHtml()}</div>"""
                 }}
-                html += "</div>"
+                if (objectHtml.isNotBlank()) {
+                    html += """<div class="json_object">$objectHtml</div>"""
+                }
             }
-            is ArrayNode -> forEachIndexed { index, arrayElement ->
-                html += arrayElement.toHtmlDiv()
+            is ArrayNode -> forEachIndexed { index, arrayElement -> if (arrayElement.inneholderData()) {
+                html += arrayElement.toHtml()
                 val erSisteElementIListen = size() == index + 1
                 if (!arrayElement.isObject && !erSisteElementIListen) {
                     html += ", "
                 }
-            }
+
+            }}
             else -> html += prettyValue()
         }
+
         return html
     }
 
@@ -103,7 +109,7 @@ internal object HtmlGenerator {
             val tom = LocalDate.parse(split[1])
             when (fom == tom) {
                 true -> fom.format(DATE_FORMATTER)
-                false -> "${fom.format(DATE_FORMATTER)}-${tom.format(DATE_FORMATTER)}"
+                false -> "${fom.format(DATE_FORMATTER)} - ${tom.format(DATE_FORMATTER)}"
             }
         }
         false -> null
@@ -120,6 +126,20 @@ internal object HtmlGenerator {
         0L -> ""
         1L -> "$this $entall, "
         else -> "$this $flertall, "
+    }
+
+    private fun JsonNode.inneholderData() : Boolean {
+        if (isMissingNode || isNull) { return false }
+        else if (isArray) { return size() > 0 }
+        else if (isObject) {
+            fields().forEach { (_, jsonNode) ->
+                // Rekursivt kall som returnerer så fort den ser at en node inneholder data
+                if (jsonNode.inneholderData()) { return true }
+            }
+            return false
+        }
+        // Alle andre ting anser vi som data
+        else { return true }
     }
 
     private val ZONE_ID = ZoneId.of("Europe/Oslo")

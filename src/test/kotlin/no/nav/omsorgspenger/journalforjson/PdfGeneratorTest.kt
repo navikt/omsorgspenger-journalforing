@@ -34,6 +34,27 @@ internal class PdfGeneratorTest {
         @Language("JSON")
         private val pleiepengesøknad = """
         {
+          "tom": {
+            "tom2": {
+              "tom3": {
+                "tom4": {
+                  "tom5": []
+                }
+              }
+            }
+          },
+          "ikkeTom": {
+            "ikkeTom2": {
+              "ikkeTom3": {
+                "ikkeTom4": {
+                  "ikkeTom5": ["ikkeTom"],
+                  "ikkeTom6": {
+                    "ikkeTom7": true
+                  }
+                }
+              }
+            }
+          },
           "søknadId": "1",
           "versjon": "2.0.0",
           "mottattDato": "2020-10-12T12:53:21.046Z",
