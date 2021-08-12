@@ -102,8 +102,8 @@ internal object HtmlGenerator {
             val fom = LocalDate.parse(split[0])
             val tom = LocalDate.parse(split[1])
             when (fom == tom) {
-                true -> "Enkeltdagen ${fom.format(DATE_FORMATTER)}"
-                false -> "Fra og med ${fom.format(DATE_FORMATTER)}, til og med ${tom.format(DATE_FORMATTER)}"
+                true -> fom.format(DATE_FORMATTER)
+                false -> "${fom.format(DATE_FORMATTER)}-${tom.format(DATE_FORMATTER)}"
             }
         }
         false -> null
