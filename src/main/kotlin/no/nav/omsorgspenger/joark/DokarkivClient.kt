@@ -44,7 +44,7 @@ internal class DokarkivClient(
         pingUrl = URI("${env.hentRequiredEnv("DOKARKIV_BASE_URL")}/isReady")) {
 
     private val baseUrl = env.hentRequiredEnv("DOKARKIV_BASE_URL")
-    private val opprettJournalpostUrl = "$baseUrl/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=true"
+    private val opprettJournalpostUrl = "$baseUrl/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"
 
     internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost) : JournalpostStatus {
         val payload = journalpost.oppdatertJournalpostBody().also {

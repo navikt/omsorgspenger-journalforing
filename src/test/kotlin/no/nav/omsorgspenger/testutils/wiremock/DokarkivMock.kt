@@ -31,7 +31,7 @@ private fun opprettJournalpostMapping(
     callIdPattern: StringValuePattern = AnythingPattern()
 ) = WireMock.post(WireMock
     .urlMatching(".*$journalpostPath.*"))
-    .withQueryParam("foersoekFerdigstill", equalTo("true"))
+    .withQueryParam("forsoekFerdigstill", equalTo("true"))
     .withHeader("Authorization", RegexPattern("^Bearer .+$"))
     .withHeader("Content-Type", equalTo("application/json"))
     .withHeader("Nav-Consumer-Id", equalTo("omsorgspenger-journalforing"))
