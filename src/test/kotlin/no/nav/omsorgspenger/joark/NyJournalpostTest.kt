@@ -37,7 +37,7 @@ internal class NyJournalpostTest {
             fagsystem = Fagsystem.K9,
             saksnummer = "ABC123".somSaksnummer(),
             identitetsnummer = "11111111111".somIdentitetsnummer(),
-            avsenderNavn = "Ola Nordmann",
+            avsenderNavn = "\"Ola Nordmann\"",
             json = json,
             pdf = "LiksomPdf".toByteArray()
         )

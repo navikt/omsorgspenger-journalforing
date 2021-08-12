@@ -54,7 +54,7 @@ internal class JournalførJsonRiver(
             )
         )}
 
-        logger.info("OpprettetJournalpostId=[$journalpostId]")
+        logger.info("Opprettet JournalpostId=[$journalpostId]")
 
         JournalførJsonMelding.leggTilLøsning(
             packet = packet,

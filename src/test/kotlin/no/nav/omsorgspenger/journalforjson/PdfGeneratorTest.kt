@@ -3,8 +3,14 @@ package no.nav.omsorgspenger.journalforjson
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.intellij.lang.annotations.Language
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.verapdf.pdfa.Foundries
+import org.verapdf.pdfa.VeraGreenfieldFoundryProvider
+import org.verapdf.pdfa.flavours.PDFAFlavour
+import org.verapdf.pdfa.results.TestAssertion
+import java.io.ByteArrayInputStream
 import java.io.File
 
 internal class PdfGeneratorTest {
@@ -20,6 +26,22 @@ internal class PdfGeneratorTest {
         pleiepengesøknad(lagrePdf = true)
     }
 
+    private fun ByteArray.assertPDFCompliance() {
+        val pdf = ByteArrayInputStream(this)
+        val validator = Foundries.defaultInstance().createValidator(PDFAFlavour.PDFA_2_U, false)
+        val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
+        val failures = result.testAssertions.filter { it.status != TestAssertion.Status.PASSED }
+        failures.forEachIndexed{ id , failure ->
+            println("=== PDF Compliance feil ${id+1} ===")
+            println("       ${failure.message}")
+            println("       Location ${failure.location.context} ${failure.location.level}")
+            println("       Status ${failure.status}")
+            println("       Rule Id ${failure.ruleId.testNumber} ${failure.ruleId.specification}")
+        }
+        assertEquals(0, failures.size)
+    }
+
+
     private fun pleiepengesøknad(lagrePdf: Boolean) = PdfGenerator.genererPdf(
         html = HtmlGenerator.genererHtml(
             tittel = "Søknad om pleiepenger",
@@ -28,9 +50,13 @@ internal class PdfGeneratorTest {
         )
     ).also { pdfBytes -> if (lagrePdf) {
         File(pdfPath("pleiepengesøknad")).writeBytes(pdfBytes)
-    }}
+    }}//.also { pdfBytes -> pdfBytes.assertPDFCompliance() }
 
     private companion object {
+        init {
+            VeraGreenfieldFoundryProvider.initialise()
+        }
+
         @Language("JSON")
         private val pleiepengesøknad = """
         {

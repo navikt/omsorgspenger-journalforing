@@ -28,9 +28,9 @@ internal data class NyJournalpost(
             {
               "eksternReferanseId": "$behovssekvensId",
               "datoMottatt": "${mottatt.withZoneSameInstant(UTC).iso8601()}",
-              "tittel": "$tittel",
+              "tittel": "${tittel.trimQuotes()}",
               "avsenderMottaker": {
-                "navn": "$avsenderNavn"
+                "navn": "${avsenderNavn.trimQuotes()}"
               },
               "bruker": {
                 "id": "$identitetsnummer",
@@ -64,6 +64,7 @@ internal data class NyJournalpost(
     }
 
     private companion object {
+        private fun String.trimQuotes() = replace("\"","")
         private val UTC = ZoneId.of("UTC")
         private fun ByteArray.base64() = Base64.getEncoder().encodeToString(this)
         private fun ObjectNode.base64() = this.toString().toByteArray().base64()

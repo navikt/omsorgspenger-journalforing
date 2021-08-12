@@ -9,6 +9,7 @@ val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20210307"
 val mockkVersion = "1.12.0"
 val openhtmltopdfVersion = "1.0.9"
+val verapdfVersion = "1.18.8"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
@@ -33,9 +34,11 @@ dependencies {
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("org.json:json:$orgJsonVersion")
 
+    // PDF
     implementation("com.openhtmltopdf:openhtmltopdf-core:$openhtmltopdfVersion")
     implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:$openhtmltopdfVersion")
-    implementation("com.openhtmltopdf:openhtmltopdf-slf4j:$openhtmltopdfVersion")
+    testImplementation("org.verapdf:validation-model:$verapdfVersion")
+
 
     // Test
     testImplementation("org.skyscreamer:jsonassert:$jsonassertVersion")
