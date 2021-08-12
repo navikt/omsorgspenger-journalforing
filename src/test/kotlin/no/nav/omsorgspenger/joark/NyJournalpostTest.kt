@@ -74,7 +74,7 @@ internal class NyJournalpostTest {
             }]
           }],
           "tema": "OMS",
-          "journalposttype": "N",
+          "journalposttype": "NOTAT",
           "kanal": "INGEN_DISTRIBUSJON",
           "journalfoerendeEnhet": "9999"
         }
