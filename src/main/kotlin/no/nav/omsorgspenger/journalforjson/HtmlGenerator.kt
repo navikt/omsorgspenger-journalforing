@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+
 import org.intellij.lang.annotations.Language
 import java.time.Duration
 import java.time.LocalDate
@@ -69,13 +70,11 @@ internal object HtmlGenerator {
                     html += """<div class="json_object">$objectHtml</div>"""
                 }
             }
-            is ArrayNode -> forEachIndexed { index, arrayElement -> if (arrayElement.inneholderData()) {
-                html += arrayElement.toHtml()
-                val erSisteElementIListen = size() == index + 1
-                if (!arrayElement.isObject && !erSisteElementIListen) {
-                    html += ", "
+            is ArrayNode -> forEachIndexed { _, arrayElement -> if (arrayElement.inneholderData()) {
+                html += when (arrayElement.isObject) {
+                    true -> arrayElement.toHtml()
+                    false -> """<div class="json_object"><div><span class="json_key"></span>${arrayElement.toHtml()}</div></div>"""
                 }
-
             }}
             else -> html += prettyValue()
         }

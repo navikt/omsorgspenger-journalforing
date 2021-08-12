@@ -68,7 +68,7 @@ internal class PdfGeneratorTest {
           } ],
           "ytelse": {
             "type" : "PLEIEPENGER_SYKT_BARN",
-            "søknadsperiode" : [ "2018-12-30/2019-10-20" ],
+            "søknadsperiode" : [ "2018-12-30/2019-10-20", "2021-12-30/2022-10-20" ],
             "endringsperiode" : [ ],
             "dataBruktTilUtledning" : {
               "harForståttRettigheterOgPlikter" : true,
