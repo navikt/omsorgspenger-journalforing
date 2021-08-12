@@ -108,21 +108,21 @@ private fun WireMockServer.stubFerdigstillJournalpostUventetFeil() = also {
 
 private fun WireMockServer.stubOpprettJournalpostOk() = also {
     stubFor(opprettJournalpostMapping().willReturn(WireMock.aResponse()
-        .withStatus(200)
+        .withStatus(201)
         .withBody("""{"journalpostId":"12345678", "journalpostferdigstilt": true}""")
     ))
 }
 
 private fun WireMockServer.stubOpprettJournalpostAlleredeOpprettet() = also {
     stubFor(opprettJournalpostMapping(callIdPattern = equalTo("allerede-opprettet")).willReturn(WireMock.aResponse()
-        .withStatus(200)
+        .withStatus(409)
         .withBody("""{"journalpostId":"910111213", "journalpostferdigstilt": true}""")
     ))
 }
 
 private fun WireMockServer.stubOpprettJournalpostIkkeFerdigstilt() = also {
     stubFor(opprettJournalpostMapping(callIdPattern = equalTo("ikke-ferdigstilt")).willReturn(WireMock.aResponse()
-        .withStatus(200)
+        .withStatus(201)
         .withBody("""{"journalpostId":"1415161718", "journalpostferdigstilt": false}""")
     ))
 }

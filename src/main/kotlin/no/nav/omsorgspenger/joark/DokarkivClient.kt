@@ -97,7 +97,7 @@ internal class DokarkivClient(
             builder.jsonBody(nyJournalpost.dokarkivPayload())
         }.readTextOrThrow()
 
-        return when (httpStatus == HttpStatusCode.OK || httpStatus == HttpStatusCode.Conflict)  {
+        return when (httpStatus == HttpStatusCode.Created || httpStatus == HttpStatusCode.Conflict)  {
             true -> JSONObject(responseBody).let { json ->
                 val journalpostId = json.getString("journalpostId").somJournalpostId()
                 check(json.getBoolean("journalpostferdigstilt")) {
