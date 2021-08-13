@@ -67,7 +67,7 @@ internal object HtmlGenerator {
             is ObjectNode -> {
                 var objectHtml = ""
                 fields().asSequence().sortedBy { it.key }.forEach { (navn, jsonNode) -> if (jsonNode.inneholderData()) {
-                    objectHtml += """<div><span class="json_key">${navn.prettyKey()}</span>: ${jsonNode.toHtml()}</div>"""
+                    objectHtml += """<div><span class="json_key">${navn.formatKey()}</span>: ${jsonNode.toHtml()}</div>"""
                 }}
                 if (objectHtml.isNotBlank()) {
                     html += """<div class="json_object">$objectHtml</div>"""
@@ -79,29 +79,40 @@ internal object HtmlGenerator {
                     false -> """<div class="json_object"><div><span class="json_key"></span>${arrayElement.toHtml()}</div></div>"""
                 }
             }}
-            else -> html += prettyValue()
+            else -> html += formatValue()
         }
 
         return html
     }
 
-    private fun JsonNode.prettyValue() : String = when (this) {
+    private fun String.formatKey() = removePrefix("_").let { utenPrefix -> utenPrefix.formatPeriodeOrNull() ?: utenPrefix }
+
+    private fun JsonNode.formatValue() : String = when (this) {
         is BooleanNode -> when (this.booleanValue()) {
             true -> "Ja"
             false -> "Nei"
         }
         else -> {
             val textValue = asText()
-            parseOrNull { ZonedDateTime.parse(textValue).format(DATE_TIME_FORMATTER) }
-                ?: parseOrNull { LocalDate.parse(textValue).format(DATE_FORMATTER) }
+                textValue.formatTimeOrNull()
+                ?: textValue.formatDateOrNull()
                 ?: textValue.formatDurationOrNull()
                 ?: textValue.formatPeriodeOrNull()
                 ?: textValue
         }
     }
 
+    private fun Number.formatDurationPart(entall: String, flertall: String = "${entall}er") = when (this.toLong()) {
+        0L -> ""
+        1L -> "$this $entall, "
+        else -> "$this $flertall, "
+    }
+
     private fun String.formatDurationOrNull() = parseOrNull { Duration.parse(this).let {
-        "${it.toDaysPart().tidspunkt("dag")}${it.toHoursPart().tidspunkt("time", "timer")}${it.toMinutesPart().tidspunkt("minutt")}${it.toSecondsPart().tidspunkt("sekund")}".removeSuffix(", ")
+        when (it.toSeconds() == 0L) {
+            true -> "0 sekunder"
+            else -> "${it.toDaysPart().formatDurationPart("dag")}${it.toHoursPart().formatDurationPart("time", "timer")}${it.toMinutesPart().formatDurationPart("minutt")}${it.toSecondsPart().formatDurationPart("sekund")}".removeSuffix(", ")
+        }
     }}
 
     private fun String.formatPeriodeOrNull() = parseOrNull { when (this.matches(PERIODE_REGEX)) {
@@ -117,18 +128,14 @@ internal object HtmlGenerator {
         false -> null
     }}
 
-    private fun String.prettyKey() = removePrefix("_").let { utenPrefix -> utenPrefix.formatPeriodeOrNull() ?: utenPrefix }
+    private fun String.formatDateOrNull() = parseOrNull { LocalDate.parse(this).format(DATE_FORMATTER) }
+
+    private fun String.formatTimeOrNull() = parseOrNull { ZonedDateTime.parse(this).format(DATE_TIME_FORMATTER) }
 
     private fun parseOrNull(parse: () -> String?) = kotlin.runCatching { parse() }.fold(
         onSuccess = { it },
         onFailure = { null }
     )
-
-    private fun Number.tidspunkt(entall: String, flertall: String = "${entall}er") = when (this.toLong()) {
-        0L -> ""
-        1L -> "$this $entall, "
-        else -> "$this $flertall, "
-    }
 
     private fun JsonNode.inneholderData() : Boolean {
         if (isMissingNode || isNull) { return false }
@@ -141,7 +148,7 @@ internal object HtmlGenerator {
             return false
         }
         // Alle andre ting anser vi som data
-        else { return true }
+        else { return asText().isNotBlank() }
     }
 
     private val ZONE_ID = ZoneId.of("Europe/Oslo")

@@ -75,7 +75,9 @@ internal class PdfGeneratorTest {
                 "ikkeTom4": {
                   "ikkeTom5": ["ikkeTom"],
                   "ikkeTom6": {
-                    "ikkeTom7": true
+                    "ikkeTom7": true,
+                    "tomString": "",
+                    "tomDuration": "PT0S"
                   }
                 }
               }
@@ -151,7 +153,7 @@ internal class PdfGeneratorTest {
                   "etablertTilsynTimerPerDag" : "PT7H30M"
                 },
                 "2019-01-02/2019-01-02" : {
-                  "etablertTilsynTimerPerDag" : "PT7H30M"
+                  "etablertTilsynTimerPerDag" : "PT7H30M2S"
                 },
                 "2019-01-03/2019-01-09" : {
                   "etablertTilsynTimerPerDag" : "PT7H30M"
@@ -215,5 +217,6 @@ internal class PdfGeneratorTest {
         """.trimIndent()
         private fun String.somObjectNode() = jacksonObjectMapper().readTree(this) as ObjectNode
         private fun pdfPath(id: String) = "${System.getProperty("user.dir")}/generated-pdf-$id.pdf"
+
     }
 }
