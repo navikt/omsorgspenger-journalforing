@@ -29,20 +29,20 @@ internal object JournalførJsonMelding {
         packet.require(aktueltBehov.identitetsnummer()) { it.requireText() }
         packet.require(aktueltBehov.brevkode()) { it.requireText() }
         packet.require(aktueltBehov.avsenderNavn()) { it.requireText() }
-        packet.require(aktueltBehov.mottatt()) { ZonedDateTime.parse(it.asText()) }
+        packet.require(aktueltBehov.mottatt()) { ZonedDateTime.parse(it.hentString()) }
         packet.interestedIn(aktueltBehov.farge())
     }
 
     internal fun hentBehov(packet: JsonMessage, aktueltBehov: String) = JournalførJson(
         json = packet[aktueltBehov.json()] as ObjectNode,
-        tittel = packet[aktueltBehov.tittel()].asText(),
+        tittel = packet[aktueltBehov.tittel()].hentString(),
         farge = packet[aktueltBehov.farge()].farge(),
-        fagsystem = Fagsystem.valueOf(packet[aktueltBehov.fagsystem()].asText()),
-        identitetsnummer = packet[aktueltBehov.identitetsnummer()].asText().somIdentitetsnummer(),
-        saksnummer = packet[aktueltBehov.saksnummer()].asText().somSaksnummer(),
-        brevkode = packet[aktueltBehov.brevkode()].asText(),
-        mottatt = packet[aktueltBehov.mottatt()].let { ZonedDateTime.parse(it.asText()) },
-        avsenderNavn = packet[aktueltBehov.avsenderNavn()].asText()
+        fagsystem = Fagsystem.valueOf(packet[aktueltBehov.fagsystem()].hentString()),
+        identitetsnummer = packet[aktueltBehov.identitetsnummer()].hentString().somIdentitetsnummer(),
+        saksnummer = packet[aktueltBehov.saksnummer()].hentString().somSaksnummer(),
+        brevkode = packet[aktueltBehov.brevkode()].hentString(),
+        mottatt = packet[aktueltBehov.mottatt()].let { ZonedDateTime.parse(it.hentString()) },
+        avsenderNavn = packet[aktueltBehov.avsenderNavn()].hentString()
     )
 
     internal fun leggTilLøsning(packet: JsonMessage, aktueltBehov: String, journalpostId: JournalpostId) {
@@ -56,9 +56,9 @@ internal object JournalførJsonMelding {
 
     private fun JsonNode.farge() = when {
         isMissingOrNull() -> DEFAULT_FARGE
-        asText().matches(FARGE_REGEX) -> asText()
+        hentString().matches(FARGE_REGEX) -> hentString()
         else -> DEFAULT_FARGE.also {
-            logger.warn("Ugyldig farge=[${asText()} satt i meldingen, defaulter til farge=[$it]")
+            logger.warn("Ugyldig farge=[${hentString()} satt i meldingen, defaulter til farge=[$it]")
         }
     }
 
@@ -86,4 +86,5 @@ internal object JournalførJsonMelding {
     private fun String.identitetsnummer() = "@behov.$this.identitetsnummer"
     private fun String.saksnummer() = "@behov.$this.saksnummer"
     private fun String.avsenderNavn() = "@behov.$this.avsender.navn"
+    private fun JsonNode.hentString() = asText().replace("\"","")
 }
