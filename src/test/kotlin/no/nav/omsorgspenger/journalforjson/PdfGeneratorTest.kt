@@ -26,7 +26,7 @@ internal class PdfGeneratorTest {
         pleiepengesøknad(lagrePdf = true)
     }
 
-    private fun ByteArray.assertPDFCompliance() {
+    private fun ByteArray.assertPDFConformance() {
         val pdf = ByteArrayInputStream(this)
         val validator = Foundries.defaultInstance().createValidator(PDFAFlavour.PDFA_2_U, false)
         val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
@@ -50,7 +50,7 @@ internal class PdfGeneratorTest {
         )
     ).also { pdfBytes -> if (lagrePdf) {
         File(pdfPath("pleiepengesøknad")).writeBytes(pdfBytes)
-    }}//.also { pdfBytes -> pdfBytes.assertPDFCompliance() }
+    }}.also { pdfBytes -> pdfBytes.assertPDFConformance() }
 
     private companion object {
         init {

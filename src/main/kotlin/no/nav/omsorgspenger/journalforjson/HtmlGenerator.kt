@@ -30,7 +30,9 @@ internal object HtmlGenerator {
                             margin: 0.3cm 0.3cm 0.3cm;
                             padding-bottom: 1cm;
                         }
-                        body { font-family: Arial, sans-serif; }
+                        * {
+                            font-family: "Source Sans Pro";
+                        }
                         .json_object { margin:10px; padding-left:10px; border-left:1px solid #ccc }
                         .json_key { font-weight: bold; }
                         #header {
