@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.joark
 
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -6,7 +6,12 @@ import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPost
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.jsonBody
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.readTextOrThrow
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.omsorgspenger.AzureAwareClient
+import no.nav.omsorgspenger.CorrelationId
+import no.nav.omsorgspenger.Fagsystem
+import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
+import no.nav.omsorgspenger.Saksnummer
 import org.json.JSONObject
 import java.net.URI
 import java.time.LocalDate
@@ -26,18 +31,21 @@ internal class SafGateway(
         fagsystem: Fagsystem,
         saksnummer: Saksnummer,
         fraOgMed: LocalDate,
-        correlationId: CorrelationId) : Map<JournalpostId, Set<JournalpostId>> {
+        correlationId: CorrelationId
+    ) : Map<JournalpostId, Set<JournalpostId>> {
 
         val (httpStatusCode, response) = GraphQlUrl.httpPost { builder->
             builder.header("Nav-CallId", "$correlationId")
             builder.header("Nav-Consumer-Id", "omsorgspenger-journalforing")
             builder.accept(ContentType.Application.Json)
             builder.header(HttpHeaders.Authorization, authorizationHeader())
-            builder.jsonBody(hentOriginalJournalpostIderQuery(
+            builder.jsonBody(
+                hentOriginalJournalpostIderQuery(
                 fagsystem = fagsystem,
                 saksnummer = saksnummer,
                 fraOgMed = fraOgMed
-            ))
+            )
+            )
         }.readTextOrThrow()
 
         require(httpStatusCode.isSuccess()) {

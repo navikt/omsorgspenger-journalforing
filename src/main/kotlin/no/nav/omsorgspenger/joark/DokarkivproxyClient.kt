@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.joark
 
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -6,8 +6,10 @@ import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPut
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.jsonBody
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.readTextOrThrow
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.omsorgspenger.AzureAwareClient
+import no.nav.omsorgspenger.CorrelationId
+import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
-import no.nav.omsorgspenger.journalforing.Journalpost
 import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import java.net.URI
@@ -26,7 +28,8 @@ internal class DokarkivproxyClient(
 
     internal suspend fun knyttTilAnnenSak(
         correlationId: CorrelationId,
-        journalpost: Journalpost) : JournalpostId {
+        journalpost: Journalpost
+    ) : JournalpostId {
 
         @Language("JSON")
         val dto = """

@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import java.util.UUID
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.time.ZonedDateTime
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class FerdigstillJournalforingTest(
+internal class FerdigstillJournalføringTest(
         private val applicationContext: ApplicationContext) {
 
     private val rapid = TestRapid().apply {

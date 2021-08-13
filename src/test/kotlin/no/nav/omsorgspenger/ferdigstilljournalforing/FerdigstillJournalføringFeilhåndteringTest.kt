@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import io.mockk.clearMocks
 import io.mockk.coEvery
@@ -9,6 +9,9 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.omsorgspenger.*
+import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.Journalpost
+import no.nav.omsorgspenger.joark.JournalpostStatus
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -19,14 +22,14 @@ import java.net.URI
 import java.time.ZonedDateTime
 import java.util.*
 
-internal class JournalforingFeilhandteringTest {
+internal class FerdigstillJournalføringFeilhåndteringTest {
 
-    private val mockJoarkClient = mockk<JoarkClient>()
+    private val mockJoarkClient = mockk<DokarkivClient>()
 
     private val rapid = TestRapid().apply {
         this.registerApplicationContext(ApplicationContext.Builder(
             env = mapOf(
-                "JOARK_BASE_URL" to "test",
+                "DOKARKIV_BASE_URL" to "test",
                 "DOKARKIV_SCOPES" to "testScope/.default",
                 "OPPGAVE_BASE_URL" to "test",
                 "OPPGAVE_SCOPES" to "test/.default"
@@ -36,7 +39,7 @@ internal class JournalforingFeilhandteringTest {
                 clientSecret = "azureSecret",
                 tokenEndpoint = URI("test")
             ),
-            joarkClient = mockJoarkClient,
+            dokarkivClient = mockJoarkClient,
             dokarkivproxyClient = mockk(),
             safGateway = mockk()
         ).build())
@@ -81,7 +84,8 @@ internal class JournalforingFeilhandteringTest {
             saksnummer = saksnummer,
             fagsaksystem = Fagsystem.OMSORGSPENGER,
             navn = navn
-        ))}.returns(JournalpostStatus.Ferdigstilt)
+        )
+        )}.returns(JournalpostStatus.Ferdigstilt)
 
         coEvery { mockJoarkClient.oppdaterJournalpost(any(), Journalpost(
             journalpostId = "22222",
@@ -89,7 +93,8 @@ internal class JournalforingFeilhandteringTest {
             saksnummer = saksnummer,
             fagsaksystem = Fagsystem.OMSORGSPENGER,
             navn = navn
-        ))}.returns(JournalpostStatus.Oppdatert)
+        )
+        )}.returns(JournalpostStatus.Oppdatert)
 
         coEvery { mockJoarkClient.ferdigstillJournalpost(any(), any()) }.returns(JournalpostStatus.Ferdigstilt)
 

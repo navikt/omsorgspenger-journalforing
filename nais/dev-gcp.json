@@ -10,7 +10,7 @@
   "kafkaPool": "nav-dev",
   "azureTenant": "trygdeetaten.no",
   "env": {
-    "JOARK_BASE_URL": "https://dokarkiv.dev-fss-pub.nais.io",
+    "DOKARKIV_BASE_URL": "https://dokarkiv.dev-fss-pub.nais.io",
     "DOKARKIV_SCOPES": "972814f3-8bdf-44f8-a191-c2ed00020b54/.default",
     "OPPGAVE_BASE_URL": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/oppgave",
     "OPPGAVE_SCOPES": "824525c6-74df-47fc-8892-444e5f8506de/.default",

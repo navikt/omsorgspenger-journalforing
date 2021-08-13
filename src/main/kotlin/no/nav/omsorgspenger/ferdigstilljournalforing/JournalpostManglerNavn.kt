@@ -1,4 +1,4 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.isMissingOrNull
@@ -9,11 +9,12 @@ import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.Identitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.Saksnummer
+import no.nav.omsorgspenger.joark.Journalpost
 import org.slf4j.LoggerFactory
 
 internal object JournalpostManglerNavn {
 
-    internal fun JournalforingMediator.behandlaJournalpostHåndterManglerNavn(
+    internal fun FerdigstillJournalføringMediator.behandlaJournalpostHåndterManglerNavn(
         packet: JsonMessage,
         aktueltBehov: String,
         identitetsnummer: Identitetsnummer,

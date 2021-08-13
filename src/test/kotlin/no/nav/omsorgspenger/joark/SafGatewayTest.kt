@@ -1,9 +1,10 @@
-package no.nav.omsorgspenger
+package no.nav.omsorgspenger.joark
 
+import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
-import no.nav.omsorgspenger.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
-import no.nav.omsorgspenger.SafGateway.Companion.hentOriginalJournalpostIderQuery
-import no.nav.omsorgspenger.SafGateway.Companion.mapOriginaleJournalpostIderResponse
+import no.nav.omsorgspenger.joark.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
+import no.nav.omsorgspenger.joark.SafGateway.Companion.hentOriginalJournalpostIderQuery
+import no.nav.omsorgspenger.joark.SafGateway.Companion.mapOriginaleJournalpostIderResponse
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions.assertEquals

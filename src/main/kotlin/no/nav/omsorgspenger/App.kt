@@ -15,11 +15,16 @@ import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.RapidsStateListener
 import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
-import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForK9
-import no.nav.omsorgspenger.journalforing.FerdigstillJournalføringForOmsorgspenger
-import no.nav.omsorgspenger.journalforing.JournalforingMediator
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForK9
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForOmsorgspenger
+import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
+import no.nav.omsorgspenger.joark.DokarkivproxyClient
+import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.SafGateway
+import no.nav.omsorgspenger.journalforjson.JournalførJsonRiver
 import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
+import no.nav.omsorgspenger.oppgave.OppgaveClient
 import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
 
 fun main() {
@@ -34,11 +39,11 @@ fun main() {
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
     FerdigstillJournalføringForOmsorgspenger(
         rapidsConnection = this,
-        journalforingMediator = applicationContext.journalforingMediator
+        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator
     )
     FerdigstillJournalføringForK9(
         rapidsConnection = this,
-        journalforingMediator = applicationContext.journalforingMediator
+        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator
     )
     OpprettGosysJournalføringsoppgaver(
         rapidsConnection = this,
@@ -47,12 +52,15 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     InitierGosysJournalføringsoppgaver(
         rapidsConnection = this
     )
-
     KopierJournalpostForK9(
         rapidsConnection = this,
-        journalforingMediator = applicationContext.journalforingMediator,
+        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator,
         dokarkivproxyClient = applicationContext.dokarkivproxyClient,
         safGateway = applicationContext.safGateway
+    )
+    JournalførJsonRiver(
+        rapidsConnection = this,
+        dokarkivClient = applicationContext.dokarkivClient
     )
 
     register(object : RapidsConnection.StatusListener {
@@ -95,10 +103,10 @@ internal fun Application.omsorgspengerJournalføring(applicationContext: Applica
 
 internal class ApplicationContext(
     internal val env: Environment,
-    internal val joarkClient: JoarkClient,
+    internal val dokarkivClient: DokarkivClient,
     internal val dokarkivproxyClient: DokarkivproxyClient,
     internal val safGateway: SafGateway,
-    internal val journalforingMediator: JournalforingMediator,
+    internal val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     internal val oppgaveClient: OppgaveClient,
     internal val healthChecks: Set<HealthCheck>) {
     internal var rapidsState = RapidsStateListener.RapidsState.initialState()
@@ -110,10 +118,10 @@ internal class ApplicationContext(
         internal var env: Environment? = null,
         internal var httpClient: HttpClient? = null,
         internal var accessTokenClient: AccessTokenClient? = null,
-        internal var joarkClient: JoarkClient? = null,
+        internal var dokarkivClient: DokarkivClient? = null,
         internal var dokarkivproxyClient: DokarkivproxyClient? = null,
         internal var safGateway: SafGateway? = null,
-        internal var journalforingMediator: JournalforingMediator? = null,
+        internal var ferdigstillJournalføringMediator: FerdigstillJournalføringMediator? = null,
         internal var oppgaveClient: OppgaveClient? = null) {
         internal fun build() : ApplicationContext {
             val benyttetEnv = env?:System.getenv()
@@ -124,7 +132,7 @@ internal class ApplicationContext(
                 clientSecret = benyttetEnv.hentRequiredEnv("AZURE_APP_CLIENT_SECRET"),
                 tokenEndpoint = URI(benyttetEnv.hentRequiredEnv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"))
             )
-            val benyttetJoarkClient = joarkClient?: JoarkClient(
+            val benyttetDokarkivClient = dokarkivClient?: DokarkivClient(
                 env = benyttetEnv,
                 accessTokenClient = benyttetAccessTokenClient,
                 httpClient = benyttetHttpClient
@@ -149,12 +157,12 @@ internal class ApplicationContext(
 
             return ApplicationContext(
                 env = benyttetEnv,
-                joarkClient = benyttetJoarkClient,
-                journalforingMediator = journalforingMediator?: JournalforingMediator(
-                    joarkClient = benyttetJoarkClient
+                dokarkivClient = benyttetDokarkivClient,
+                ferdigstillJournalføringMediator = ferdigstillJournalføringMediator?: FerdigstillJournalføringMediator(
+                    dokarkivClient = benyttetDokarkivClient
                 ),
                 healthChecks = setOf(
-                    benyttetJoarkClient,
+                    benyttetDokarkivClient,
                     benyttetOppgaveClient,
                     benyttetDokarkivproxyClient,
                     benyttetSafGateway

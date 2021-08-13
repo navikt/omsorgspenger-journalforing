@@ -1,28 +1,31 @@
-package no.nav.omsorgspenger.journalforing
+package no.nav.omsorgspenger.ferdigstilljournalforing
 
 import kotlinx.coroutines.runBlocking
-import no.nav.omsorgspenger.JoarkClient
-import no.nav.omsorgspenger.JournalpostStatus
+import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.Journalpost
+import no.nav.omsorgspenger.joark.JournalpostStatus
 import org.slf4j.LoggerFactory
 
-internal class JournalforingMediator(
-        private val joarkClient: JoarkClient) {
+internal class FerdigstillJournalføringMediator(
+        private val dokarkivClient: DokarkivClient
+) {
 
     internal fun behandlaJournalpost(
         correlationId: String,
-        journalpost: Journalpost): Boolean {
+        journalpost: Journalpost
+    ): Boolean {
         var result = false
         val journalpostId = journalpost.journalpostId
 
         runBlocking {
-            joarkClient.oppdaterJournalpost(
+            dokarkivClient.oppdaterJournalpost(
                     correlationId = correlationId,
                     journalpost = journalpost
             ).let { statusEtterOppdatering ->
                 logger.info(journalpost.log("Status etter oppdatering: $statusEtterOppdatering"))
                 when (statusEtterOppdatering) {
                     JournalpostStatus.Oppdatert -> {
-                        joarkClient.ferdigstillJournalpost(
+                        dokarkivClient.ferdigstillJournalpost(
                             correlationId = correlationId,
                             journalpostId = journalpostId
                         ).let { statusEtterFerdigstilling ->
@@ -54,6 +57,6 @@ internal class JournalforingMediator(
     private fun Journalpost.log(log: String) = "[JournalpostId=$journalpostId] $log"
 
     private companion object {
-        private val logger = LoggerFactory.getLogger(JournalforingMediator::class.java)
+        private val logger = LoggerFactory.getLogger(FerdigstillJournalføringMediator::class.java)
     }
 }

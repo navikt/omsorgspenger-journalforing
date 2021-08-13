@@ -5,9 +5,9 @@ import no.nav.helse.dusseldorf.testsupport.wiremock.WireMockBuilder
 import no.nav.helse.dusseldorf.testsupport.wiremock.getAzureV2TokenUrl
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.testutils.wiremock.*
-import no.nav.omsorgspenger.testutils.wiremock.journalpostApiBaseUrl
+import no.nav.omsorgspenger.testutils.wiremock.dokarkivBaseUrl
 import no.nav.omsorgspenger.testutils.wiremock.oppgaveApiBaseUrl
-import no.nav.omsorgspenger.testutils.wiremock.stubJournalpostApi
+import no.nav.omsorgspenger.testutils.wiremock.stubDokarkiv
 import no.nav.omsorgspenger.testutils.wiremock.stubOppgaveMock
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
@@ -19,14 +19,14 @@ internal class ApplicationContextExtension : ParameterResolver {
         private val wireMockServer = WireMockBuilder()
             .withAzureSupport()
             .build()
-            .stubJournalpostApi()
+            .stubDokarkiv()
             .stubOppgaveMock()
             .stubDokarkivproxy()
             .stubSaf()
 
         private val applicationContextBuilder = ApplicationContext.Builder(
                 env = mapOf(
-                    "JOARK_BASE_URL" to wireMockServer.journalpostApiBaseUrl(),
+                    "DOKARKIV_BASE_URL" to wireMockServer.dokarkivBaseUrl(),
                     "DOKARKIV_SCOPES" to "dokarkiv/.default",
                     "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
                     "OPPGAVE_SCOPES" to "oppgave/.default",
