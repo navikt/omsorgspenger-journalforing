@@ -205,7 +205,12 @@ internal class PdfGeneratorTest {
                 }
               }
             }
-          }
+          },
+          "_æBørKommeØverst": {
+            "c": "3",
+            "b": "2",
+            "a": "1"
+          } 
         }
         """.trimIndent()
         private fun String.somObjectNode() = jacksonObjectMapper().readTree(this) as ObjectNode

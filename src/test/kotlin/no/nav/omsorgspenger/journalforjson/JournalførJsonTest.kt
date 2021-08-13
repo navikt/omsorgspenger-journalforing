@@ -92,7 +92,7 @@ internal class JournalførJsonTest(
                         "farge" to "#00ff00",
                         "tittel" to "Oppsummering fra punsj",
                         "avsender" to mapOf(
-                            "navn" to "Saks behandlersen"
+                            "navn" to "\"Saks behandlersen\""
                         )
                     )
                 )

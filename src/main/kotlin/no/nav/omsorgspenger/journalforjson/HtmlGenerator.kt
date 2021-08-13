@@ -13,6 +13,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 internal object HtmlGenerator {
+
     internal fun genererHtml(
         tittel: String,
         farge: String,
@@ -51,7 +52,7 @@ internal object HtmlGenerator {
                     <div id="json">${json.toHtml()}</div>
                 </body>
             </html>
-        """.trimIndent().replace("\n", "").replace("  ", "")
+        """.trimIndent()
         return html
     }
 
@@ -63,7 +64,7 @@ internal object HtmlGenerator {
         when (this) {
             is ObjectNode -> {
                 var objectHtml = ""
-                fields().forEach { (navn, jsonNode) -> if (jsonNode.inneholderData()) {
+                fields().asSequence().sortedBy { it.key }.forEach { (navn, jsonNode) -> if (jsonNode.inneholderData()) {
                     objectHtml += """<div><span class="json_key">${navn.prettyKey()}</span>: ${jsonNode.toHtml()}</div>"""
                 }}
                 if (objectHtml.isNotBlank()) {
@@ -114,7 +115,7 @@ internal object HtmlGenerator {
         false -> null
     }}
 
-    private fun String.prettyKey() = formatPeriodeOrNull() ?: this
+    private fun String.prettyKey() = removePrefix("_").let { utenPrefix -> utenPrefix.formatPeriodeOrNull() ?: utenPrefix }
 
     private fun parseOrNull(parse: () -> String?) = kotlin.runCatching { parse() }.fold(
         onSuccess = { it },
