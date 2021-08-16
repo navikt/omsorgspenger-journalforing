@@ -77,7 +77,8 @@ internal class PdfGeneratorTest {
                   "ikkeTom6": {
                     "ikkeTom7": true,
                     "tomString": "",
-                    "tomDuration": "PT0S"
+                    "tomDuration": "PT0S",
+                    "propMed7779Tall": true
                   }
                 }
               }
@@ -130,7 +131,7 @@ internal class PdfGeneratorTest {
             "beredskap" : {
               "perioder" : {
                 "2019-02-21/2019-05-21" : {
-                  "tilleggsinformasjon" : "Noe tilleggsinformasjon. Lorem ipsum æÆøØåÅ."
+                  "tilleggsinformasjon" : "Noe tilleggsinformasjon. Lorem ipsum æÆøØåÅ. Noe tilleggsinformasjon. Lorem ipsum æÆøØåÅ. Noe tilleggsinformasjon. Lorem ipsum æÆøØåÅ. Noe tilleggsinformasjon. Lorem ipsum æÆøØåÅ. Noe tilleggsinformasjon. Lorem ipsum æÆøØåÅ."
                 },
                 "2018-12-30/2019-02-20" : {
                   "tilleggsinformasjon" : "Noe tilleggsinformasjon. Lorem ipsum æÆøØåÅ."

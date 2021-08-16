@@ -85,7 +85,22 @@ internal object HtmlGenerator {
         return html
     }
 
-    private fun String.formatKey() = removePrefix("_").let { utenPrefix -> utenPrefix.formatPeriodeOrNull() ?: utenPrefix }
+    private fun String.formatKey() = removePrefix("_").let { utenPrefix -> utenPrefix.formatPeriodeOrNull() ?: utenPrefix.revertCamelCase() }
+
+    private fun String.revertCamelCase() : String {
+        var reverted = ""
+        var wasDigit = false
+        forEachIndexed { index, char ->
+            reverted += when {
+                index == 0 -> char.toUpperCase()
+                char.isUpperCase() -> " ${char.toLowerCase()}"
+                char.isDigit() && !wasDigit -> " $char"
+                else -> char
+            }
+            wasDigit = char.isDigit()
+        }
+        return reverted
+    }
 
     private fun JsonNode.formatValue() : String = when (this) {
         is BooleanNode -> when (this.booleanValue()) {
