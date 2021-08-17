@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class KopierJournalpostForK9Test(
+internal class KopierJournalpostForK9RiverTest(
     private val applicationContext: ApplicationContext) {
 
     private val rapid = TestRapid().apply {

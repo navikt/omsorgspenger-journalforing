@@ -22,7 +22,7 @@ import no.nav.omsorgspenger.joark.DokarkivproxyClient
 import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.journalforjson.JournalførJsonRiver
-import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9
+import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9River
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
 import no.nav.omsorgspenger.oppgave.OppgaveClient
 import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
@@ -52,7 +52,7 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     InitierGosysJournalføringsoppgaver(
         rapidsConnection = this
     )
-    KopierJournalpostForK9(
+    KopierJournalpostForK9River(
         rapidsConnection = this,
         ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator,
         dokarkivproxyClient = applicationContext.dokarkivproxyClient,

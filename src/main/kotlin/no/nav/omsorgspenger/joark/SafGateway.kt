@@ -12,6 +12,8 @@ import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.Saksnummer
+import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostStatus.Companion.somJournalpostStatus
+import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostType.Companion.somJournalpostType
 import org.json.JSONObject
 import java.net.URI
 import java.time.LocalDate
@@ -41,10 +43,10 @@ internal class SafGateway(
             builder.header(HttpHeaders.Authorization, authorizationHeader())
             builder.jsonBody(
                 hentOriginalJournalpostIderQuery(
-                fagsystem = fagsystem,
-                saksnummer = saksnummer,
-                fraOgMed = fraOgMed
-            )
+                    fagsystem = fagsystem,
+                    saksnummer = saksnummer,
+                    fraOgMed = fraOgMed
+                )
             )
         }.readTextOrThrow()
 
@@ -53,6 +55,12 @@ internal class SafGateway(
         }
 
         return response.mapOriginaleJournalpostIderResponse()
+    }
+
+    internal suspend fun hentTypeOgStatus(
+        journalpostId: JournalpostId,
+        correlationId: CorrelationId) : Pair<JoarkTyper.JournalpostType, JoarkTyper.JournalpostStatus> {
+        return "I".somJournalpostType() to "JOURNALFOERT".somJournalpostStatus()
     }
 
     internal companion object {
