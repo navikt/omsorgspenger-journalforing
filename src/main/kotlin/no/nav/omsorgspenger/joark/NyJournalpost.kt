@@ -1,19 +1,15 @@
 package no.nav.omsorgspenger.joark
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import no.nav.k9.rapid.behov.Behovsformat.iso8601
 import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.Identitetsnummer
 import no.nav.omsorgspenger.Saksnummer
 import org.intellij.lang.annotations.Language
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 
 internal data class NyJournalpost(
     internal val behovssekvensId: String,
     internal val tittel: String,
-    internal val mottatt: ZonedDateTime,
     internal val brevkode: String,
     internal val fagsystem: Fagsystem,
     internal val saksnummer: Saksnummer,
@@ -27,7 +23,6 @@ internal data class NyJournalpost(
         val json = """
             {
               "eksternReferanseId": "$behovssekvensId",
-              "datoMottatt": "${mottatt.withZoneSameInstant(UTC).iso8601()}",
               "tittel": "$tittel",
               "avsenderMottaker": {
                 "navn": "$avsenderNavn"
@@ -64,7 +59,6 @@ internal data class NyJournalpost(
     }
 
     private companion object {
-        private val UTC = ZoneId.of("UTC")
         private fun ByteArray.base64() = Base64.getEncoder().encodeToString(this)
         private fun ObjectNode.base64() = this.toString().toByteArray().base64()
     }

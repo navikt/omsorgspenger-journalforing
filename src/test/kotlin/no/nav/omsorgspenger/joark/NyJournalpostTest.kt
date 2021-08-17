@@ -8,7 +8,6 @@ import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
-import java.time.ZonedDateTime
 
 internal class NyJournalpostTest {
 
@@ -33,7 +32,6 @@ internal class NyJournalpostTest {
             behovssekvensId = "01FCTKFCGACDNTBH7V56VZ598X",
             tittel = "Test tittel",
             brevkode = "NAV brevkode 007",
-            mottatt = ZonedDateTime.parse("2021-05-03T16:08:45.800Z"),
             fagsystem = Fagsystem.K9,
             saksnummer = "ABC123".somSaksnummer(),
             identitetsnummer = "11111111111".somIdentitetsnummer(),
@@ -46,7 +44,6 @@ internal class NyJournalpostTest {
         private val forventetPayload = """
         {
           "eksternReferanseId": "01FCTKFCGACDNTBH7V56VZ598X",
-          "datoMottatt": "2021-05-03T16:08:45.800Z",
           "tittel": "Test tittel",
           "avsenderMottaker": {
             "navn": "Ola Nordmann"

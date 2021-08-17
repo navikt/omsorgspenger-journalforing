@@ -43,7 +43,6 @@ internal class JournalførJsonRiver(
             nyJournalpost = NyJournalpost(
                 behovssekvensId = id,
                 tittel = journalførJson.tittel,
-                mottatt = journalførJson.mottatt,
                 brevkode = journalførJson.brevkode,
                 fagsystem = journalførJson.fagsystem,
                 saksnummer = journalførJson.saksnummer,
