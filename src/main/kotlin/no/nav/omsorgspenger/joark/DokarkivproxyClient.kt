@@ -6,10 +6,15 @@ import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPut
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.jsonBody
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.readTextOrThrow
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
+import no.nav.omsorgspenger.*
 import no.nav.omsorgspenger.AzureAwareClient
 import no.nav.omsorgspenger.CorrelationId
+import no.nav.omsorgspenger.Identitetsnummer
+import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
+import no.nav.omsorgspenger.Saksnummer
+import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import java.net.URI
@@ -23,30 +28,32 @@ internal class DokarkivproxyClient(
         scopes = scopes,
         pingUrl = URI("$baseUrl/isReady")) {
 
-    private fun knyttTilAnnenSakUrl(journalpostId: String) =
+    private fun knyttTilAnnenSakUrl(journalpostId: JournalpostId) =
         "$baseUrl/rest/journalpostapi/v1/journalpost/$journalpostId/knyttTilAnnenSak"
 
     internal suspend fun knyttTilAnnenSak(
-        correlationId: CorrelationId,
-        journalpost: Journalpost
+        journalpostId: JournalpostId,
+        fagsystem: Fagsystem,
+        identitetsnummer: Identitetsnummer,
+        saksnummer: Saksnummer,
+        correlationId: CorrelationId
     ) : JournalpostId {
-
         @Language("JSON")
         val dto = """
         {
             "sakstype": "FAGSAK",
-            "fagsaksystem": "${journalpost.fagsaksystem.name}",
-            "fagsakId": "${journalpost.saksnummer}",
+            "fagsaksystem": "${fagsystem.name}",
+            "fagsakId": "$saksnummer",
             "journalfoerendeEnhet": "9999",
             "tema": "OMS",
             "bruker": {
                 "idType": "FNR",
-                "id": "${journalpost.identitetsnummer}"
+                "id": "$identitetsnummer"
             }
         }
         """.trimIndent()
 
-        val url = knyttTilAnnenSakUrl(journalpostId = journalpost.journalpostId)
+        val url = knyttTilAnnenSakUrl(journalpostId = journalpostId)
         val (httpStatusCode, response) = url.httpPut { builder->
             builder.header("Nav-CallId", "$correlationId")
             builder.header("Nav-Consumer-Id", "omsorgspenger-journalforing")
@@ -61,4 +68,16 @@ internal class DokarkivproxyClient(
 
         return JSONObject(response).getString("nyJournalpostId").somJournalpostId()
     }
+
+    @Deprecated("Bruk knyttTilAnnenSak med andre parametre")
+    internal suspend fun knyttTilAnnenSak(
+        correlationId: CorrelationId,
+        journalpost: Journalpost
+    ) : JournalpostId = knyttTilAnnenSak(
+        journalpostId = journalpost.journalpostId.somJournalpostId(),
+        fagsystem = journalpost.fagsaksystem,
+        saksnummer = journalpost.saksnummer.somSaksnummer(),
+        identitetsnummer = journalpost.identitetsnummer.somIdentitetsnummer(),
+        correlationId = correlationId
+    )
 }
