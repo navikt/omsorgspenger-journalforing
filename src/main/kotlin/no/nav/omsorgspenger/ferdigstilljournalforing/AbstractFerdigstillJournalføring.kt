@@ -13,12 +13,12 @@ import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import no.nav.omsorgspenger.ferdigstilljournalforing.JournalpostManglerNavn.behandlaJournalpostHåndterManglerNavn
 import org.slf4j.LoggerFactory
 
-internal abstract class FerdigstillJournalføring(
+internal abstract class AbstractFerdigstillJournalføring(
     rapidsConnection: RapidsConnection,
     private val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     private val behov: String,
     private val fagsystem: Fagsystem) : BehovssekvensPacketListener(
-    logger = LoggerFactory.getLogger(FerdigstillJournalføring::class.java)) {
+    logger = LoggerFactory.getLogger(AbstractFerdigstillJournalføring::class.java)) {
 
     private val JOURNALPOSTIDER = "@behov.$behov.journalpostIder"
     private val IDENTITETSNUMMER = "@behov.$behov.identitetsnummer"
