@@ -29,6 +29,22 @@ internal class SafGateway(
 
     private val GraphQlUrl = URI("$baseUrl/graphql")
 
+    private suspend fun String.hentDataFraSaf(correlationId: CorrelationId) : JSONObject {
+        val (httpStatusCode, response) = GraphQlUrl.httpPost { builder->
+            builder.header("Nav-Callid", "$correlationId")
+            builder.header("Nav-Consumer-Id", "omsorgspenger-journalforing")
+            builder.header(HttpHeaders.Authorization, authorizationHeader())
+            builder.accept(ContentType.Application.Json)
+            builder.jsonBody(this)
+        }.readTextOrThrow()
+
+        check(httpStatusCode.isSuccess()) {
+            "Feil fra SAF. Url=[$GraphQlUrl], HttpStatus=[${httpStatusCode.value}], Request=[$this], Response=[$response]"
+        }
+
+        return response.safData()
+    }
+
     internal suspend fun hentOriginaleJournalpostIder(
         fagsystem: Fagsystem,
         saksnummer: Saksnummer,
@@ -36,42 +52,47 @@ internal class SafGateway(
         correlationId: CorrelationId
     ) : Map<JournalpostId, Set<JournalpostId>> {
 
-        val (httpStatusCode, response) = GraphQlUrl.httpPost { builder->
-            builder.header("Nav-CallId", "$correlationId")
-            builder.header("Nav-Consumer-Id", "omsorgspenger-journalforing")
-            builder.accept(ContentType.Application.Json)
-            builder.header(HttpHeaders.Authorization, authorizationHeader())
-            builder.jsonBody(
-                hentOriginalJournalpostIderQuery(
-                    fagsystem = fagsystem,
-                    saksnummer = saksnummer,
-                    fraOgMed = fraOgMed
-                )
-            )
-        }.readTextOrThrow()
+        val request = hentOriginalJournalpostIderQuery(
+            fagsystem = fagsystem,
+            saksnummer = saksnummer,
+            fraOgMed = fraOgMed
+        )
 
-        require(httpStatusCode.isSuccess()) {
-            "Feil fra SAF. URL=[$GraphQlUrl], HttpStatusCode=[${httpStatusCode.value}], Response=[$response]"
-        }
-
-        return response.mapOriginaleJournalpostIderResponse()
+        return request.hentDataFraSaf(correlationId).mapOriginaleJournalpostIderResponse()
     }
 
-    // TODO: Legge til integrasjon mot SAF
     internal suspend fun hentTypeOgStatus(
         journalpostId: JournalpostId,
         correlationId: CorrelationId) : Pair<JoarkTyper.JournalpostType, JoarkTyper.JournalpostStatus> {
-        return "I".somJournalpostType() to "MOTTATT".somJournalpostStatus()
+
+        val request = hentTypeOgStatusQuery(
+            journalpostId = journalpostId
+        )
+
+        val journalpost = request.hentDataFraSaf(correlationId).getJSONObject("journalpost")
+        return journalpost.getString("journalposttype").somJournalpostType() to journalpost.getString("journalstatus").somJournalpostStatus()
     }
 
-    // TODO: Legge til integrasjon mot SAF
     internal suspend fun hentFerdigstillJournalpost(
         correlationId: CorrelationId,
         journalpostId: JournalpostId
     ) : FerdigstillJournalpost {
+
+        val request = hentFerdigstillJournalpostQuery(
+            journalpostId = journalpostId
+        )
+
+        val journalpost = request.hentDataFraSaf(correlationId).getJSONObject("journalpost")
+
         return FerdigstillJournalpost(
             journalpostId = journalpostId,
-            status = "MOTTATT".somJournalpostStatus()
+            avsendernavn = journalpost.getJSONObject("avsenderMottaker").getString("navn"),
+            status = journalpost.getString("journalstatus").somJournalpostStatus(),
+            tittel = journalpost.getString("tittel"),
+            dokumenter = journalpost.getJSONArray("dokumenter").map { it as JSONObject }.map { FerdigstillJournalpost.Dokument(
+                dokumentId = it.getString("dokumentInfoId"),
+                tittel = it.getString("tittel")
+            )}.toSet()
         )
     }
 
@@ -80,6 +101,14 @@ internal class SafGateway(
 
         internal fun hentOriginalJournalpostIderQuery(fagsystem: Fagsystem, saksnummer: Saksnummer, fraOgMed: LocalDate) = """
             {"query":"query {dokumentoversiktFagsak(tema:OMS,fagsak:{fagsaksystem:\"${fagsystem.name}\",fagsakId:\"${saksnummer}\"},foerste:$MaksAntallJournalposter,fraDato:\"$fraOgMed\"){journalposter{journalpostId,dokumenter{originalJournalpostId}}}}"}
+        """.trimIndent()
+
+        internal fun hentTypeOgStatusQuery(journalpostId: JournalpostId) = """
+            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalposttype,journalstatus}"}
+        """.trimIndent()
+
+        internal fun hentFerdigstillJournalpostQuery(journalpostId: JournalpostId) = """
+            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalstatus,tittel,avsenderMottaker{navn},dokumenter{dokumentInfoId,tittel}}"}
         """.trimIndent()
 
         private fun JSONObject.notNullNotBlankString(key: String)
@@ -96,9 +125,10 @@ internal class SafGateway(
         internal fun Map<JournalpostId, Set<JournalpostId>>.førsteJournalpostIdSomHarOriginalJournalpostId(originalJournalpostId: JournalpostId) =
             filterValues { it.contains(originalJournalpostId) }.keys.firstOrNull()
 
-        internal fun String.mapOriginaleJournalpostIderResponse() = JSONObject(this)
-            .getJSONObject("data")
-            .getJSONObject("dokumentoversiktFagsak")
+        internal fun String.safData() = JSONObject(this).getJSONObject("data")
+
+        internal fun JSONObject.mapOriginaleJournalpostIderResponse() =
+            getJSONObject("dokumentoversiktFagsak")
             .getJSONArray("journalposter")
             .asSequence()
             .map { it as JSONObject }

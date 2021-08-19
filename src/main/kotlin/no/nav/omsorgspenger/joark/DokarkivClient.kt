@@ -54,7 +54,7 @@ internal class DokarkivClient(
         return kotlin.runCatching {
             httpClient.put<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpost.journalpostId}") {
                 header("Nav-Callid", correlationId)
-                header("Nav-Consumer-Id", ConsumerId)
+                header("Nav-Consumer-Id", "omsorgspenger-journalforing")
                 header("Authorization", authorizationHeader())
                 contentType(ContentType.Application.Json)
                 body = payload
@@ -75,7 +75,7 @@ internal class DokarkivClient(
         return kotlin.runCatching {
             httpClient.patch<HttpStatement>("$baseUrl/rest/journalpostapi/v1/journalpost/${journalpostId}/ferdigstill") {
                 header("Nav-Callid", correlationId)
-                header("Nav-Consumer-Id", ConsumerId)
+                header("Nav-Consumer-Id", "omsorgspenger-journalforing")
                 header("Authorization", authorizationHeader())
                 contentType(ContentType.Application.Json)
                 body = payload
@@ -137,7 +137,7 @@ internal class DokarkivClient(
 
     private fun HttpRequestBuilder.defaultHeaders(correlationId: CorrelationId) {
         header("Nav-Callid", "$correlationId")
-        header("Nav-Consumer-Id", ConsumerId)
+        header("Nav-Consumer-Id", "omsorgspenger-journalforing")
         header("Authorization", authorizationHeader())
     }
 
@@ -161,8 +161,6 @@ internal class DokarkivClient(
 
     private companion object {
         private val secureLogger = LoggerFactory.getLogger("tjenestekall")
-
-        private const val ConsumerId = "omsorgspenger-journalforing"
 
         private fun String.json() = kotlin.runCatching { JSONObject(this) }.fold(
             onSuccess = { it },

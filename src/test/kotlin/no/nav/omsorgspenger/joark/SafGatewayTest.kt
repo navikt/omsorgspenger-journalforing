@@ -6,6 +6,7 @@ import no.nav.omsorgspenger.joark.SafGateway.Companion.førsteJournalpostIdSomHa
 import no.nav.omsorgspenger.joark.SafGateway.Companion.hentOriginalJournalpostIderQuery
 import no.nav.omsorgspenger.joark.SafGateway.Companion.mapOriginaleJournalpostIderResponse
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
+import no.nav.omsorgspenger.joark.SafGateway.Companion.safData
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -66,7 +67,7 @@ internal class SafGatewayTest {
             "99999999999".somJournalpostId() to emptySet()
         )
 
-        val faktisk = response.mapOriginaleJournalpostIderResponse()
+        val faktisk = response.safData().mapOriginaleJournalpostIderResponse()
 
         assertEquals(forventet, faktisk)
     }
