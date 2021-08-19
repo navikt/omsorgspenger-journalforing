@@ -72,7 +72,7 @@ internal class FerdigstillJournalføringRiver(
 
         runBlocking { ferdigstillJournalposter.forEach { ferdigstillJournalpost ->
             dokarkivClient.oppdaterJournalpostForFerdigstilling(correlationId, ferdigstillJournalpost)
-            dokarkivClient.ferdigstillJournalpost(correlationId, ferdigstillJournalpost)
+            dokarkivClient.ferdigstillJournalposten(correlationId, ferdigstillJournalpost)
         }}
 
         logger.info("Alle journalposter ferdigstilt.")

@@ -121,7 +121,7 @@ internal class DokarkivClient(
         }
     }
 
-    internal suspend fun ferdigstillJournalpost(
+    internal suspend fun ferdigstillJournalposten(
         correlationId: CorrelationId,
         ferdigstillJournalpost: FerdigstillJournalpost) {
         val url = ferdigstillJournalpost.journalpostId.ferdigstillJournalpostUrl()
