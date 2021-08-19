@@ -57,10 +57,22 @@ internal class SafGateway(
         return response.mapOriginaleJournalpostIderResponse()
     }
 
+    // TODO: Legge til integrasjon mot SAF
     internal suspend fun hentTypeOgStatus(
         journalpostId: JournalpostId,
         correlationId: CorrelationId) : Pair<JoarkTyper.JournalpostType, JoarkTyper.JournalpostStatus> {
-        return "I".somJournalpostType() to "JOURNALFOERT".somJournalpostStatus()
+        return "I".somJournalpostType() to "MOTTATT".somJournalpostStatus()
+    }
+
+    // TODO: Legge til integrasjon mot SAF
+    internal suspend fun hentFerdigstillJournalpost(
+        correlationId: CorrelationId,
+        journalpostId: JournalpostId
+    ) : FerdigstillJournalpost {
+        return FerdigstillJournalpost(
+            journalpostId = journalpostId,
+            status = "MOTTATT".somJournalpostStatus()
+        )
     }
 
     internal companion object {

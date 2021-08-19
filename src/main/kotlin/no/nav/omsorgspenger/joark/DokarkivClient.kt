@@ -2,16 +2,14 @@ package no.nav.omsorgspenger.joark
 
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
-import io.ktor.client.request.header
-import io.ktor.client.request.patch
-import io.ktor.client.request.put
+import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.HttpStatement
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
+import io.ktor.http.*
 import io.ktor.util.toByteArray
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPatch
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPost
+import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.httpPut
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.jsonBody
 import no.nav.helse.dusseldorf.ktor.client.SimpleHttpClient.readTextOrThrow
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
@@ -45,6 +43,8 @@ internal class DokarkivClient(
 
     private val baseUrl = env.hentRequiredEnv("DOKARKIV_BASE_URL")
     private val opprettJournalpostUrl = "$baseUrl/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"
+    private fun JournalpostId.oppdaterJournalpostUrl() = "$baseUrl/rest/journalpostapi/v1/journalpost/${this}"
+    private fun JournalpostId.ferdigstillJournalpostUrl() = "$baseUrl/rest/journalpostapi/v1/journalpost/${this}/ferdigstill"
 
     internal suspend fun oppdaterJournalpost(correlationId: String, journalpost: Journalpost) : JournalpostStatus {
         val payload = journalpost.oppdatertJournalpostBody().also {
@@ -91,9 +91,7 @@ internal class DokarkivClient(
         nyJournalpost: NyJournalpost
     ): JournalpostId {
         val (httpStatus, responseBody) = opprettJournalpostUrl.httpPost { builder ->
-            builder.header("Nav-Callid", "$correlationId")
-            builder.header("Nav-Consumer-Id", ConsumerId)
-            builder.header("Authorization", authorizationHeader())
+            builder.defaultHeaders(correlationId)
             builder.jsonBody(nyJournalpost.dokarkivPayload())
         }.readTextOrThrow()
 
@@ -107,6 +105,40 @@ internal class DokarkivClient(
             }
             false -> throw IllegalStateException("Feil ved opprettelse av journalpost. HttpStatus=[${httpStatus.value}], Response=[$responseBody]")
         }
+    }
+
+    internal suspend fun oppdaterJournalpostForFerdigstilling(
+        correlationId: CorrelationId,
+        ferdigstillJournalpost: FerdigstillJournalpost) {
+        val url = ferdigstillJournalpost.journalpostId.oppdaterJournalpostUrl()
+        val (httpStatus, responseBody) = url.httpPut { builder ->
+            builder.defaultHeaders(correlationId)
+            builder.jsonBody(ferdigstillJournalpost.oppdaterPayload())
+        }.readTextOrThrow()
+
+        check(httpStatus.isSuccess()) {
+            "Feil ved oppdatering av journalpost. HttpStatus=[${httpStatus.value}, Response=[$responseBody], Url=[$url]"
+        }
+    }
+
+    internal suspend fun ferdigstillJournalpost(
+        correlationId: CorrelationId,
+        ferdigstillJournalpost: FerdigstillJournalpost) {
+        val url = ferdigstillJournalpost.journalpostId.ferdigstillJournalpostUrl()
+        val (httpStatus, responseBody) = url.httpPatch { builder ->
+            builder.defaultHeaders(correlationId)
+            builder.jsonBody(ferdigstillJournalpost.ferdigstillPayload())
+        }.readTextOrThrow()
+
+        check(httpStatus.isSuccess()) {
+            "Feil ved ferdigstilling av journalpost. HttpStatus=[${httpStatus.value}, Response=[$responseBody], Url=[$url]"
+        }
+    }
+
+    private fun HttpRequestBuilder.defaultHeaders(correlationId: CorrelationId) {
+        header("Nav-Callid", "$correlationId")
+        header("Nav-Consumer-Id", ConsumerId)
+        header("Authorization", authorizationHeader())
     }
 
     private suspend fun Result<HttpResponse>.håndterResponseFraJoark(
