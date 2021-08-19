@@ -69,8 +69,7 @@ internal class SafGateway(
             journalpostId = journalpostId
         )
 
-        val journalpost = request.hentDataFraSaf(correlationId).getJSONObject("journalpost")
-        return journalpost.getString("journalposttype").somJournalpostType() to journalpost.getString("journalstatus").somJournalpostStatus()
+        return request.hentDataFraSaf(correlationId).mapTypeOgStatus()
     }
 
     internal suspend fun hentFerdigstillJournalpost(
@@ -82,18 +81,7 @@ internal class SafGateway(
             journalpostId = journalpostId
         )
 
-        val journalpost = request.hentDataFraSaf(correlationId).getJSONObject("journalpost")
-
-        return FerdigstillJournalpost(
-            journalpostId = journalpostId,
-            avsendernavn = journalpost.getJSONObject("avsenderMottaker").getString("navn"),
-            status = journalpost.getString("journalstatus").somJournalpostStatus(),
-            tittel = journalpost.getString("tittel"),
-            dokumenter = journalpost.getJSONArray("dokumenter").map { it as JSONObject }.map { FerdigstillJournalpost.Dokument(
-                dokumentId = it.getString("dokumentInfoId"),
-                tittel = it.getString("tittel")
-            )}.toSet()
-        )
+        return request.hentDataFraSaf(correlationId).mapFerdigstillJournalpost(journalpostId)
     }
 
     internal companion object {
@@ -104,23 +92,25 @@ internal class SafGateway(
         """.trimIndent()
 
         internal fun hentTypeOgStatusQuery(journalpostId: JournalpostId) = """
-            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalposttype,journalstatus}"}
+            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalposttype,journalstatus}}"}
         """.trimIndent()
 
         internal fun hentFerdigstillJournalpostQuery(journalpostId: JournalpostId) = """
-            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalstatus,tittel,avsenderMottaker{navn},dokumenter{dokumentInfoId,tittel}}"}
+            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalstatus,tittel,avsenderMottaker{navn},dokumenter{dokumentInfoId,tittel}}}"}
         """.trimIndent()
 
         private fun JSONObject.notNullNotBlankString(key: String)
             = has(key) && get(key) is String && getString(key).isNotBlank()
 
-        private fun JSONObject.originaleJournalpostIder() = getJSONArray("dokumenter")
-            .map { it as JSONObject }.mapNotNull {
-                when (it.notNullNotBlankString("originalJournalpostId")) {
-                    true -> it.getString("originalJournalpostId").somJournalpostId()
-                    false -> null
-                }
-            }
+        private fun JSONObject.stringOrNull(key: String) = when (notNullNotBlankString(key)) {
+            true -> getString(key)
+            false -> null
+        }
+
+        private fun JSONObject.originaleJournalpostIder() =
+            getJSONArray("dokumenter")
+            .map { it as JSONObject }
+            .mapNotNull { it.stringOrNull("originalJournalpostId")?.somJournalpostId() }
 
         internal fun Map<JournalpostId, Set<JournalpostId>>.førsteJournalpostIdSomHarOriginalJournalpostId(originalJournalpostId: JournalpostId) =
             filterValues { it.contains(originalJournalpostId) }.keys.firstOrNull()
@@ -138,5 +128,24 @@ internal class SafGateway(
             .also { require(it.size < MaksAntallJournalposter) {
                 "Fant ${it.size} journalposter, støtter maks $MaksAntallJournalposter"
             }}
+
+        internal fun JSONObject.mapTypeOgStatus() =
+            getJSONObject("journalpost")
+            .let { journalpost ->
+                journalpost.getString("journalposttype").somJournalpostType() to journalpost.getString("journalstatus").somJournalpostStatus()
+            }
+
+        internal fun JSONObject.mapFerdigstillJournalpost(journalpostId: JournalpostId) =
+            getJSONObject("journalpost")
+                .let { journalpost -> FerdigstillJournalpost(
+                    journalpostId = journalpostId,
+                    avsendernavn = journalpost.getJSONObject("avsenderMottaker").stringOrNull("navn"),
+                    status = journalpost.getString("journalstatus").somJournalpostStatus(),
+                    tittel = journalpost.stringOrNull("tittel"),
+                    dokumenter = journalpost.getJSONArray("dokumenter").map { it as JSONObject }.map { FerdigstillJournalpost.Dokument(
+                        dokumentId = it.getString("dokumentInfoId"),
+                        tittel = it.stringOrNull("tittel")
+                    )}.toSet()
+                )}
     }
 }
