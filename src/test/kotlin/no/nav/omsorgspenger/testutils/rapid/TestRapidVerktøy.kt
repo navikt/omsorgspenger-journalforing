@@ -1,13 +1,10 @@
 package no.nav.omsorgspenger.testutils.rapid
 
-import com.fasterxml.jackson.databind.node.TextNode
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageProblems
-import no.nav.helse.rapids_rivers.isMissingOrNull
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behovsformat
 import org.json.JSONObject
-import java.time.ZonedDateTime
 
 internal object TestRapidVerktøy {
     internal fun TestRapid.sisteMelding() =
@@ -25,21 +22,10 @@ internal object TestRapidVerktøy {
     internal fun TestRapid.printSisteMelding() =
         println(sisteMeldingSomJSONObject().toString(1))
 
-    internal fun TestRapid.sisteMeldingHarLøsningPå(behov: String) {
-        val key = "@løsninger.$behov.løst"
-        val jsonMessage = sisteMeldingSomJsonMessage().also { it.interestedIn(key) }
-        val node = jsonMessage[key]
-        require(node is TextNode && ZonedDateTime.parse(node.textValue()) != null)
-    }
-
-    internal fun TestRapid.sisteMeldingManglerLøsningPå(behov: String) {
-        val key = "@løsninger.$behov.løst"
-        val jsonMessage = sisteMeldingSomJsonMessage().also { it.interestedIn(key) }
-        val node = jsonMessage[key]
-        require(node.isMissingOrNull())
-    }
+    internal fun TestRapid.løsningPå(behov: String) = sisteMeldingSomJSONObject().let { it.getJSONObject("@løsninger").getJSONObject(behov) }
 
     internal fun TestRapid.behov() = sisteMeldingSomJSONObject().getJSONArray(Behovsformat.Behovsrekkefølge).map { "$it" }.toSet()
+
     internal fun TestRapid.løsninger() = sisteMeldingSomJSONObject().let { when (it.has("@løsninger")) {
         true -> it.getJSONObject("@løsninger").keySet()
         false -> emptySet<String>()

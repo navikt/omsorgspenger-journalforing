@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class FerdigstillJournalføringTest(
+internal class FerdigstillJournalføringRiverTest(
     private val applicationContextBuilder: ApplicationContext.Builder) {
 
     private val dokarkivClientMock = mockk<DokarkivClient>().also { mock ->
