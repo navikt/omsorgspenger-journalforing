@@ -34,6 +34,7 @@ internal object FerdigstillJournalføringMelding {
         packet.require(aktueltBehov.identitetsnummer(), JsonNode::asText)
         packet.require(aktueltBehov.saksnummer(), JsonNode::asText)
         packet.require(aktueltBehov.fagsystem(), JsonNode::asText)
+        packet.require(aktueltBehov.versjon(), JsonNode::asText)
         packet.interestedIn(personopplysninger)
     }
 

@@ -42,18 +42,20 @@ internal class FerdigstillJournalføringRiver(
 
         logger.info("Ferdigstiller JournalpostIder=${behov.journalpostIder} for Fagsystem=[${behov.fagsystem.name}] & Saksnummer=[${behov.saksnummer}]")
 
+        val bruker = FerdigstillJournalpost.Bruker(
+            identitetsnummer = behov.identitetsnummer,
+            sak = behov.fagsystem to behov.saksnummer,
+            navn = behov.navn?.also { logger.info("Har hentet navn på bruker.") }
+        )
+
         val ferdigstillJournalposter = behov.journalpostIder.map { journalpostId -> runBlocking { safGateway.hentFerdigstillJournalpost(
             correlationId = correlationId,
             journalpostId = journalpostId
         )}}.filterNot { ferdigstillJournalpost ->
-            ferdigstillJournalpost.erFerdigstilt.also { logger.info("JournalpostId=[${ferdigstillJournalpost.journalpostId}] er allerede ferdigstilt.")
-        }}.map { it.copy(
-            bruker = FerdigstillJournalpost.Bruker(
-                identitetsnummer = behov.identitetsnummer,
-                sak = behov.fagsystem to behov.saksnummer,
-                navn = behov.navn
-            )
-        )}
+            ferdigstillJournalpost.erFerdigstilt.also { if (it) {
+                logger.info("JournalpostId=[${ferdigstillJournalpost.journalpostId}] er allerede ferdigstilt.")
+            }
+        }}.map { it.copy(bruker = bruker) }
 
         val manglerAvsendernavn = ferdigstillJournalposter.filter { it.manglerAvsendernavn() }
         // Legger til behov for å hente navn på brukeren om det vi mangler avsendernavn
