@@ -114,14 +114,13 @@ internal class FerdigstillJournalpostTest {
                 "sakstype": "FAGSAK",
                 "fagsakId": "ABC123"
             },
-            "dokumenter": {
-              "1": {
+            "dokumenter": [{
+                "dokumentInfoId": "1",
                 "tittel": "Mangler tittel"
-              },
-              "3": {
+            },{
+                "dokumentInfoId": "3",
                 "tittel": "Mangler tittel"
-              }
-            }
+            }]
         }
         """.trimIndent()
 

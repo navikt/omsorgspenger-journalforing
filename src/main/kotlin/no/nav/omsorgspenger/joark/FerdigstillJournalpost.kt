@@ -5,6 +5,7 @@ import no.nav.omsorgspenger.Identitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.Saksnummer
 import org.intellij.lang.annotations.Language
+import org.json.JSONArray
 import org.json.JSONObject
 
 internal data class FerdigstillJournalpost(
@@ -52,9 +53,12 @@ internal data class FerdigstillJournalpost(
         if (tittel.isNullOrBlank()) { json.put("tittel", ManglerTittel) }
         // Mangler tittel på et eller fler dokumenter
         dokumenter.filter { it.tittel.isNullOrBlank() }.takeIf { it.isNotEmpty() }?.also { dokumenterUtenTittel ->
-            val jsonDokumenter = JSONObject()
+            val jsonDokumenter = JSONArray()
             dokumenterUtenTittel.forEach { dokumentUtenTittel ->
-                jsonDokumenter.put(dokumentUtenTittel.dokumentId, JSONObject().also { it.put("tittel", ManglerTittel) })
+                jsonDokumenter.put(JSONObject().also {
+                    it.put("dokumentInfoId", dokumentUtenTittel.dokumentId)
+                    it.put("tittel", ManglerTittel)
+                })
             }
             json.put("dokumenter", jsonDokumenter)
         }
