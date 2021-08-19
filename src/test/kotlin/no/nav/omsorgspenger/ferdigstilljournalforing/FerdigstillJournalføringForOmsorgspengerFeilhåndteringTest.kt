@@ -22,7 +22,7 @@ import java.net.URI
 import java.time.ZonedDateTime
 import java.util.*
 
-internal class FerdigstillJournalføringFeilhåndteringTest {
+internal class FerdigstillJournalføringForOmsorgspengerFeilhåndteringTest {
 
     private val mockJoarkClient = mockk<DokarkivClient>()
 

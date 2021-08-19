@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.time.ZonedDateTime
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class FerdigstillJournalføringTest(
+internal class FerdigstillJournalføringForOmsorgspengerTest(
         private val applicationContext: ApplicationContext) {
 
     private val rapid = TestRapid().apply {
