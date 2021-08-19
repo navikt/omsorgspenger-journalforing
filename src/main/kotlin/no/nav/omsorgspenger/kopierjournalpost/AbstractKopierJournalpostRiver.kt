@@ -24,7 +24,7 @@ import no.nav.omsorgspenger.ferdigstilljournalforing.JournalpostManglerNavn.beha
 import org.slf4j.LoggerFactory
 import java.time.ZonedDateTime
 
-internal abstract class KopierJournalpost(
+internal abstract class AbstractKopierJournalpostRiver(
     rapidsConnection: RapidsConnection,
     private val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     private val dokarkivproxyClient: DokarkivproxyClient,
@@ -32,7 +32,7 @@ internal abstract class KopierJournalpost(
     private val fagsystem: Fagsystem,
     private val behov: String
 ) : BehovssekvensPacketListener(
-    logger = LoggerFactory.getLogger(KopierJournalpost::class.java)) {
+    logger = LoggerFactory.getLogger(AbstractKopierJournalpostRiver::class.java)) {
 
     private val JournalpostIdKey = "@behov.$behov.journalpostId"
     private val VersjonKey = "@behov.$behov.versjon"

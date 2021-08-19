@@ -92,8 +92,8 @@ internal object HtmlGenerator {
         var wasDigit = false
         forEachIndexed { index, char ->
             reverted += when {
-                index == 0 -> char.toUpperCase()
-                char.isUpperCase() -> " ${char.toLowerCase()}"
+                index == 0 -> char.uppercase()
+                char.isUpperCase() -> " ${char.lowercase()}"
                 char.isDigit() && !wasDigit -> " $char"
                 else -> char
             }

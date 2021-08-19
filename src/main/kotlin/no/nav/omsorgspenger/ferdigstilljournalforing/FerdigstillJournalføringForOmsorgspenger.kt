@@ -6,7 +6,7 @@ import no.nav.omsorgspenger.Fagsystem
 internal class FerdigstillJournalføringForOmsorgspenger(
     rapidsConnection: RapidsConnection,
     ferdigstillJournalføringMediator: FerdigstillJournalføringMediator
-) : FerdigstillJournalføring(
+) : AbstractFerdigstillJournalføring(
     rapidsConnection = rapidsConnection,
     ferdigstillJournalføringMediator = ferdigstillJournalføringMediator,
     behov = "FerdigstillJournalføringForOmsorgspenger",

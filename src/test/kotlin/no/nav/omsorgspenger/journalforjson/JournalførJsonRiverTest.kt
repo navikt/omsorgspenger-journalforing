@@ -15,7 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.util.*
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class JournalførJsonTest(
+internal class JournalførJsonRiverTest(
     private val applicationContext: ApplicationContext) {
 
     private val rapid = TestRapid().apply {

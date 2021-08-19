@@ -6,12 +6,12 @@ import no.nav.omsorgspenger.Fagsystem
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
 
-internal class KopierJournalpostForK9(
+internal class KopierJournalpostForK9River(
     rapidsConnection: RapidsConnection,
     ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     dokarkivproxyClient: DokarkivproxyClient,
     safGateway: SafGateway
-) : KopierJournalpost(
+) : AbstractKopierJournalpostRiver(
     rapidsConnection = rapidsConnection,
     ferdigstillJournalføringMediator = ferdigstillJournalføringMediator,
     dokarkivproxyClient = dokarkivproxyClient,
