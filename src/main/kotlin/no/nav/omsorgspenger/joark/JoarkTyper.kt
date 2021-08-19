@@ -5,7 +5,6 @@ internal object JoarkTyper {
         override fun toString() = value
         internal val erJournalført = value == "JOURNALFOERT"
         internal val erFerdigstilt = value == "FERDIGSTILT"
-        internal val erMottatt = value == "MOTTATT"
         internal companion object {
             internal fun String.somJournalpostStatus() = JournalpostStatus(this)
         }
