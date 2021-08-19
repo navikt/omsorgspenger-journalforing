@@ -54,7 +54,7 @@ internal data class FerdigstillJournalpost(
         dokumenter.filter { it.tittel.isNullOrBlank() }.takeIf { it.isNotEmpty() }?.also { dokumenterUtenTittel ->
             val jsonDokumenter = JSONObject()
             dokumenterUtenTittel.forEach { dokumentUtenTittel ->
-                json.put(dokumentUtenTittel.dokumentId, JSONObject().also { it.put("tittel", ManglerTittel) })
+                jsonDokumenter.put(dokumentUtenTittel.dokumentId, JSONObject().also { it.put("tittel", ManglerTittel) })
             }
             json.put("dokumenter", jsonDokumenter)
         }
