@@ -89,6 +89,10 @@ internal class KopierJournalpostRiver(
             return true
         }
 
+        check(typeOgStatus.kanKopieresEtterFerdigstilling()) {
+            "Journalpost kan ikke kopieres. Type=[${typeOgStatus.first}], Status=[${typeOgStatus.second}]"
+        }
+
         // Legger til behov for å ferdigstille
         logger.info("Journalpost må ferdigstilles før den kopieres. Legger til behov for ferdigstilling.")
         KopierJournalpostMelding.leggTilBehovForFerdigstilling(
@@ -102,5 +106,8 @@ internal class KopierJournalpostRiver(
     private companion object {
         private fun Pair<JoarkTyper.JournalpostType, JoarkTyper.JournalpostStatus>.kanKopieresNå() =
             (first.erNotat && second.erFerdigstilt) || (first.erInngående && second.erJournalført)
+
+        private fun Pair<JoarkTyper.JournalpostType, JoarkTyper.JournalpostStatus>.kanKopieresEtterFerdigstilling() =
+            !kanKopieresNå() && (first.erNotat || first.erInngående)
     }
 }
