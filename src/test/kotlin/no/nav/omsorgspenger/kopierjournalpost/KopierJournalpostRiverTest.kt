@@ -22,7 +22,6 @@ import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.behov
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.løsningPå
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.løsninger
-import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.printSisteMelding
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.sisteMelding
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.sisteMeldingErKlarForArkivering
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -38,7 +37,7 @@ internal class KopierJournalpostRiverTest(
     private val safGatewayMock = mockk<SafGateway>()
     private val dokarkivClientMock = mockk<DokarkivClient>().also { mock ->
         coEvery { mock.oppdaterJournalpostForFerdigstilling(any(), any()) }.returns(Unit)
-        coEvery { mock.ferdigstillJournalposten(any(), any()) }.returns(Unit)
+        coEvery { mock.ferdigstillJournalpost(any(), any()) }.returns(Unit)
     }
 
     private val rapid = TestRapid().apply {
