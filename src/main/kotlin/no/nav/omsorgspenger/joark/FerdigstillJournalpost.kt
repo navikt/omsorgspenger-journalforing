@@ -7,6 +7,7 @@ import no.nav.omsorgspenger.Saksnummer
 import org.intellij.lang.annotations.Language
 import org.json.JSONArray
 import org.json.JSONObject
+import org.slf4j.LoggerFactory
 
 internal data class FerdigstillJournalpost(
     internal val journalpostId: JournalpostId,
@@ -33,6 +34,7 @@ internal data class FerdigstillJournalpost(
 
     internal fun oppdaterPayload() : String {
         check(kanFerdigstilles) { "Journalposten $journalpostId kan ikke ferdigstilles." }
+        val utfyllendeInformasjon = mutableListOf<String>()
         @Language("JSON")
         val json = """
         {
@@ -50,7 +52,10 @@ internal data class FerdigstillJournalpost(
         """.trimIndent().let { JSONObject(it) }
 
         // Mangler tittel på journalposten
-        if (tittel.isNullOrBlank()) { json.put("tittel", ManglerTittel) }
+        if (tittel.isNullOrBlank()) {
+            utfyllendeInformasjon.add("tittel=[$ManglerTittel]")
+            json.put("tittel", ManglerTittel)
+        }
         // Mangler tittel på et eller fler dokumenter
         dokumenter.filter { it.tittel.isNullOrBlank() }.takeIf { it.isNotEmpty() }?.also { dokumenterUtenTittel ->
             val jsonDokumenter = JSONArray()
@@ -59,14 +64,18 @@ internal data class FerdigstillJournalpost(
                     it.put("dokumentInfoId", dokumentUtenTittel.dokumentId)
                     it.put("tittel", ManglerTittel)
                 })
+                utfyllendeInformasjon.add("dokumenter[${dokumentUtenTittel.dokumentId}].tittel=[$ManglerTittel]")
             }
             json.put("dokumenter", jsonDokumenter)
         }
         // Mangler navn på avsender
         if (avsendernavn.isNullOrBlank()) {
             json.put("avsenderMottaker", JSONObject().also { it.put("navn", bruker.navn!!) })
+            utfyllendeInformasjon.add("avsenderMottaker.navn=[***]")
         }
-        return json.toString()
+        return json.toString().also { if (utfyllendeInformasjon.isNotEmpty()) {
+            logger.info("Utfyllende informasjon ved oppdatering: ${utfyllendeInformasjon.joinToString(", ")}")
+        }}
     }
 
     internal fun ferdigstillPayload() : String {
@@ -91,6 +100,7 @@ internal data class FerdigstillJournalpost(
     }
 
     private companion object {
+        private val logger = LoggerFactory.getLogger(FerdigstillJournalpost::class.java)
         private const val ManglerTittel = "Mangler tittel"
         @Language("JSON")
         private const val FerdigstillPayload = """{"journalfoerendeEnhet": "9999"}"""

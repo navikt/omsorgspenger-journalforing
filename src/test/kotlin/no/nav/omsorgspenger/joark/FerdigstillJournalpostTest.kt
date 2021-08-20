@@ -124,9 +124,6 @@ internal class FerdigstillJournalpostTest {
         }
         """.trimIndent()
 
-
-        println(ferdigstillJournalpost.oppdaterPayload())
-
         JSONAssert.assertEquals(forventet, ferdigstillJournalpost.oppdaterPayload(), true)
     }
 
