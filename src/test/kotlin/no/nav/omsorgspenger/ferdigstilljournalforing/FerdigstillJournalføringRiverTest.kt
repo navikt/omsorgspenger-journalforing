@@ -18,6 +18,7 @@ import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.behov
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.løsninger
+import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.printSisteMelding
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.sisteMeldingErKlarForArkivering
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.sisteMeldingSomJsonMessage
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -32,7 +33,7 @@ internal class FerdigstillJournalføringRiverTest(
 
     private val dokarkivClientMock = mockk<DokarkivClient>().also { mock ->
         coEvery { mock.oppdaterJournalpostForFerdigstilling(any(), any()) }.returns(Unit)
-        coEvery { mock.ferdigstillJournalposten(any(), any()) }.returns(Unit)
+        coEvery { mock.ferdigstillJournalpost(any(), any()) }.returns(Unit)
     }
 
     private val safGatewayMock = mockk<SafGateway>()
@@ -130,13 +131,15 @@ internal class FerdigstillJournalføringRiverTest(
 
         val (_, behovsskevens) = nyBehovsSekvens(
             behov = behovNavn,
-            journalpostIder = setOf(journalpost1, journalpost2)
+            journalpostIder = setOf(journalpost1, journalpost2),
+            fagsystem = Fagsystem.OMSORGSPENGER
         )
 
         rapid.sendTestMessage(behovsskevens)
         assertEquals(setOf(behovNavn), rapid.behov())
 
         rapid.sisteMeldingErKlarForArkivering()
+        rapid.printSisteMelding()
     }
 
     private companion object {

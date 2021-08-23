@@ -10,11 +10,9 @@ import no.nav.omsorgspenger.*
 import no.nav.omsorgspenger.AzureAwareClient
 import no.nav.omsorgspenger.CorrelationId
 import no.nav.omsorgspenger.Identitetsnummer
-import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.Saksnummer
-import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import java.net.URI
@@ -68,16 +66,4 @@ internal class DokarkivproxyClient(
 
         return JSONObject(response).getString("nyJournalpostId").somJournalpostId()
     }
-
-    @Deprecated("Bruk knyttTilAnnenSak med andre parametre")
-    internal suspend fun knyttTilAnnenSak(
-        correlationId: CorrelationId,
-        journalpost: Journalpost
-    ) : JournalpostId = knyttTilAnnenSak(
-        journalpostId = journalpost.journalpostId.somJournalpostId(),
-        fagsystem = journalpost.fagsaksystem,
-        saksnummer = journalpost.saksnummer.somSaksnummer(),
-        identitetsnummer = journalpost.identitetsnummer.somIdentitetsnummer(),
-        correlationId = correlationId
-    )
 }

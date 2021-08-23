@@ -15,15 +15,11 @@ import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.RapidsStateListener
 import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
-import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForK9
-import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringForOmsorgspenger
-import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringMediator
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringRiver
 import no.nav.omsorgspenger.joark.DokarkivproxyClient
 import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.journalforjson.JournalførJsonRiver
-import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostForK9River
 import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostRiver
 import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
 import no.nav.omsorgspenger.oppgave.OppgaveClient
@@ -39,26 +35,12 @@ fun main() {
 }
 
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
-    FerdigstillJournalføringForOmsorgspenger(
-        rapidsConnection = this,
-        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator
-    )
-    FerdigstillJournalføringForK9(
-        rapidsConnection = this,
-        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator
-    )
     OpprettGosysJournalføringsoppgaver(
         rapidsConnection = this,
         oppgaveClient = applicationContext.oppgaveClient
     )
     InitierGosysJournalføringsoppgaver(
         rapidsConnection = this
-    )
-    KopierJournalpostForK9River(
-        rapidsConnection = this,
-        ferdigstillJournalføringMediator = applicationContext.ferdigstillJournalføringMediator,
-        dokarkivproxyClient = applicationContext.dokarkivproxyClient,
-        safGateway = applicationContext.safGateway
     )
     JournalførJsonRiver(
         rapidsConnection = this,
@@ -118,7 +100,6 @@ internal class ApplicationContext(
     internal val dokarkivClient: DokarkivClient,
     internal val dokarkivproxyClient: DokarkivproxyClient,
     internal val safGateway: SafGateway,
-    internal val ferdigstillJournalføringMediator: FerdigstillJournalføringMediator,
     internal val oppgaveClient: OppgaveClient,
     internal val healthChecks: Set<HealthCheck>) {
     internal var rapidsState = RapidsStateListener.RapidsState.initialState()
@@ -133,7 +114,6 @@ internal class ApplicationContext(
         internal var dokarkivClient: DokarkivClient? = null,
         internal var dokarkivproxyClient: DokarkivproxyClient? = null,
         internal var safGateway: SafGateway? = null,
-        internal var ferdigstillJournalføringMediator: FerdigstillJournalføringMediator? = null,
         internal var oppgaveClient: OppgaveClient? = null) {
         internal fun build() : ApplicationContext {
             val benyttetEnv = env?:System.getenv()
@@ -145,22 +125,20 @@ internal class ApplicationContext(
                 tokenEndpoint = URI(benyttetEnv.hentRequiredEnv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"))
             )
             val benyttetDokarkivClient = dokarkivClient?: DokarkivClient(
-                env = benyttetEnv,
                 accessTokenClient = benyttetAccessTokenClient,
-                httpClient = benyttetHttpClient
+                baseUrl = URI(benyttetEnv.hentRequiredEnv("DOKARKIV_BASE_URL")),
+                scopes = benyttetEnv.hentRequiredEnv("DOKARKIV_SCOPES").csvTilSet()
             )
             val benyttetOppgaveClient = oppgaveClient?: OppgaveClient(
                 env = benyttetEnv,
                 accessTokenClient = benyttetAccessTokenClient,
                 httpClient = benyttetHttpClient
             )
-
             val benyttetDokarkivproxyClient = dokarkivproxyClient ?: DokarkivproxyClient(
                 accessTokenClient = benyttetAccessTokenClient,
                 baseUrl = URI(benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_BASE_URL")),
                 scopes = benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_SCOPES").csvTilSet()
             )
-
             val benyttetSafGateway = safGateway ?: SafGateway(
                 accessTokenClient = benyttetAccessTokenClient,
                 baseUrl = URI(benyttetEnv.hentRequiredEnv("SAF_BASE_URL")),
@@ -170,9 +148,6 @@ internal class ApplicationContext(
             return ApplicationContext(
                 env = benyttetEnv,
                 dokarkivClient = benyttetDokarkivClient,
-                ferdigstillJournalføringMediator = ferdigstillJournalføringMediator?: FerdigstillJournalføringMediator(
-                    dokarkivClient = benyttetDokarkivClient
-                ),
                 healthChecks = setOf(
                     benyttetDokarkivClient,
                     benyttetOppgaveClient,
