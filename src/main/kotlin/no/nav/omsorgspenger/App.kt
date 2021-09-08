@@ -21,9 +21,8 @@ import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.journalforjson.JournalførJsonRiver
 import no.nav.omsorgspenger.kopierjournalpost.KopierJournalpostRiver
-import no.nav.omsorgspenger.oppgave.InitierGosysJournalføringsoppgaver
 import no.nav.omsorgspenger.oppgave.OppgaveClient
-import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaver
+import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaverRiver
 
 fun main() {
     val applicationContext = ApplicationContext.Builder().build()
@@ -35,12 +34,9 @@ fun main() {
 }
 
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
-    OpprettGosysJournalføringsoppgaver(
+    OpprettGosysJournalføringsoppgaverRiver(
         rapidsConnection = this,
         oppgaveClient = applicationContext.oppgaveClient
-    )
-    InitierGosysJournalføringsoppgaver(
-        rapidsConnection = this
     )
     JournalførJsonRiver(
         rapidsConnection = this,
