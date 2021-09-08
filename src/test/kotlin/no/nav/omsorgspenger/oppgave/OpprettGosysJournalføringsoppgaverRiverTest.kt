@@ -104,7 +104,7 @@ private fun String.somJsonMessage() =
     JsonMessage(toString(), MessageProblems(this)).also { it.interestedIn("@løsninger") }
 
 private fun JsonMessage.leggTilLøsningPåHentePersonopplysninger(identitetsnummer: String) = leggTilLøsning(
-    behov = "HentPersonopplysninger",
+    behov = "HentPersonopplysninger@opprettGosysJournalføringsoppgaver",
     løsning = mapOf(
         "personopplysninger" to mapOf(
             identitetsnummer to mapOf(

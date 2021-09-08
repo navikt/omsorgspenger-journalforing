@@ -68,7 +68,7 @@ internal object OpprettGosysJournalføringsoppgaverMelding {
     }
 
     internal const val behovNavn = "OpprettGosysJournalføringsoppgaver"
-    private const val hentPersonopplysningerNavn = "HentPersonopplysninger" //@opprettGosysJournalføringsoppgaver"
+    private const val hentPersonopplysningerNavn = "HentPersonopplysninger@opprettGosysJournalføringsoppgaver"
 
     private const val JOURNALPOSTIDER = "@behov.$behovNavn.journalpostIder"
     private const val JOURNALPOSTTYPE = "@behov.$behovNavn.journalpostType"
