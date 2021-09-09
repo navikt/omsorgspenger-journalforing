@@ -6,10 +6,8 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
-import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.CorrelationId.Companion.correlationId
-import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.extensions.PrometheusExt.ensureRegistered
 import org.slf4j.LoggerFactory
 
@@ -31,7 +29,7 @@ internal class OpprettGosysJournalføringsoppgaverRiver(
     override fun handlePacket(id: String, packet: JsonMessage): Boolean {
         val behov = OpprettGosysJournalføringsoppgaverMelding.hentBehov(packet)
         val correlationId = packet.correlationId()
-        logger.info("Skal løse behov ${OpprettGosysJournalføringsoppgaverMelding.behovNavn}.")
+        logger.info("Skal løse behov ${OpprettGosysJournalføringsoppgaverMelding.behovNavn} for journalpostIder=${behov.journalpostIder}.")
 
         if (behov.manglerPersonopplysninger) {
             logger.info("Legger til behov for å hente personopplysninger.")
@@ -41,41 +39,41 @@ internal class OpprettGosysJournalføringsoppgaverRiver(
             return true
         }
 
-        logger.info("Henter eksisterende oppgaver for ${behov.journalpostIder.size} journalpostIder")
-        var løsning = runBlocking { oppgaveClient.hentOppgave(
+        var journalføringsoppgaver = runBlocking { oppgaveClient.hentJournalføringsoppgaver(
             aktørId = behov.aktørId!!,
             journalpostIder = behov.journalpostIder,
             correlationId = correlationId
-        )}.filterKeys { behov.journalpostIder.contains(it.somJournalpostId()) }
+        )}.filterKeys { behov.journalpostIder.contains(it) }
 
-        if (løsning.isNotEmpty()) {
-            logger.info("JournalpostIder=${løsning.keys} har allerede journalføringsoppgave.")
+        if (journalføringsoppgaver.isNotEmpty()) {
+            logger.info("JournalpostIder=${journalføringsoppgaver.keys} har allerede tilhørende journalføringsoppgaver.")
         }
 
         behov.journalpostIder.filterNot {
-            løsning.keys.contains("$it")
+            journalføringsoppgaver.keys.contains(it)
         }.forEach { journalpostId ->
-            val result = runBlocking { oppgaveClient.opprettOppgave(
+            val oppgaveId = runBlocking { oppgaveClient.opprettJournalføringsoppgave(
                 oppgave = Oppgave(
                     journalpostType = behov.journalpostType,
-                    journalpostId = "$journalpostId",
-                    aktørId = "${behov.aktørId}",
-                    enhetsNummer = "${behov.enhetsnummer}"
+                    journalpostId = journalpostId,
+                    aktørId = behov.aktørId!!,
+                    enhetsNummer = behov.enhetsnummer!!
                 ),
                 correlationId = correlationId
             )}
-            logger.info("Opprettet journalføringsoppgave for journalpostId=$journalpostId")
-            løsning = løsning.plus(result)
+            journalføringsoppgaver = journalføringsoppgaver.plus(journalpostId to oppgaveId)
         }
 
-        require(løsning.keys.containsAll(behov.journalpostIder.map { "$it" })) {
-            "Klarte ikke å opprette oppgave for alle journalpostIdene."
+        require(journalføringsoppgaver.keys.containsAll(behov.journalpostIder)) {
+            "Har kun funnet/opprettet journalføringsoppgaver for journalpostIder=${journalføringsoppgaver.keys}"
         }
 
-        packet.leggTilLøsning(OpprettGosysJournalføringsoppgaverMelding.behovNavn, mapOf(
-            "oppgaveIder" to løsning
-        ))
+        OpprettGosysJournalføringsoppgaverMelding.leggTilLøsning(
+            packet = packet,
+            løsning = journalføringsoppgaver
+        )
 
+        logger.info("JournalpostId/OppgaveId-mapping=$journalføringsoppgaver")
         gosysJournalforingsoppgaveCounter.labels(behov.journalpostType).inc(behov.journalpostIder.size.toDouble())
         return true
     }

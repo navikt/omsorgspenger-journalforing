@@ -15,6 +15,9 @@ private const val oppgaveApiPath = "$basePath/api/v1/oppgaver"
 internal const val HentJournalpostId1 = "111111111111"
 internal const val HentJournalpostId2 = "111111111112"
 internal const val OpprettJournalpostId1 = "111111111113"
+internal const val HentOppgaveId1 = "11111111114"
+internal const val HentOppgaveId2 = "11111111115"
+internal const val OpprettOppgaveId1 = "11111111116"
 
 private fun opprettOppgaveMapping(
         callIdPattern: StringValuePattern = AnythingPattern()
@@ -44,12 +47,12 @@ private fun WireMockServer.stubHentOppgaveOK() = also {
       "antallTreffTotalt": "2",
       "oppgaver": [
         {
-            "id": "HentOppgaveId1",
+            "id": "$HentOppgaveId1",
             "journalpostId": "$HentJournalpostId1",
             "behandlingsTema": "test"
         },
         {
-            "id": "HentOppgaveId2",
+            "id": "$HentOppgaveId2",
             "journalpostId": "$HentJournalpostId2",
             "behandlingsTema": "test2"
         }
@@ -69,7 +72,7 @@ private fun WireMockServer.stubOpprettOppgaveCreated() = also {
     @Language("JSON")
     val json = """
         	{
-        	  "id": "OpprettOppgaveId1",
+        	  "id": "$OpprettOppgaveId1",
         	  "aktoerId": "11111111111",
         	  "journalpostId": "$OpprettJournalpostId1",
         	  "tema": "OMS",

@@ -126,7 +126,8 @@ internal class ApplicationContext(
                 scopes = benyttetEnv.hentRequiredEnv("DOKARKIV_SCOPES").csvTilSet()
             )
             val benyttetOppgaveClient = oppgaveClient?: OppgaveClient(
-                env = benyttetEnv,
+                baseUrl = URI(benyttetEnv.hentRequiredEnv("OPPGAVE_BASE_URL")),
+                scopes = benyttetEnv.hentRequiredEnv("OPPGAVE_SCOPES").csvTilSet(),
                 accessTokenClient = benyttetAccessTokenClient,
                 httpClient = benyttetHttpClient
             )

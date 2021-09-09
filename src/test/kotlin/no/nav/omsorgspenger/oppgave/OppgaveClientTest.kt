@@ -1,8 +1,10 @@
 package no.nav.omsorgspenger.oppgave
 
 import kotlinx.coroutines.runBlocking
+import no.nav.omsorgspenger.AktørId.Companion.somAktørId
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.CorrelationId.Companion.somCorrelationId
+import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -19,12 +21,12 @@ internal class OppgaveClientTest(
 
         assertThrows(IllegalStateException::class.java) {
             runBlocking {
-                client.opprettOppgave(
+                client.opprettJournalføringsoppgave(
                     correlationId = "testtesttest".somCorrelationId(),
                     oppgave = Oppgave(
                         journalpostType = "feiltype",
-                        journalpostId = "test",
-                        aktørId = "test",
+                        journalpostId = "11111111111".somJournalpostId(),
+                        aktørId = "2222222222".somAktørId(),
                         enhetsNummer = "test"
                     )
                 )

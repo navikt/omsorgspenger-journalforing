@@ -41,11 +41,20 @@ internal data class Identitetsnummer private constructor(private val value: Stri
 }
 
 internal data class AktørId private constructor(private val value: String) {
-    init { require(value.matches(Regex)) { "Ugyldig aktørId" } }
+    init { require(value.matches(Regex)) { "$value er en ugyldig aktørId" } }
     override fun toString() = value
     internal companion object {
         private val Regex = "\\d{5,40}".toRegex()
         internal fun String.somAktørId() = AktørId(this)
+    }
+}
+
+internal data class OppgaveId private constructor(private val value: String) {
+    init { require(value.matches(Regex)) { "$value er en ugyldig oppgaveId" } }
+    override fun toString() = value
+    internal companion object {
+        private val Regex = "\\d{5,40}".toRegex()
+        internal fun String.somOppgaveId() = OppgaveId(this)
     }
 }
 

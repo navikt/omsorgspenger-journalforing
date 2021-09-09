@@ -10,8 +10,10 @@ import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.omsorgspenger.ApplicationContext
 import no.nav.omsorgspenger.registerApplicationContext
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
+import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.printSisteMelding
 import no.nav.omsorgspenger.testutils.wiremock.HentJournalpostId1
 import no.nav.omsorgspenger.testutils.wiremock.HentJournalpostId2
+import no.nav.omsorgspenger.testutils.wiremock.HentOppgaveId1
 import no.nav.omsorgspenger.testutils.wiremock.OpprettJournalpostId1
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -43,7 +45,7 @@ internal class OpprettGosysJournalføringsoppgaverRiverTest(
         rapid.mockLøsningPåHentePersonopplysninger("11111111111")
 
         Assertions.assertEquals(2, rapid.inspektør.size)
-        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("HentOppgaveId1"))
+        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains(HentOppgaveId1))
     }
 
     @Test
@@ -56,9 +58,10 @@ internal class OpprettGosysJournalføringsoppgaverRiverTest(
 
         rapid.sendTestMessage(behovssekvens)
         rapid.mockLøsningPåHentePersonopplysninger("11111111111")
+        rapid.printSisteMelding()
 
         Assertions.assertEquals(2, rapid.inspektør.size)
-        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains("HentOppgaveId1"))
+        Assertions.assertTrue(rapid.inspektør.message(1).get("@løsninger").toString().contains(HentOppgaveId1))
         Assertions.assertEquals(2, rapid.inspektør.message(1)["@løsninger"][BEHOV]["oppgaveIder"].size())
     }
 

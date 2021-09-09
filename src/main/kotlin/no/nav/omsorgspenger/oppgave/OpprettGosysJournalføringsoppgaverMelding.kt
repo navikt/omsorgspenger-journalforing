@@ -6,6 +6,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.isMissingOrNull
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.river.leggTilBehov
+import no.nav.k9.rapid.river.leggTilLøsning
 import no.nav.k9.rapid.river.requireArray
 import no.nav.omsorgspenger.AktørId
 import no.nav.omsorgspenger.AktørId.Companion.somAktørId
@@ -13,6 +14,7 @@ import no.nav.omsorgspenger.Identitetsnummer
 import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
+import no.nav.omsorgspenger.OppgaveId
 
 internal object OpprettGosysJournalføringsoppgaverMelding {
 
@@ -65,6 +67,13 @@ internal object OpprettGosysJournalføringsoppgaverMelding {
                 "attributter" to setOf("aktørId", "enhetsnummer")
             )
         ))
+    }
+
+    internal fun leggTilLøsning(packet: JsonMessage, løsning: Map<JournalpostId, OppgaveId>) {
+        packet.leggTilLøsning(
+            behov = behovNavn,
+            løsning = mapOf("oppgaveIder" to løsning.mapValues { "${it.value}" })
+        )
     }
 
     internal const val behovNavn = "OpprettGosysJournalføringsoppgaver"

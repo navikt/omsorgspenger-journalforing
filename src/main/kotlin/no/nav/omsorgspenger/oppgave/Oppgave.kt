@@ -1,21 +1,21 @@
 package no.nav.omsorgspenger.oppgave
 
+import no.nav.omsorgspenger.AktørId
+import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.extensions.DateUtils
 import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import org.intellij.lang.annotations.Language
 
 // Koder:  https://kodeverk-web.nais.preprod.local/kodeverksoversikt
-data class Oppgave(
-        var journalpostId: String,
-        val journalpostType: String,
-        val aktørId: String,
-        val tema: String = "OMS",
-        val behandlingsTema: String =
-                OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstema,
-        val behandlingsType: String =
-                OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstype,
-        val enhetsNummer: String
-)
+internal data class Oppgave(
+    val journalpostId: JournalpostId,
+    val journalpostType: String,
+    val aktørId: AktørId,
+    val enhetsNummer: String) {
+    val tema = "OMS"
+    val behandlingsTema = OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstema
+    val behandlingsType = OppgaveAttributter.hentAttributer(journalføringstype = journalpostType).behandlingstype
+}
 
 internal fun Oppgave.oppdatertOppgaveBody(): String {
     // Oppgave schema: https://oppgave.nais.preprod.local/#/Oppgave/opprettOppgave
