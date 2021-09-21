@@ -113,7 +113,7 @@ internal class SafGateway(
             .mapNotNull { it.stringOrNull("originalJournalpostId")?.somJournalpostId() }
 
         internal fun Map<JournalpostId, Set<JournalpostId>>.førsteJournalpostIdSomHarOriginalJournalpostId(originalJournalpostId: JournalpostId) =
-            filterValues { it.contains(originalJournalpostId) }.keys.firstOrNull()
+            filterKeys { it != originalJournalpostId }.filterValues { it.contains(originalJournalpostId) }.keys.firstOrNull()
 
         internal fun String.safData() = JSONObject(this).getJSONObject("data")
 
