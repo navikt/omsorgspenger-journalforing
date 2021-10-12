@@ -14,6 +14,7 @@ import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.FerdigstillJournalpost
 import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostStatus.Companion.somJournalpostStatus
+import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostType.Companion.somJournalpostType
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.testutils.ApplicationContextExtension
 import no.nav.omsorgspenger.testutils.rapid.TestRapidVerktøy.behov
@@ -58,12 +59,14 @@ internal class FerdigstillJournalføringRiverTest(
 
         coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpost1) }.returns(FerdigstillJournalpost(
             journalpostId = journalpost1,
-            status = "FERDIGSTILT".somJournalpostStatus()
+            status = "FERDIGSTILT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
         ))
 
         coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpost2) }.returns(FerdigstillJournalpost(
             journalpostId = journalpost2,
-            status = "JOURNALFOERT".somJournalpostStatus()
+            status = "JOURNALFOERT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
         ))
 
         val (_, behovsskevens) = nyBehovsSekvens(
@@ -84,12 +87,14 @@ internal class FerdigstillJournalføringRiverTest(
         coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpost1) }.returns(FerdigstillJournalpost(
             journalpostId = journalpost1,
             status = "MOTTATT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = null
         ))
 
         coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpost2) }.returns(FerdigstillJournalpost(
             journalpostId = journalpost2,
             status = "MOTTATT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = "Ola Nordmann"
         ))
 
@@ -120,18 +125,44 @@ internal class FerdigstillJournalføringRiverTest(
         coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpost1) }.returns(FerdigstillJournalpost(
             journalpostId = journalpost1,
             status = "JOURNALFORT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = "Kari Nordmann"
         ))
 
         coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpost2) }.returns(FerdigstillJournalpost(
             journalpostId = journalpost2,
             status = "MOTTATT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = "Ola Nordmann"
         ))
 
         val (_, behovsskevens) = nyBehovsSekvens(
             behov = behovNavn,
             journalpostIder = setOf(journalpost1, journalpost2),
+            fagsystem = Fagsystem.OMSORGSPENGER
+        )
+
+        rapid.sendTestMessage(behovsskevens)
+        assertEquals(setOf(behovNavn), rapid.behov())
+
+        rapid.sisteMeldingErKlarForArkivering()
+        rapid.printSisteMelding()
+    }
+
+    @Test
+    fun `stopper ikke når avsendernavn saknas for journalposttype notat`() {
+        val journalpost1 = "808080".somJournalpostId()
+        val behovNavn = "$FerdigstillJournalføring@testCase"
+
+        coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpost1) }.returns(FerdigstillJournalpost(
+            journalpostId = journalpost1,
+            status = "MOTTATT".somJournalpostStatus(),
+            type = "N".somJournalpostType()
+        ))
+
+        val (_, behovsskevens) = nyBehovsSekvens(
+            behov = behovNavn,
+            journalpostIder = setOf(journalpost1),
             fagsystem = Fagsystem.OMSORGSPENGER
         )
 

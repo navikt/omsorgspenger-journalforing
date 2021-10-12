@@ -66,7 +66,7 @@ internal class SafGatewayTest {
     @Test
     fun `request for hente ferdigstill journalpost`() {
         val journalpostId = "123123123".somJournalpostId()
-        val forventet = """{"query":"query {journalpost(journalpostId:\"123123123\"){journalstatus,tittel,avsenderMottaker{navn},dokumenter{dokumentInfoId,tittel}}}"}"""
+        val forventet = """{"query":"query {journalpost(journalpostId:\"123123123\"){journalstatus,journalposttype,tittel,avsenderMottaker{navn},dokumenter{dokumentInfoId,tittel}}}"}"""
 
         val faktisk = hentFerdigstillJournalpostQuery(journalpostId)
         assertEquals(forventet, faktisk)
@@ -83,6 +83,7 @@ internal class SafGatewayTest {
         var forventet = FerdigstillJournalpost(
             journalpostId = journalpostId,
             status = "FERDIGSTILT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = null,
             tittel = null,
             dokumenter = setOf(dokument)
@@ -119,6 +120,7 @@ internal class SafGatewayTest {
           "data": {
             "journalpost": {
               "journalstatus": "FERDIGSTILT",
+              "journalposttype": "I",
               "tittel": ${tittel?.let { "\"$it\"" }},
               "avsenderMottaker": {
                 "navn": ${avsendernavn?.let { "\"$it\"" }}

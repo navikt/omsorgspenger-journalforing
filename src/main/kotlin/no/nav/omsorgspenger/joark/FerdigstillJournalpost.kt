@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 internal data class FerdigstillJournalpost(
     internal val journalpostId: JournalpostId,
     private val status: JoarkTyper.JournalpostStatus,
+    private val type: JoarkTyper.JournalpostType,
     private val avsendernavn: String? = null,
     private val tittel: String? = null,
     private val dokumenter: Set<Dokument> = emptySet(),
@@ -19,7 +20,7 @@ internal data class FerdigstillJournalpost(
 
     private val mangler = mutableListOf<Mangler>().also { alleMangler ->
         if (bruker == null) { alleMangler.add(Mangler.Bruker) }
-        if (avsendernavn.isNullOrBlank() && bruker?.navn.isNullOrBlank()) { alleMangler.add(Mangler.Avsendernavn) }
+        if (avsendernavn.isNullOrBlank() && bruker?.navn.isNullOrBlank() && !type.erNotat) { alleMangler.add(Mangler.Avsendernavn) }
     }.toList()
 
     internal val erFerdigstilt = status.erFerdigstilt || status.erJournalført
@@ -69,7 +70,7 @@ internal data class FerdigstillJournalpost(
             json.put("dokumenter", jsonDokumenter)
         }
         // Mangler navn på avsender
-        if (avsendernavn.isNullOrBlank()) {
+        if (avsendernavn.isNullOrBlank() && !type.erNotat) {
             json.put("avsenderMottaker", JSONObject().also { it.put("navn", bruker.navn!!) })
             utfyllendeInformasjon.add("avsenderMottaker.navn=[***]")
         }

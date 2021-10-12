@@ -5,6 +5,7 @@ import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
 import no.nav.omsorgspenger.Saksnummer.Companion.somSaksnummer
 import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostStatus.Companion.somJournalpostStatus
+import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostType.Companion.somJournalpostType
 import org.intellij.lang.annotations.Language
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.*
@@ -18,6 +19,7 @@ internal class FerdigstillJournalpostTest {
         val ferdigstillJournalpost = FerdigstillJournalpost(
             journalpostId = "11111111".somJournalpostId(),
             status = "MOTATTT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = null
         )
 
@@ -49,6 +51,7 @@ internal class FerdigstillJournalpostTest {
         val ferdigstillJournalpost = FerdigstillJournalpost(
             journalpostId = "1111111".somJournalpostId(),
             status = "MOTTATT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = "Ola Nordmann",
             tittel = null,
             bruker = FerdigstillJournalpost.Bruker(
@@ -87,6 +90,7 @@ internal class FerdigstillJournalpostTest {
         val ferdigstillJournalpost = FerdigstillJournalpost(
             journalpostId = "1111111".somJournalpostId(),
             status = "MOTTATT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = "Ola Nordmann",
             tittel = "Har tittel",
             bruker = FerdigstillJournalpost.Bruker(
@@ -132,6 +136,7 @@ internal class FerdigstillJournalpostTest {
         val ferdigstillJournalpost = FerdigstillJournalpost(
             journalpostId = "1111111".somJournalpostId(),
             status = "MOTTATT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = "Ola Nordmann",
             tittel = "Hovedtittel",
             bruker = FerdigstillJournalpost.Bruker(
@@ -169,6 +174,7 @@ internal class FerdigstillJournalpostTest {
         val ferdigstillJournalpost = FerdigstillJournalpost(
             journalpostId = "1111111".somJournalpostId(),
             status = "MOTTATT".somJournalpostStatus(),
+            type = "I".somJournalpostType(),
             avsendernavn = null,
             tittel = "Hovedtittel",
             bruker = FerdigstillJournalpost.Bruker(
@@ -197,6 +203,44 @@ internal class FerdigstillJournalpostTest {
             },
             "avsenderMottaker": {
               "navn": "Kari Nordmann"
+            }
+        }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(forventet, ferdigstillJournalpost.oppdaterPayload(), true)
+    }
+
+    @Test
+    fun `avsendernavn mangler ikke på journalposttype Notat`() {
+        val ferdigstillJournalpost = FerdigstillJournalpost(
+            journalpostId = "1111111".somJournalpostId(),
+            status = "MOTTATT".somJournalpostStatus(),
+            type = "N".somJournalpostType(),
+            avsendernavn = null,
+            tittel = "Hovedtittel",
+            bruker = FerdigstillJournalpost.Bruker(
+                identitetsnummer = "11111111111".somIdentitetsnummer(),
+                sak = Fagsystem.K9 to "ABC123".somSaksnummer(),
+                navn = "Kari Nordmann"
+            ),
+            dokumenter = setOf(FerdigstillJournalpost.Dokument(
+                dokumentId = "1",
+                tittel = "En tittel"
+            ))
+        )
+
+        @Language("JSON")
+        val forventet = """
+        {
+            "tema": "OMS",
+            "bruker": {
+                "idType": "FNR",
+                "id": "11111111111"
+            },
+            "sak": {
+                "fagsaksystem": "K9",
+                "sakstype": "FAGSAK",
+                "fagsakId": "ABC123"
             }
         }
         """.trimIndent()

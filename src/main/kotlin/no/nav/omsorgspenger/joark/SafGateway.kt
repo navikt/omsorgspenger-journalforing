@@ -96,7 +96,7 @@ internal class SafGateway(
         """.trimIndent()
 
         internal fun hentFerdigstillJournalpostQuery(journalpostId: JournalpostId) = """
-            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalstatus,tittel,avsenderMottaker{navn},dokumenter{dokumentInfoId,tittel}}}"}
+            {"query":"query {journalpost(journalpostId:\"${journalpostId}\"){journalstatus,journalposttype,tittel,avsenderMottaker{navn},dokumenter{dokumentInfoId,tittel}}}"}
         """.trimIndent()
 
         private fun JSONObject.notNullNotBlankString(key: String)
@@ -141,6 +141,7 @@ internal class SafGateway(
                     journalpostId = journalpostId,
                     avsendernavn = journalpost.getJSONObject("avsenderMottaker").stringOrNull("navn"),
                     status = journalpost.getString("journalstatus").somJournalpostStatus(),
+                    type = journalpost.getString("journalposttype").somJournalpostType(),
                     tittel = journalpost.stringOrNull("tittel"),
                     dokumenter = journalpost.getJSONArray("dokumenter").map { it as JSONObject }.map { FerdigstillJournalpost.Dokument(
                         dokumentId = it.getString("dokumentInfoId"),

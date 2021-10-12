@@ -113,7 +113,7 @@ internal class KopierJournalpostRiverTest(
         assertEquals(emptySet<String>(), rapid.løsninger())
 
         // Sender melding for å bli løst av FerdigstillJournalføringRiver
-        coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpostId) }.returns(FerdigstillJournalpost(journalpostId = journalpostId, status = "MOTTATT".somJournalpostStatus(), avsendernavn = "Ola Nordmann"))
+        coEvery { safGatewayMock.hentFerdigstillJournalpost(any(), journalpostId) }.returns(FerdigstillJournalpost(journalpostId = journalpostId, status = "MOTTATT".somJournalpostStatus(), type = "I".somJournalpostType(), avsendernavn = "Ola Nordmann"))
         rapid.sendTestMessage(rapid.sisteMelding())
         assertEquals(setOf(FerdigstillJournalføringBehov), rapid.løsninger())
 
