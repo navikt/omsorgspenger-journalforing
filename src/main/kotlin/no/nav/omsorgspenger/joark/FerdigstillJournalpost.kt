@@ -31,7 +31,7 @@ internal data class FerdigstillJournalpost(
         return mangler
     }
 
-    internal fun manglerAvsendernavn() = mangler().contains(Mangler.Avsendernavn) && !type.erNotat
+    internal fun manglerAvsendernavn() = mangler().contains(Mangler.Avsendernavn)
 
     internal fun oppdaterPayload() : String {
         check(kanFerdigstilles) { "Journalposten $journalpostId kan ikke ferdigstilles." }

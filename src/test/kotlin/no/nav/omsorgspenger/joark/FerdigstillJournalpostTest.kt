@@ -210,6 +210,44 @@ internal class FerdigstillJournalpostTest {
         JSONAssert.assertEquals(forventet, ferdigstillJournalpost.oppdaterPayload(), true)
     }
 
+    @Test
+    fun `avsendernavn mangler ikke på journalposttype Notat`() {
+        val ferdigstillJournalpost = FerdigstillJournalpost(
+            journalpostId = "1111111".somJournalpostId(),
+            status = "MOTTATT".somJournalpostStatus(),
+            type = "N".somJournalpostType(),
+            avsendernavn = null,
+            tittel = "Hovedtittel",
+            bruker = FerdigstillJournalpost.Bruker(
+                identitetsnummer = "11111111111".somIdentitetsnummer(),
+                sak = Fagsystem.K9 to "ABC123".somSaksnummer(),
+                navn = "Kari Nordmann"
+            ),
+            dokumenter = setOf(FerdigstillJournalpost.Dokument(
+                dokumentId = "1",
+                tittel = "En tittel"
+            ))
+        )
+
+        @Language("JSON")
+        val forventet = """
+        {
+            "tema": "OMS",
+            "bruker": {
+                "idType": "FNR",
+                "id": "11111111111"
+            },
+            "sak": {
+                "fagsaksystem": "K9",
+                "sakstype": "FAGSAK",
+                "fagsakId": "ABC123"
+            }
+        }
+        """.trimIndent()
+
+        JSONAssert.assertEquals(forventet, ferdigstillJournalpost.oppdaterPayload(), true)
+    }
+
     private companion object {
         private fun FerdigstillJournalpost.assertAvsendernavnTilDokarkiv(forventet: String?) {
             val json = JSONObject(oppdaterPayload())
