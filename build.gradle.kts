@@ -1,26 +1,26 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.8.0"
+val junitJupiterVersion = "5.8.2"
 val k9rapidVersion = "1.20210920084849-2ac86f1"
-val dusseldorfKtorVersion = "3.1.6.3-bf04e18"
-val ktorVersion = "1.6.3"
+val dusseldorfKtorVersion = "3.1.6.7-7d29e37"
+val ktorVersion = "1.6.7"
 val jsonassertVersion = "1.5.0"
-val orgJsonVersion = "20210307"
-val mockkVersion = "1.12.0"
+val orgJsonVersion = "20211205"
+val mockkVersion = "1.12.1"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.18.8"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.5.31"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    kotlin("jvm") version "1.6.10"
+    id("com.github.johnrengelman.shadow") version "7.1.1"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 dependencies {
@@ -71,11 +71,11 @@ repositories {
 tasks {
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "16"
+        kotlinOptions.jvmTarget = "17"
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "16"
+        kotlinOptions.jvmTarget = "17"
     }
 
     withType<Test> {
@@ -98,7 +98,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.2"
+        gradleVersion = "7.3.2"
     }
 
 }
