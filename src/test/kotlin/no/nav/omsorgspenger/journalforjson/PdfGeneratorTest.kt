@@ -31,8 +31,8 @@ internal class PdfGeneratorTest {
         val validator = Foundries.defaultInstance().createValidator(PDFAFlavour.PDFA_2_U, false)
         val result = Foundries.defaultInstance().createParser(pdf).use { validator.validate(it) }
         val failures = result.testAssertions.filter { it.status != TestAssertion.Status.PASSED }
-        failures.forEachIndexed{ id , failure ->
-            println("=== PDF Compliance feil ${id+1} ===")
+        failures.forEachIndexed { id, failure ->
+            println("=== PDF Compliance feil ${id + 1} ===")
             println("       ${failure.message}")
             println("       Location ${failure.location.context} ${failure.location.level}")
             println("       Status ${failure.status}")
@@ -121,7 +121,7 @@ internal class PdfGeneratorTest {
                     "virksomhetstyper" : [ "FISKE", "JORDBRUK" ]
                   }
                 },
-                "virksomhetNavn" : "Test"
+                "virksomhetNavn" : "Test&FlereKonstiga#Tecken!%Heheh"
               } ],
               "frilanser" : {
                 "startdato" : "2019-10-10",

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import io.ktor.util.*
 
 import org.intellij.lang.annotations.Language
 import java.time.Duration
@@ -113,7 +114,7 @@ internal object HtmlGenerator {
                 ?: textValue.formatDateOrNull()
                 ?: textValue.formatDurationOrNull()
                 ?: textValue.formatPeriodeOrNull()
-                ?: textValue
+                ?: textValue.escapeHTML()
         }
     }
 

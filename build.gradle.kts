@@ -3,11 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.8.2"
 val k9rapidVersion = "1.20210920084849-2ac86f1"
-val dusseldorfKtorVersion = "3.1.6.7-7d29e37"
+val dusseldorfKtorVersion = "3.1.6.7-fadfc45"
 val ktorVersion = "1.6.7"
 val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20211205"
-val mockkVersion = "1.12.1"
+val mockkVersion = "1.12.2"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.18.8"
 
@@ -15,7 +15,7 @@ val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "1.6.10"
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 java {
