@@ -11,7 +11,7 @@
   "azureTenant": "nav.no",
   "env": {
     "DOKARKIV_BASE_URL": "https://dokarkiv.prod-fss-pub.nais.io",
-    "DOKARKIV_SCOPES": "162b3255-2f72-4399-8f7a-244add9ffaac/.default",
+    "DOKARKIV_SCOPES": "prod-fss.teamdokumenthandtering.dokarkiv/.default",
     "OPPGAVE_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/oppgave",
     "OPPGAVE_SCOPES": "e816bb42-bf62-4be9-a1cc-a9be70fe4403/.default",
     "DOKARKIVPROXY_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/dokarkivproxy",
