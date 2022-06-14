@@ -6,16 +6,12 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.client.HttpClient
-import io.ktor.client.features.ResponseException
-import io.ktor.client.request.accept
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.HttpStatement
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.toByteArray
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.omsorgspenger.AktørId
 import no.nav.omsorgspenger.AzureAwareClient
@@ -31,93 +27,98 @@ internal class OppgaveClient(
     private val baseUrl: URI,
     scopes: Set<String>,
     accessTokenClient: AccessTokenClient,
-    private val httpClient: HttpClient) : AzureAwareClient(
-        navn = "OppgaveClient",
-        accessTokenClient = accessTokenClient,
-        scopes = scopes,
-        pingUrl = URI("$baseUrl/internal/ready")) {
+    private val httpClient: HttpClient
+) : AzureAwareClient(
+    navn = "OppgaveClient",
+    accessTokenClient = accessTokenClient,
+    scopes = scopes,
+    pingUrl = URI("$baseUrl/internal/ready")
+) {
 
     internal suspend fun hentJournalføringsoppgaver(
         correlationId: CorrelationId,
         aktørId: AktørId,
-        journalpostIder: Set<JournalpostId>): Map<JournalpostId, OppgaveId> {
+        journalpostIder: Set<JournalpostId>
+    ): Map<JournalpostId, OppgaveId> {
         val journalpostId = journalpostIder.joinToString { "$it" }.replace(" ", "")
         val oppgaveParams = "tema=OMS&aktoerId=$aktørId&journalpostId=$journalpostId&limit=20"
         return kotlin.runCatching {
-            httpClient.get<HttpStatement>("$baseUrl/api/v1/oppgaver?$oppgaveParams") {
+            httpClient.get("$baseUrl/api/v1/oppgaver?$oppgaveParams") {
                 header(HttpHeaders.Authorization, authorizationHeader())
                 header(HttpHeaders.XCorrelationId, "$correlationId")
                 accept(ContentType.Application.Json)
-            }.execute()
+            }.body<HttpStatement>().execute()
         }.håndterResponse()
     }
 
     internal suspend fun opprettJournalføringsoppgave(
         correlationId: CorrelationId,
-        oppgave: Oppgave): OppgaveId {
+        oppgave: Oppgave
+    ): OppgaveId {
         val payload = oppgave.oppdatertOppgaveBody()
         return kotlin.runCatching {
-            httpClient.post<HttpStatement>("$baseUrl/api/v1/oppgaver") {
+            httpClient.post("$baseUrl/api/v1/oppgaver") {
                 header(HttpHeaders.Authorization, authorizationHeader())
                 header(HttpHeaders.XCorrelationId, "$correlationId")
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
-                body = payload
-            }.execute()
+                setBody(payload)
+            }
+                .body<HttpStatement>().execute()
         }.håndterResponse().getValue(oppgave.journalpostId)
     }
 
     private suspend fun Result<HttpResponse>.håndterResponse(): Map<JournalpostId, OppgaveId> = fold(
-            onSuccess = { response ->
-                when (response.status) {
-                    HttpStatusCode.OK -> { // Håndter HentOppgave
-                        val jsonResponse = objectMapper.readValue<JsonNode>(response.content.toByteArray())
-                        if (jsonResponse["antallTreffTotalt"].asInt() == 0) {
-                            logger.info("Fann inga oppgaver")
-                            return emptyMap()
-                        }
-
-                        return jsonResponse["oppgaver"].elements().asSequence().toList().associate {
-                            val oppgaveid = it["id"].asText()
-                            logger.info("Hentet existerande oppgave $oppgaveid")
-                            val journalpostId = it["journalpostId"].asText()
-                            journalpostId.somJournalpostId() to oppgaveid.somOppgaveId()
-                        }
+        onSuccess = { response ->
+            when (response.status) {
+                HttpStatusCode.OK -> { // Håndter HentOppgave
+                    val jsonResponse = objectMapper.readValue<JsonNode>(response.bodyAsText())
+                    if (jsonResponse["antallTreffTotalt"].asInt() == 0) {
+                        logger.info("Fann inga oppgaver")
+                        return emptyMap()
                     }
-                    HttpStatusCode.Created -> { // Håndter OpprettOppgave
-                        val oppgaveResponse = objectMapper.readValue<OppgaveRespons>(response.content.toByteArray())
 
-                        if (oppgaveResponse.id.isEmpty()) {
-                            throw IllegalStateException("Uventet feil vid parsing av svar fra oppgave api, id er null")
-                        }
-                        logger.info("Opprettet oppgave ${oppgaveResponse.id}")
-                        return mapOf(oppgaveResponse.journalpostId.somJournalpostId() to oppgaveResponse.id.somOppgaveId())
-                    }
-                    else -> {
-                        response.logError()
-                        throw IllegalStateException("Uventet response code (${response.status}) fra oppgave-api")
+                    return jsonResponse["oppgaver"].elements().asSequence().toList().associate {
+                        val oppgaveid = it["id"].asText()
+                        logger.info("Hentet existerande oppgave $oppgaveid")
+                        val journalpostId = it["journalpostId"].asText()
+                        journalpostId.somJournalpostId() to oppgaveid.somOppgaveId()
                     }
                 }
-            },
-            onFailure = { cause ->
-                when (cause is ResponseException) {
-                    true -> {
-                        cause.response.logError()
-                        throw IllegalStateException("Uventet feil ved kall till oppgave-api")
+                HttpStatusCode.Created -> { // Håndter OpprettOppgave
+                    val oppgaveResponse = objectMapper.readValue<OppgaveRespons>(response.bodyAsText())
+
+                    if (oppgaveResponse.id.isEmpty()) {
+                        throw IllegalStateException("Uventet feil vid parsing av svar fra oppgave api, id er null")
                     }
-                    else -> throw cause
+                    logger.info("Opprettet oppgave ${oppgaveResponse.id}")
+                    return mapOf(oppgaveResponse.journalpostId.somJournalpostId() to oppgaveResponse.id.somOppgaveId())
+                }
+                else -> {
+                    response.logError()
+                    throw IllegalStateException("Uventet response code (${response.status}) fra oppgave-api")
                 }
             }
+        },
+        onFailure = { cause ->
+            when (cause is ResponseException) {
+                true -> {
+                    cause.response.logError()
+                    throw IllegalStateException("Uventet feil ved kall till oppgave-api")
+                }
+                else -> throw cause
+            }
+        }
     )
 
     private suspend fun HttpResponse.logError() =
-            logger.error("HTTP ${status.value} fra oppgave-api, response: ${String(content.toByteArray())}")
+        logger.error("HTTP ${status.value} fra oppgave-api, response: ${this.bodyAsText()}")
 
     private companion object {
         private val logger = LoggerFactory.getLogger(Oppgave::class.java)
 
         private val objectMapper: ObjectMapper = jacksonObjectMapper()
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .registerModule(JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .registerModule(JavaTimeModule())
     }
 }

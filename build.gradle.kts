@@ -3,18 +3,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.8.2"
 val k9rapidVersion = "1.20220602105039-77944ce"
-val dusseldorfKtorVersion = "3.1.6.8-248832c"
-val ktorVersion = "1.6.8"
+val dusseldorfKtorVersion = "3.2.0.2-db0f814"
+val ktorVersion = "2.0.2"
 val jsonassertVersion = "1.5.0"
 val orgJsonVersion = "20220320"
-val mockkVersion = "1.12.3"
+val mockkVersion = "1.12.4"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.20.1"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.7.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -28,10 +28,10 @@ dependencies {
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-oauth2-client:$dusseldorfKtorVersion")
     implementation("no.nav.helse:dusseldorf-ktor-client:$dusseldorfKtorVersion")
-
-
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
     implementation("org.json:json:$orgJsonVersion")
 
     // PDF
@@ -47,7 +47,7 @@ dependencies {
         exclude(group = "com.github.jknack")
     }
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
+    testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
     }
 
