@@ -1,9 +1,12 @@
 package no.nav.omsorgspenger.kopierjournalpost
 
+import com.fasterxml.jackson.databind.node.TextNode
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.isMissingOrNull
+import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.aktueltBehov
 import no.nav.k9.rapid.river.skalLøseBehov
@@ -46,11 +49,12 @@ internal class KopierJournalpostRiver(
 
         logger.info("Kopierer JournalpostId=[${kopierJournalpost.journalpostId}] for Fagsystem=[${kopierJournalpost.fagsystem.name}] fra Saksnummer=[${kopierJournalpost.fraSaksnummer}] til Saksnummer=[${kopierJournalpost.tilSaksnummer}]")
 
+        val opprettet = packet["@behovOpprettet"].takeIf { !it.isMissingOrNull() }?.asText() ?: packet["@opprettet"].asText()
         // Håndterer om journalposten allerede er kopiert.
         val alleredeKopiertJournalpostId = runBlocking { safGateway.hentOriginaleJournalpostIder(
             fagsystem = kopierJournalpost.fagsystem,
             saksnummer = kopierJournalpost.tilSaksnummer,
-            fraOgMed = ZonedDateTime.parse(packet["@opprettet"].asText()).minusWeeks(1).toLocalDate(),
+            fraOgMed = ZonedDateTime.parse(opprettet).minusWeeks(1).toLocalDate(),
             correlationId = correlationId
         )}.førsteJournalpostIdSomHarOriginalJournalpostId(kopierJournalpost.journalpostId)
 
