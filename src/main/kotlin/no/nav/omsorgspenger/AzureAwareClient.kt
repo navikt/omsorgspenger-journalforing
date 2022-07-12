@@ -45,11 +45,11 @@ internal abstract class AzureAwareClient(
         onFailure = { UnHealthy("AccessTokenCheck", "Feil: ${it.message}") }
     )
 
-    open suspend fun pingCheck() : Result = pingUrl.httpGet {
+    open suspend fun pingCheck() : Result = pingUrl.toString().httpGet {
         it.header(HttpHeaders.Authorization, authorizationHeader())
     }.second.fold(
         onSuccess = { when (it.status.isSuccess()) {
-            true -> Healthy("PingCheck", "OK: ${it.readText()}")
+            true -> Healthy("PingCheck", "OK: ${it.bodyAsText()}")
             false -> UnHealthy("PingCheck", "Feil: ${it.status}")
         }},
         onFailure = { UnHealthy("PingCheck", "Feil: ${it.message}") }

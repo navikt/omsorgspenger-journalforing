@@ -27,7 +27,7 @@ internal class SafGateway(
         scopes = scopes,
         pingUrl = URI("$baseUrl/isReady")) {
 
-    private val GraphQlUrl = URI("$baseUrl/graphql")
+    private val GraphQlUrl = URI("$baseUrl/graphql").toString()
 
     private suspend fun String.hentDataFraSaf(correlationId: CorrelationId) : JSONObject {
         val (httpStatusCode, response) = GraphQlUrl.httpPost { builder->

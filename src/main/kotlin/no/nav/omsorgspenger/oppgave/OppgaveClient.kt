@@ -7,15 +7,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ResponseException
-import io.ktor.client.request.accept
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.HttpStatement
+import io.ktor.client.plugins.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.util.toByteArray
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.omsorgspenger.AktørId
 import no.nav.omsorgspenger.AzureAwareClient
@@ -44,7 +39,7 @@ internal class OppgaveClient(
         val journalpostId = journalpostIder.joinToString { "$it" }.replace(" ", "")
         val oppgaveParams = "tema=OMS&aktoerId=$aktørId&journalpostId=$journalpostId&limit=20"
         return kotlin.runCatching {
-            httpClient.get<HttpStatement>("$baseUrl/api/v1/oppgaver?$oppgaveParams") {
+            httpClient.prepareGet("$baseUrl/api/v1/oppgaver?$oppgaveParams") {
                 header(HttpHeaders.Authorization, authorizationHeader())
                 header(HttpHeaders.XCorrelationId, "$correlationId")
                 accept(ContentType.Application.Json)
@@ -57,12 +52,12 @@ internal class OppgaveClient(
         oppgave: Oppgave): OppgaveId {
         val payload = oppgave.oppdatertOppgaveBody()
         return kotlin.runCatching {
-            httpClient.post<HttpStatement>("$baseUrl/api/v1/oppgaver") {
+            httpClient.preparePost("$baseUrl/api/v1/oppgaver") {
                 header(HttpHeaders.Authorization, authorizationHeader())
                 header(HttpHeaders.XCorrelationId, "$correlationId")
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
-                body = payload
+                setBody(payload)
             }.execute()
         }.håndterResponse().getValue(oppgave.journalpostId)
     }
@@ -71,7 +66,7 @@ internal class OppgaveClient(
             onSuccess = { response ->
                 when (response.status) {
                     HttpStatusCode.OK -> { // Håndter HentOppgave
-                        val jsonResponse = objectMapper.readValue<JsonNode>(response.content.toByteArray())
+                        val jsonResponse = objectMapper.readValue<JsonNode>(response.bodyAsText().toByteArray())
                         if (jsonResponse["antallTreffTotalt"].asInt() == 0) {
                             logger.info("Fann inga oppgaver")
                             return emptyMap()
@@ -85,7 +80,7 @@ internal class OppgaveClient(
                         }
                     }
                     HttpStatusCode.Created -> { // Håndter OpprettOppgave
-                        val oppgaveResponse = objectMapper.readValue<OppgaveRespons>(response.content.toByteArray())
+                        val oppgaveResponse = objectMapper.readValue<OppgaveRespons>(response.bodyAsText().toByteArray())
 
                         if (oppgaveResponse.id.isEmpty()) {
                             throw IllegalStateException("Uventet feil vid parsing av svar fra oppgave api, id er null")
@@ -111,7 +106,7 @@ internal class OppgaveClient(
     )
 
     private suspend fun HttpResponse.logError() =
-            logger.error("HTTP ${status.value} fra oppgave-api, response: ${String(content.toByteArray())}")
+            logger.error("HTTP ${status.value} fra oppgave-api, response: ${String(bodyAsText().toByteArray())}")
 
     private companion object {
         private val logger = LoggerFactory.getLogger(Oppgave::class.java)
