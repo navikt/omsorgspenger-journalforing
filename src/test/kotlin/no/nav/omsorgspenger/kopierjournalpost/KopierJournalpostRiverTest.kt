@@ -125,25 +125,6 @@ internal class KopierJournalpostRiverTest(
         assertEquals("123412341234", rapid.løsningPå(behovNavn).getString("journalpostId"))
     }
 
-    @Test
-    fun `håndterer deprecated @opprettet key`() {
-        val identitetsnummer = "11111111119".somIdentitetsnummer()
-        var (_, behovsskevens) = nyBehovsSekvens(
-            fra = identitetsnummer,
-            til = identitetsnummer
-        )
-
-        behovsskevens = behovsskevens.replace("@behovOpprettet", "@opprettet")
-
-        coEvery { safGatewayMock.hentOriginaleJournalpostIder(any(),any(),any(),any()) }.returns(emptyMap())
-        coEvery { safGatewayMock.hentTypeOgStatus(any(), any()) }.returns("I".somJournalpostType() to "JOURNALFOERT".somJournalpostStatus())
-        rapid.sendTestMessage(behovsskevens)
-
-        assertEquals(setOf(KopierJournalpost), rapid.behov())
-        rapid.sisteMeldingErKlarForArkivering()
-        assertEquals("123412341234", rapid.løsningPå(KopierJournalpost).getString("journalpostId"))
-    }
-
     private companion object {
         private const val FerdigstillJournalføringBehov = "FerdigstillJournalføring@kopierJournalpost"
         const val KopierJournalpost = "KopierJournalpost"
