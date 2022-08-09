@@ -20,11 +20,13 @@ import java.net.URI
 internal class DokarkivproxyClient(
     accessTokenClient: AccessTokenClient,
     private val baseUrl: URI,
-    scopes: Set<String>) : AzureAwareClient(
-        navn = "DokarkivproxyClient",
-        accessTokenClient = accessTokenClient,
-        scopes = scopes,
-        pingUrl = URI("$baseUrl/isReady")) {
+    scopes: Set<String>
+) : AzureAwareClient(
+    navn = "DokarkivproxyClient",
+    accessTokenClient = accessTokenClient,
+    scopes = scopes,
+    pingUrl = URI("$baseUrl/isReady")
+) {
 
     private fun knyttTilAnnenSakUrl(journalpostId: JournalpostId) =
         "$baseUrl/rest/journalpostapi/v1/journalpost/$journalpostId/knyttTilAnnenSak"
@@ -35,7 +37,7 @@ internal class DokarkivproxyClient(
         identitetsnummer: Identitetsnummer,
         saksnummer: Saksnummer,
         correlationId: CorrelationId
-    ) : JournalpostId {
+    ): JournalpostId {
         @Language("JSON")
         val dto = """
         {
@@ -52,7 +54,7 @@ internal class DokarkivproxyClient(
         """.trimIndent()
 
         val url = knyttTilAnnenSakUrl(journalpostId = journalpostId)
-        val (httpStatusCode, response) = url.httpPut { builder->
+        val (httpStatusCode, response) = url.httpPut { builder ->
             builder.header("Nav-CallId", "$correlationId")
             builder.header("Nav-Consumer-Id", "omsorgspenger-journalforing")
             builder.accept(ContentType.Application.Json)

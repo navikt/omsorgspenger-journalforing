@@ -18,15 +18,18 @@ import java.net.URI
 internal class DokarkivClient(
     accessTokenClient: AccessTokenClient,
     private val baseUrl: URI,
-    scopes: Set<String>) : AzureAwareClient(
-        navn = "DokarkivClient",
-        accessTokenClient = accessTokenClient,
-        scopes = scopes,
-        pingUrl = URI("$baseUrl/isReady")) {
+    scopes: Set<String>
+) : AzureAwareClient(
+    navn = "DokarkivClient",
+    accessTokenClient = accessTokenClient,
+    scopes = scopes,
+    pingUrl = URI("$baseUrl/isReady")
+) {
 
     private val opprettJournalpostUrl = "$baseUrl/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"
     private fun JournalpostId.oppdaterJournalpostUrl() = "$baseUrl/rest/journalpostapi/v1/journalpost/${this}"
-    private fun JournalpostId.ferdigstillJournalpostUrl() = "$baseUrl/rest/journalpostapi/v1/journalpost/${this}/ferdigstill"
+    private fun JournalpostId.ferdigstillJournalpostUrl() =
+        "$baseUrl/rest/journalpostapi/v1/journalpost/${this}/ferdigstill"
 
     internal suspend fun opprettJournalpost(
         correlationId: CorrelationId,
@@ -37,7 +40,7 @@ internal class DokarkivClient(
             builder.jsonBody(nyJournalpost.dokarkivPayload())
         }.readTextOrThrow()
 
-        return when (httpStatus == HttpStatusCode.Created || httpStatus == HttpStatusCode.Conflict)  {
+        return when (httpStatus == HttpStatusCode.Created || httpStatus == HttpStatusCode.Conflict) {
             true -> JSONObject(responseBody).let { json ->
                 val journalpostId = json.getString("journalpostId").somJournalpostId()
                 check(json.getBoolean("journalpostferdigstilt")) {
@@ -51,7 +54,8 @@ internal class DokarkivClient(
 
     internal suspend fun oppdaterJournalpostForFerdigstilling(
         correlationId: CorrelationId,
-        ferdigstillJournalpost: FerdigstillJournalpost) {
+        ferdigstillJournalpost: FerdigstillJournalpost
+    ) {
         val url = ferdigstillJournalpost.journalpostId.oppdaterJournalpostUrl()
         val (httpStatus, responseBody) = url.httpPut { builder ->
             builder.defaultHeaders(correlationId)
@@ -65,7 +69,8 @@ internal class DokarkivClient(
 
     internal suspend fun ferdigstillJournalpost(
         correlationId: CorrelationId,
-        ferdigstillJournalpost: FerdigstillJournalpost) {
+        ferdigstillJournalpost: FerdigstillJournalpost
+    ) {
         val url = ferdigstillJournalpost.journalpostId.ferdigstillJournalpostUrl()
         val (httpStatus, responseBody) = url.httpPatch { builder ->
             builder.defaultHeaders(correlationId)
