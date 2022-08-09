@@ -12,7 +12,6 @@ import no.nav.omsorgspenger.Identitetsnummer
 import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
-import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.FerdigstillJournalpost
 import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostStatus.Companion.somJournalpostStatus
 import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostType.Companion.somJournalpostType
@@ -35,15 +34,10 @@ internal class KopierJournalpostRiverTest(
     private val applicationContextBuilder: ApplicationContext.Builder) {
 
     private val safGatewayMock = mockk<SafGateway>()
-    private val dokarkivClientMock = mockk<DokarkivClient>().also { mock ->
-        coEvery { mock.oppdaterJournalpostForFerdigstilling(any(), any()) }.returns(Unit)
-        coEvery { mock.ferdigstillJournalpost(any(), any()) }.returns(Unit)
-    }
 
     private val rapid = TestRapid().apply {
         this.registerApplicationContext(applicationContextBuilder.also { builder ->
             builder.safGateway = safGatewayMock
-            builder.dokarkivClient = dokarkivClientMock
         }.build())
     }
 

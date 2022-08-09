@@ -21,7 +21,6 @@ internal class ApplicationContextExtension : ParameterResolver {
             .build()
             .stubDokarkiv()
             .stubOppgaveMock()
-            .stubDokarkivproxy()
             .stubSaf()
 
         private val applicationContextBuilder = ApplicationContext.Builder(
@@ -30,8 +29,6 @@ internal class ApplicationContextExtension : ParameterResolver {
                     "DOKARKIV_SCOPES" to "dokarkiv/.default",
                     "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
                     "OPPGAVE_SCOPES" to "oppgave/.default",
-                    "DOKARKIVPROXY_BASE_URL" to wireMockServer.dokarkivproxyBaseUrl(),
-                    "DOKARKIVPROXY_SCOPES" to "dokarkivproxy/.default",
                     "SAF_BASE_URL" to wireMockServer.safBaseUrl(),
                     "SAF_SCOPES" to "saf/.default",
                     "AZURE_APP_CLIENT_ID" to "omsorgspenger-journalforing",
