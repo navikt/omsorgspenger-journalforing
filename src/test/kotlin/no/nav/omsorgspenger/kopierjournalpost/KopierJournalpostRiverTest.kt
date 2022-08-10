@@ -12,6 +12,7 @@ import no.nav.omsorgspenger.Identitetsnummer
 import no.nav.omsorgspenger.Identitetsnummer.Companion.somIdentitetsnummer
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.JournalpostId.Companion.somJournalpostId
+import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.FerdigstillJournalpost
 import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostStatus.Companion.somJournalpostStatus
 import no.nav.omsorgspenger.joark.JoarkTyper.JournalpostType.Companion.somJournalpostType
@@ -34,10 +35,12 @@ internal class KopierJournalpostRiverTest(
     private val applicationContextBuilder: ApplicationContext.Builder) {
 
     private val safGatewayMock = mockk<SafGateway>()
+    private val dokarkivClientMock = mockk<DokarkivClient>()
 
     private val rapid = TestRapid().apply {
         this.registerApplicationContext(applicationContextBuilder.also { builder ->
             builder.safGateway = safGatewayMock
+            builder.dokarkivClient = dokarkivClientMock
         }.build())
     }
 
@@ -68,6 +71,7 @@ internal class KopierJournalpostRiverTest(
 
         coEvery { safGatewayMock.hentOriginaleJournalpostIder(any(),any(),any(),any()) }.returns(emptyMap())
         coEvery { safGatewayMock.hentTypeOgStatus(any(), any()) }.returns("N".somJournalpostType() to "FERDIGSTILT".somJournalpostStatus())
+        coEvery { dokarkivClientMock.knyttTilAnnenSak(any(), any(), any(), any(), any()) }.returns("123412341234".somJournalpostId())
         rapid.sendTestMessage(behovsskevens)
 
         assertEquals(setOf(KopierJournalpost), rapid.behov())
@@ -85,6 +89,7 @@ internal class KopierJournalpostRiverTest(
 
         coEvery { safGatewayMock.hentOriginaleJournalpostIder(any(),any(),any(),any()) }.returns(emptyMap())
         coEvery { safGatewayMock.hentTypeOgStatus(any(), any()) }.returns("I".somJournalpostType() to "JOURNALFOERT".somJournalpostStatus())
+        coEvery { dokarkivClientMock.knyttTilAnnenSak(any(), any(), any(), any(), any()) }.returns("123412341234".somJournalpostId())
         rapid.sendTestMessage(behovsskevens)
 
         assertEquals(setOf(KopierJournalpost), rapid.behov())
@@ -100,6 +105,9 @@ internal class KopierJournalpostRiverTest(
 
         coEvery { safGatewayMock.hentOriginaleJournalpostIder(any(),any(),any(),any()) }.returns(emptyMap())
         coEvery { safGatewayMock.hentTypeOgStatus(journalpostId, any()) }.returns("I".somJournalpostType() to "MOTTATT".somJournalpostStatus())
+        coEvery { dokarkivClientMock.knyttTilAnnenSak(any(), any(), any(), any(), any()) }.returns("123412341234".somJournalpostId())
+        coEvery { dokarkivClientMock.ferdigstillJournalpost(any(), any()) }.returns(Unit)
+        coEvery { dokarkivClientMock.oppdaterJournalpostForFerdigstilling(any(), any()) }.returns(Unit)
 
         rapid.sendTestMessage(behovsskevens)
 

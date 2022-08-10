@@ -58,22 +58,6 @@ private fun WireMockServer.stubOppdaterJournalpostOk() = also {
     )
 }
 
-private fun WireMockServer.stubKnyttTilAnnenSakK9() = also { wireMockServer ->
-    wireMockServer.stubFor(WireMock.put(WireMock.urlMatching(".*$journalpostPath/.*"))
-        .withHeader("Authorization", RegexPattern("^Bearer .+$"))
-        .withHeader("Content-Type", equalTo("application/json"))
-        .withHeader("Accept", equalTo("application/json"))
-        .withHeader("Nav-Consumer-Id", equalTo("omsorgspenger-journalforing"))
-        .withHeader("Nav-Callid", AnythingPattern())
-        .withRequestBody(matchingJsonPath("$.sakstype", equalTo("FAGSAK")))
-        .withRequestBody(matchingJsonPath("$.fagsaksystem", equalTo("K9")))
-        .withRequestBody(matchingJsonPath("$.tema", equalTo("OMS")))
-        .withRequestBody(matchingJsonPath("$.journalfoerendeEnhet", equalTo("9999")))
-        .withRequestBody(matchingJsonPath("$.bruker.idType", equalTo("FNR")))
-        .withRequestBody(matchingJsonPath("$.bruker.id"))
-        .willReturn(WireMock.aResponse().withStatus(200).withBody("""{"nyJournalpostId":"123412341234"}""")))
-}
-
 private fun WireMockServer.stubOppdaterJournalpostUventetFeil() = also {
     stubFor(oppdaterJournalpostMapping(callIdPattern = equalTo("400"))
         .willReturn(
@@ -161,6 +145,5 @@ internal fun WireMockServer.stubDokarkiv() =
     .stubOpprettJournalpostAlleredeOpprettet()
     .stubOpprettJournalpostIkkeFerdigstilt()
     .stubIsReady()
-    .stubKnyttTilAnnenSakK9()
 
 internal fun WireMockServer.dokarkivBaseUrl() = baseUrl() + basePath
