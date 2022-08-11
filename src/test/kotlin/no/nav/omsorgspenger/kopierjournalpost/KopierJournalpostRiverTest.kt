@@ -35,7 +35,10 @@ internal class KopierJournalpostRiverTest(
     private val applicationContextBuilder: ApplicationContext.Builder) {
 
     private val safGatewayMock = mockk<SafGateway>()
-    private val dokarkivClientMock = mockk<DokarkivClient>()
+    private val dokarkivClientMock = mockk<DokarkivClient>().also { mock ->
+        coEvery { mock.oppdaterJournalpostForFerdigstilling(any(), any()) }.returns(Unit)
+        coEvery { mock.ferdigstillJournalpost(any(), any()) }.returns(Unit)
+    }
 
     private val rapid = TestRapid().apply {
         this.registerApplicationContext(applicationContextBuilder.also { builder ->
@@ -71,7 +74,6 @@ internal class KopierJournalpostRiverTest(
 
         coEvery { safGatewayMock.hentOriginaleJournalpostIder(any(),any(),any(),any()) }.returns(emptyMap())
         coEvery { safGatewayMock.hentTypeOgStatus(any(), any()) }.returns("N".somJournalpostType() to "FERDIGSTILT".somJournalpostStatus())
-        coEvery { dokarkivClientMock.knyttTilAnnenSak(any(), any(), any(), any(), any()) }.returns("123412341234".somJournalpostId())
         rapid.sendTestMessage(behovsskevens)
 
         assertEquals(setOf(KopierJournalpost), rapid.behov())
@@ -89,7 +91,6 @@ internal class KopierJournalpostRiverTest(
 
         coEvery { safGatewayMock.hentOriginaleJournalpostIder(any(),any(),any(),any()) }.returns(emptyMap())
         coEvery { safGatewayMock.hentTypeOgStatus(any(), any()) }.returns("I".somJournalpostType() to "JOURNALFOERT".somJournalpostStatus())
-        coEvery { dokarkivClientMock.knyttTilAnnenSak(any(), any(), any(), any(), any()) }.returns("123412341234".somJournalpostId())
         rapid.sendTestMessage(behovsskevens)
 
         assertEquals(setOf(KopierJournalpost), rapid.behov())
@@ -105,9 +106,6 @@ internal class KopierJournalpostRiverTest(
 
         coEvery { safGatewayMock.hentOriginaleJournalpostIder(any(),any(),any(),any()) }.returns(emptyMap())
         coEvery { safGatewayMock.hentTypeOgStatus(journalpostId, any()) }.returns("I".somJournalpostType() to "MOTTATT".somJournalpostStatus())
-        coEvery { dokarkivClientMock.knyttTilAnnenSak(any(), any(), any(), any(), any()) }.returns("123412341234".somJournalpostId())
-        coEvery { dokarkivClientMock.ferdigstillJournalpost(any(), any()) }.returns(Unit)
-        coEvery { dokarkivClientMock.oppdaterJournalpostForFerdigstilling(any(), any()) }.returns(Unit)
 
         rapid.sendTestMessage(behovsskevens)
 
