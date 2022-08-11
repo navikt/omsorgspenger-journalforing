@@ -1,13 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.9.0"
+val junitJupiterVersion = "5.8.2"
 val k9rapidVersion = "1.20220711113850-0593e9e"
-val dusseldorfKtorVersion = "3.2.0.3-d4fdef9"
+val dusseldorfKtorVersion = "3.2.0.2-259fbf4"
 val ktorVersion = "2.0.3"
 val jsonassertVersion = "1.5.1"
 val orgJsonVersion = "20220320"
-val mockkVersion = "1.12.5"
+val mockkVersion = "1.12.4"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.20.1"
 
@@ -47,7 +47,6 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
-        exclude(group = "org.fusesource.jansi")
     }
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
@@ -97,7 +96,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.5.1"
+        gradleVersion = "7.4.2"
     }
 
 }

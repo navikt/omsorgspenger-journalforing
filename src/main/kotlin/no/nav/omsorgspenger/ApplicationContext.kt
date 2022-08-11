@@ -10,6 +10,7 @@ import no.nav.k9.rapid.river.RapidsStateListener
 import no.nav.k9.rapid.river.csvTilSet
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.omsorgspenger.joark.DokarkivClient
+import no.nav.omsorgspenger.joark.DokarkivproxyClient
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.oppgave.OppgaveClient
 import java.net.URI
@@ -17,6 +18,7 @@ import java.net.URI
 internal class ApplicationContext(
     internal val env: Environment,
     internal val dokarkivClient: DokarkivClient,
+    internal val dokarkivproxyClient: DokarkivproxyClient,
     internal val safGateway: SafGateway,
     internal val oppgaveClient: OppgaveClient,
     internal val healthChecks: Set<HealthCheck>
@@ -31,6 +33,7 @@ internal class ApplicationContext(
         internal var httpClient: HttpClient? = null,
         internal var accessTokenClient: AccessTokenClient? = null,
         internal var dokarkivClient: DokarkivClient? = null,
+        internal var dokarkivproxyClient: DokarkivproxyClient? = null,
         internal var safGateway: SafGateway? = null,
         internal var oppgaveClient: OppgaveClient? = null
     ) {
@@ -55,6 +58,11 @@ internal class ApplicationContext(
                 accessTokenClient = benyttetAccessTokenClient,
                 httpClient = benyttetHttpClient
             )
+            val benyttetDokarkivproxyClient = dokarkivproxyClient ?: DokarkivproxyClient(
+                accessTokenClient = benyttetAccessTokenClient,
+                baseUrl = URI(benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_BASE_URL")),
+                scopes = benyttetEnv.hentRequiredEnv("DOKARKIVPROXY_SCOPES").csvTilSet()
+            )
             val benyttetSafGateway = safGateway ?: SafGateway(
                 accessTokenClient = benyttetAccessTokenClient,
                 baseUrl = URI(benyttetEnv.hentRequiredEnv("SAF_BASE_URL")),
@@ -67,9 +75,11 @@ internal class ApplicationContext(
                 healthChecks = setOf(
                     benyttetDokarkivClient,
                     benyttetOppgaveClient,
+                    benyttetDokarkivproxyClient,
                     benyttetSafGateway
                 ),
                 oppgaveClient = benyttetOppgaveClient,
+                dokarkivproxyClient = benyttetDokarkivproxyClient,
                 safGateway = benyttetSafGateway
             )
         }

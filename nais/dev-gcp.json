@@ -5,17 +5,18 @@
   ],
   "externalHosts": [
     "dokarkiv.dev-fss-pub.nais.io",
-    "oppgave-q1.dev-fss.nais.io",
-    "saf.dev-fss-pub.nais.io"
+    "omsorgspenger-proxy.dev-fss.nais.io"
   ],
   "kafkaPool": "nav-dev",
   "azureTenant": "trygdeetaten.no",
   "env": {
     "DOKARKIV_BASE_URL": "https://dokarkiv.dev-fss-pub.nais.io",
     "DOKARKIV_SCOPES": "api://dev-fss.teamdokumenthandtering.dokarkiv-q1/.default",
-    "OPPGAVE_BASE_URL": "https://oppgave-q1.dev-fss-pub.nais.io",
-    "OPPGAVE_SCOPES": "api://dev-fss.oppgavehandtering.oppgave-q1/.default",
-    "SAF_BASE_URL": "https://saf.dev-fss-pub.nais.io",
-    "SAF_SCOPES": "api://dev-fss.teamdokumenthandtering.saf/.default"
+    "OPPGAVE_BASE_URL": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/oppgave",
+    "OPPGAVE_SCOPES": "824525c6-74df-47fc-8892-444e5f8506de/.default",
+    "DOKARKIVPROXY_BASE_URL": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/dokarkivproxy",
+    "DOKARKIVPROXY_SCOPES": "824525c6-74df-47fc-8892-444e5f8506de/.default",
+    "SAF_BASE_URL": "https://omsorgspenger-proxy.dev-fss-pub.nais.io/saf",
+    "SAF_SCOPES": "824525c6-74df-47fc-8892-444e5f8506de/.default"
   }
 }
