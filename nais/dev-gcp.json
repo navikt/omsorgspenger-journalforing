@@ -14,7 +14,7 @@
     "DOKARKIV_BASE_URL": "https://dokarkiv.dev-fss-pub.nais.io",
     "DOKARKIV_SCOPES": "api://dev-fss.teamdokumenthandtering.dokarkiv-q1/.default",
     "OPPGAVE_BASE_URL": "https://oppgave-q1.dev-fss-pub.nais.io",
-    "OPPGAVE_SCOPES": "api://dev-fss.oppgavehandtering.oppgave/.default",
+    "OPPGAVE_SCOPES": "api://dev-fss.oppgavehandtering.oppgave-q1/.default",
     "SAF_BASE_URL": "https://saf.dev-fss-pub.nais.io",
     "SAF_SCOPES": "api://dev-fss.teamdokumenthandtering.saf/.default"
   }
