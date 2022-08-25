@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.8.2"
-val k9rapidVersion = "1.20220711113850-0593e9e"
+val k9rapidVersion = "1.20220824120614-3be8319"
 val dusseldorfKtorVersion = "3.2.0.2-259fbf4"
 val ktorVersion = "2.0.3"
 val jsonassertVersion = "1.5.1"
