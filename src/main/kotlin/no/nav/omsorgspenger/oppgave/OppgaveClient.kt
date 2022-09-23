@@ -83,6 +83,7 @@ internal class OppgaveClient(
                         journalpostId.somJournalpostId() to oppgaveid.somOppgaveId()
                     }
                 }
+
                 HttpStatusCode.Created -> { // Håndter OpprettOppgave
                     val oppgaveResponse = objectMapper.readValue<OppgaveRespons>(response.bodyAsText().toByteArray())
 
@@ -92,6 +93,7 @@ internal class OppgaveClient(
                     logger.info("Opprettet oppgave ${oppgaveResponse.id}")
                     return mapOf(oppgaveResponse.journalpostId.somJournalpostId() to oppgaveResponse.id.somOppgaveId())
                 }
+
                 else -> {
                     response.logError()
                     throw IllegalStateException("Uventet response code (${response.status}) fra oppgave-api")
@@ -104,6 +106,7 @@ internal class OppgaveClient(
                     cause.response.logError()
                     throw IllegalStateException("Uventet feil ved kall till oppgave-api")
                 }
+
                 else -> throw cause
             }
         }

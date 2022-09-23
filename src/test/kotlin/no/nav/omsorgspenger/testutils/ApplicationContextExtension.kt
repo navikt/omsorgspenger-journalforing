@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
 
 internal class ApplicationContextExtension : ParameterResolver {
-
     internal companion object {
         private val wireMockServer = WireMockBuilder()
             .withAzureSupport()
@@ -25,19 +24,19 @@ internal class ApplicationContextExtension : ParameterResolver {
             .stubSaf()
 
         private val applicationContextBuilder = ApplicationContext.Builder(
-                env = mapOf(
-                    "DOKARKIV_BASE_URL" to wireMockServer.dokarkivBaseUrl(),
-                    "DOKARKIV_SCOPES" to "dokarkiv/.default",
-                    "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
-                    "OPPGAVE_SCOPES" to "oppgave/.default",
-                    "DOKARKIVPROXY_BASE_URL" to wireMockServer.dokarkivproxyBaseUrl(),
-                    "DOKARKIVPROXY_SCOPES" to "dokarkivproxy/.default",
-                    "SAF_BASE_URL" to wireMockServer.safBaseUrl(),
-                    "SAF_SCOPES" to "saf/.default",
-                    "AZURE_APP_CLIENT_ID" to "omsorgspenger-journalforing",
-                    "AZURE_APP_CLIENT_SECRET" to "azureSecret",
-                    "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to wireMockServer.getAzureV2TokenUrl()
-                )
+            env = mapOf(
+                "DOKARKIV_BASE_URL" to wireMockServer.dokarkivBaseUrl(),
+                "DOKARKIV_SCOPES" to "dokarkiv/.default",
+                "OPPGAVE_BASE_URL" to wireMockServer.oppgaveApiBaseUrl(),
+                "OPPGAVE_SCOPES" to "oppgave/.default",
+                "DOKARKIVPROXY_BASE_URL" to wireMockServer.dokarkivproxyBaseUrl(),
+                "DOKARKIVPROXY_SCOPES" to "dokarkivproxy/.default",
+                "SAF_BASE_URL" to wireMockServer.safBaseUrl(),
+                "SAF_SCOPES" to "saf/.default",
+                "AZURE_APP_CLIENT_ID" to "omsorgspenger-journalforing",
+                "AZURE_APP_CLIENT_SECRET" to "azureSecret",
+                "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to wireMockServer.getAzureV2TokenUrl()
+            )
         )
 
         private val applicationContext = applicationContextBuilder.build()
@@ -49,9 +48,9 @@ internal class ApplicationContextExtension : ParameterResolver {
         }
 
         private val støttedeParametre = listOf(
-                ApplicationContext.Builder::class.java,
-                ApplicationContext::class.java,
-                WireMockServer::class.java
+            ApplicationContext::class.java,
+            ApplicationContext.Builder::class.java,
+            WireMockServer::class.java
         )
     }
 
