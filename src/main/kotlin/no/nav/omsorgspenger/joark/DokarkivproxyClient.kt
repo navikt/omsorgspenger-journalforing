@@ -25,7 +25,7 @@ internal class DokarkivproxyClient(
     navn = "DokarkivproxyClient",
     accessTokenClient = accessTokenClient,
     scopes = scopes,
-    pingUrl = URI("$baseUrl/isReady")
+    pingUrl = URI("$baseUrl/actuator/health/readiness")
 ) {
 
     private fun knyttTilAnnenSakUrl(journalpostId: JournalpostId) =
