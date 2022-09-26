@@ -26,7 +26,7 @@ private fun WireMockServer.stubKnyttTilAnnenSakK9() = also { wireMockServer ->
 
 private fun WireMockServer.stubIsReady() = also { wireMockServer ->
     wireMockServer.stubFor(
-        WireMock.get("$basePath/isReady")
+        WireMock.get("$basePath/actuator/health/readiness")
         .willReturn(
             WireMock.aResponse()
             .withStatus(200)

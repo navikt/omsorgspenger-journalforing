@@ -128,7 +128,7 @@ private fun WireMockServer.stubOpprettJournalpostIkkeFerdigstilt() = also {
 }
 
 private fun WireMockServer.stubIsReady() = also {
-    stubFor(WireMock.get("$basePath/isReady")
+    stubFor(WireMock.get("$basePath/actuator/health/readiness")
         .willReturn(WireMock.aResponse()
             .withStatus(200)
         )
