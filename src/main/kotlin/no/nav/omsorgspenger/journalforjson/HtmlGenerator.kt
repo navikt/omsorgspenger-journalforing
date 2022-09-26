@@ -79,6 +79,7 @@ internal object HtmlGenerator {
                     html += """<div class="json_object">$objectHtml</div>"""
                 }
             }
+
             is ArrayNode -> forEachIndexed { _, arrayElement ->
                 if (arrayElement.inneholderData()) {
                     html += when (arrayElement.isObject) {
@@ -87,6 +88,7 @@ internal object HtmlGenerator {
                     }
                 }
             }
+
             else -> html += formatValue()
         }
 
@@ -116,6 +118,7 @@ internal object HtmlGenerator {
             true -> "Ja"
             false -> "Nei"
         }
+
         else -> {
             val textValue = asText()
             textValue.formatTimeOrNull()
@@ -156,6 +159,7 @@ internal object HtmlGenerator {
                     false -> "${fom.format(DATE_FORMATTER)} - ${tom.format(DATE_FORMATTER)}"
                 }
             }
+
             false -> null
         }
     }

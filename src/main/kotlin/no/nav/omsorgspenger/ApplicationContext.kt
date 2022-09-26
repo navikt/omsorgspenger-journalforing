@@ -1,7 +1,7 @@
 package no.nav.omsorgspenger
 
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.okhttp.*
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.oauth2.client.AccessTokenClient
 import no.nav.helse.dusseldorf.oauth2.client.ClientSecretAccessTokenClient
@@ -39,7 +39,7 @@ internal class ApplicationContext(
     ) {
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
-            val benyttetHttpClient = httpClient ?: HttpClient(CIO) {
+            val benyttetHttpClient = httpClient ?: HttpClient(OkHttp) {
                 expectSuccess = false
             }
             val benyttetAccessTokenClient = accessTokenClient ?: ClientSecretAccessTokenClient(

@@ -48,6 +48,7 @@ internal class DokarkivClient(
                 }
                 journalpostId
             }
+
             false -> throw IllegalStateException("Feil ved opprettelse av journalpost. HttpStatus=[${httpStatus.value}], Response=[$responseBody]")
         }
     }
