@@ -23,7 +23,7 @@ internal class DokarkivClient(
     navn = "DokarkivClient",
     accessTokenClient = accessTokenClient,
     scopes = scopes,
-    pingUrl = URI("$baseUrl/isReady")
+    pingUrl = URI("$baseUrl/actuator/health/readiness")
 ) {
 
     private val opprettJournalpostUrl = "$baseUrl/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"
