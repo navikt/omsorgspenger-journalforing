@@ -39,9 +39,12 @@ jobs:
         run: echo "TAG=$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - name: Bygg & last opp Docker image
-        run: |
-          docker build --pull --tag ${BASE_IMAGE}:${TAG} --tag ${BASE_IMAGE}:latest .
-          docker push ${BASE_IMAGE} --all-tags
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          pull: true
+          tags: ${BASE_IMAGE}:${TAG}, ${BASE_IMAGE}:latest
 
       - name: Sett image for nais deploy
         run: echo "IMAGE=${BASE_IMAGE}:${TAG}" >> $GITHUB_ENV
@@ -50,6 +53,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ${{ env.IMAGE }}
+          ignore-unfixed: true
           format: 'sarif'
           output: 'trivy-results.sarif'
 
@@ -58,6 +62,18 @@ jobs:
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.SALSA_CREDENTIALS }}
+
+      - name: Provenance, upload and sign attestation
+        uses: nais/salsa@v0.3
+        with:
+          key: ${{ secrets.SALSA_KMS_KEY }}
+          docker_pwd: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
@@ -75,20 +91,3 @@ jobs:
           CLUSTER: prod-gcp
           RESOURCE: nais/naiserator.yaml
           VARS: nais/prod-gcp.json
-
-  run-slsa:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.SALSA_CREDENTIALS }}
-
-      - name: Provenance, upload and sign attestation
-        uses: nais/salsa@v0.3
-        with:
-          key: ${{ secrets.SALSA_KMS_KEY }}
-          docker_pwd: ${{ secrets.GITHUB_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
