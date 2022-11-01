@@ -44,7 +44,7 @@ jobs:
           context: .
           push: true
           pull: true
-          tags: ${BASE_IMAGE}:${TAG}, ${BASE_IMAGE}:latest
+          tags: ${{env.BASE_IMAGE}}:${{env.TAG}}, ${{env.BASE_IMAGE}}:latest
 
       - name: Sett image for nais deploy
         run: echo "IMAGE=${BASE_IMAGE}:${TAG}" >> $GITHUB_ENV
