@@ -5,6 +5,7 @@
   ],
   "externalHosts": [
     "dokarkiv.prod-fss-pub.nais.io",
+    "omsorgspenger-proxy.prod-fss-pub.nais.io",
     "oppgave.prod-fss-pub.nais.io",
     "saf.prod-fss-pub.nais.io"
   ],
@@ -15,6 +16,8 @@
     "DOKARKIV_SCOPES": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
     "OPPGAVE_BASE_URL": "https://oppgave.prod-fss-pub.nais.io",
     "OPPGAVE_SCOPES": "api://prod-fss.oppgavehandtering.oppgave/.default",
+    "DOKARKIVPROXY_BASE_URL": "https://omsorgspenger-proxy.prod-fss-pub.nais.io/dokarkivproxy",
+    "DOKARKIVPROXY_SCOPES": "e816bb42-bf62-4be9-a1cc-a9be70fe4403/.default",
     "SAF_BASE_URL": "https://saf.prod-fss-pub.nais.io",
     "SAF_SCOPES": "api://prod-fss.teamdokumenthandtering.saf/.default"
   }
