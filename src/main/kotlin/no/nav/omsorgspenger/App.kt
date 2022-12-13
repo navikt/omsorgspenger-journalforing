@@ -40,7 +40,7 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     )
     KopierJournalpostRiver(
         rapidsConnection = this,
-        dokarkivClient = applicationContext.dokarkivClient,
+        dokarkivproxyClient = applicationContext.dokarkivproxyClient,
         safGateway = applicationContext.safGateway
     )
 

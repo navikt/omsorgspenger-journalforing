@@ -38,7 +38,6 @@ internal class KopierJournalpostRiverTest(
     private val dokarkivClientMock = mockk<DokarkivClient>().also { mock ->
         coEvery { mock.oppdaterJournalpostForFerdigstilling(any(), any()) }.returns(Unit)
         coEvery { mock.ferdigstillJournalpost(any(), any()) }.returns(Unit)
-        coEvery { mock.knyttTilAnnenSak(any(), any(), any(), any(), any()) }.returns("123412341234".somJournalpostId())
     }
 
     private val rapid = TestRapid().apply {
