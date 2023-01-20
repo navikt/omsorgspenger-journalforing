@@ -1,17 +1,15 @@
 package no.nav.omsorgspenger.kopierjournalpost
 
-import com.fasterxml.jackson.databind.node.TextNode
 import kotlinx.coroutines.runBlocking
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.helse.rapids_rivers.isMissingOrNull
-import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.aktueltBehov
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.CorrelationId.Companion.correlationId
-import no.nav.omsorgspenger.joark.DokarkivproxyClient
+import no.nav.omsorgspenger.joark.DokarkivClient
 import no.nav.omsorgspenger.joark.JoarkTyper
 import no.nav.omsorgspenger.joark.SafGateway
 import no.nav.omsorgspenger.joark.SafGateway.Companion.førsteJournalpostIdSomHarOriginalJournalpostId
@@ -20,7 +18,7 @@ import java.time.ZonedDateTime
 
 internal class KopierJournalpostRiver(
     rapidsConnection: RapidsConnection,
-    private val dokarkivproxyClient: DokarkivproxyClient,
+    private val dokarkivClient: DokarkivClient,
     private val safGateway: SafGateway,
 ) : BehovssekvensPacketListener(
     logger = LoggerFactory.getLogger(KopierJournalpostRiver::class.java)) {
@@ -76,7 +74,7 @@ internal class KopierJournalpostRiver(
 
         // Om journalposten allerede er ferdigstilt kopierer vi den med en gang.
         if (typeOgStatus.kanKopieresNå()) {
-            val nyJournalpostId = runBlocking { dokarkivproxyClient.knyttTilAnnenSak(
+            val nyJournalpostId = runBlocking { dokarkivClient.knyttTilAnnenSak(
                 journalpostId = kopierJournalpost.journalpostId,
                 saksnummer = kopierJournalpost.tilSaksnummer,
                 fagsystem = kopierJournalpost.fagsystem,
