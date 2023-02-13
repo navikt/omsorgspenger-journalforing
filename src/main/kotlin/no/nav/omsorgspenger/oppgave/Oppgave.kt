@@ -3,8 +3,8 @@ package no.nav.omsorgspenger.oppgave
 import no.nav.omsorgspenger.AktørId
 import no.nav.omsorgspenger.JournalpostId
 import no.nav.omsorgspenger.extensions.DateUtils
-import no.nav.omsorgspenger.extensions.StringExt.trimJson
 import org.intellij.lang.annotations.Language
+import org.json.JSONObject
 
 // Koder:  https://kodeverk-web.nais.preprod.local/kodeverksoversikt
 internal data class Oppgave(
@@ -37,5 +37,5 @@ internal fun Oppgave.oppdatertOppgaveBody(): String {
           "behandlesAvApplikasjon": "IT00"
         }
     """.trimIndent()
-    return json.trimJson()
+    return JSONObject(json).toString()
 }
