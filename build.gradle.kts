@@ -1,20 +1,20 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.9.1"
-val k9rapidVersion = "1.20221124140732-e07f6f7"
-val dusseldorfKtorVersion = "3.2.1.3-bd71b5a"
-val ktorVersion = "2.1.3"
+val junitJupiterVersion = "5.9.2"
+val k9rapidVersion = "1.20230206064237-4df4393"
+val dusseldorfKtorVersion = "3.2.2.3-0b4ec43"
+val ktorVersion = "2.2.3"
 val jsonassertVersion = "1.5.1"
 val orgJsonVersion = "20220924"
-val mockkVersion = "1.13.2"
+val mockkVersion = "1.13.4"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.22.2"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.8.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
