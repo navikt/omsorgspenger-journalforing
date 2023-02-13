@@ -24,8 +24,7 @@ internal class DokarkivproxyClient(
 ) : AzureAwareClient(
     navn = "DokarkivproxyClient",
     accessTokenClient = accessTokenClient,
-    scopes = scopes,
-    pingUrl = URI("$baseUrl/isReady")
+    scopes = scopes
 ) {
 
     private fun knyttTilAnnenSakUrl(journalpostId: JournalpostId) =

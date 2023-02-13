@@ -25,8 +25,7 @@ internal class SafGateway(
 ) : AzureAwareClient(
     navn = "SafGateway",
     accessTokenClient = accessTokenClient,
-    scopes = scopes,
-    pingUrl = URI("$baseUrl/isReady")
+    scopes = scopes
 ) {
 
     private val GraphQlUrl = URI("$baseUrl/graphql").toString()

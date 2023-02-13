@@ -22,8 +22,7 @@ internal class DokarkivClient(
 ) : AzureAwareClient(
     navn = "DokarkivClient",
     accessTokenClient = accessTokenClient,
-    scopes = scopes,
-    pingUrl = URI("$baseUrl/actuator/health/readiness")
+    scopes = scopes
 ) {
 
     private val opprettJournalpostUrl = "$baseUrl/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=true"

@@ -17,14 +17,6 @@ private val IngenJournalposterResponse = """
     }
 """.trimIndent()
 
-private fun WireMockServer.mockPingUrl(): WireMockServer {
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlPathMatching(".*$path/isReady"))
-            .withHeader("Authorization", WireMock.containing("Bearer e"))
-            .willReturn(WireMock.aResponse().withStatus(200)))
-    return this
-}
-
 private fun WireMockServer.mockHentOriginaleJournalpostIder(): WireMockServer {
     WireMock.stubFor(
         WireMock.post(WireMock.urlPathMatching(".*$path/graphql"))
@@ -42,5 +34,5 @@ private fun WireMockServer.mockHentOriginaleJournalpostIder(): WireMockServer {
     return this
 }
 
-internal fun WireMockServer.stubSaf() = mockPingUrl().mockHentOriginaleJournalpostIder()
+internal fun WireMockServer.stubSaf() = mockHentOriginaleJournalpostIder()
 internal fun WireMockServer.safBaseUrl() = baseUrl() + path
