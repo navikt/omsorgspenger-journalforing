@@ -123,8 +123,7 @@ internal class DokarkivClient(
         require(httpStatusCode.isSuccess()) {
             "Feil fra Dokarkivproxy. URL=[$url], HttpStatusCode=[${httpStatusCode.value}], Response=[$response]"
         }
-
-        return JSONObject(response).getString("nyJournalpostId").somJournalpostId()
+        return JSONObject(response).get("nyJournalpostId").toString().somJournalpostId()
     }
 
     private fun HttpRequestBuilder.defaultHeaders(correlationId: CorrelationId) {
