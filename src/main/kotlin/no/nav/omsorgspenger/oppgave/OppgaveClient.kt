@@ -30,8 +30,7 @@ internal class OppgaveClient(
 ) : AzureAwareClient(
     navn = "OppgaveClient",
     accessTokenClient = accessTokenClient,
-    scopes = scopes,
-    pingUrl = URI("$baseUrl/internal/ready")
+    scopes = scopes
 ) {
 
     internal suspend fun hentJournalføringsoppgaver(
