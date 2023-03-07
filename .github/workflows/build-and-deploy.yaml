@@ -73,6 +73,8 @@ jobs:
         with:
           key: ${{ secrets.SALSA_KMS_KEY }}
           registry: ${{ secrets.GITHUB_TOKEN }}
+          image_digest: ${{ steps.docker_build.outputs.digest }}
+          image: ${{ steps.docker_build.outputs.imageid }}
 
       - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
