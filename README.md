@@ -33,9 +33,3 @@ Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på Git
 ## For NAV-ansatte
 
 Interne henvendelser kan sendes via Slack i kanalen #sif_omsorgspenger.
-
-Dokumentation på integrasjoner i bruk:<br>
-<a href="https://confluence.adeo.no/display/BOA/Utviklerdokumentasjon+-+start+her">Joark</a> slack: #team_dokumentløsinger<br>
-<a href="https://confluence.adeo.no/display/TO/Systemdokumentasjon+Oppgave#">Oppgave</a> slack: #mfn<br>
-<a href="https://confluence.adeo.no/display/BOA/saf#">Saf</a> slack: #saf
-

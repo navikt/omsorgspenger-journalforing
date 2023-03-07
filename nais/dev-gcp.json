@@ -1,8 +1,5 @@
 {
   "cluster": "dev-gcp",
-  "ingresses": [
-    "https://omsorgspenger-journalforing.dev.intern.nav.no"
-  ],
   "externalHosts": [
     "dokarkiv.dev-fss-pub.nais.io",
     "oppgave-q1.dev-fss-pub.nais.io",
