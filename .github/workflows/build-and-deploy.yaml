@@ -72,8 +72,7 @@ jobs:
         uses: nais/salsa@v0.8
         with:
           key: ${{ secrets.SALSA_KMS_KEY }}
-          docker_pwd: ${{ secrets.GITHUB_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
