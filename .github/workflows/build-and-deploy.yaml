@@ -9,9 +9,6 @@ on:
       - 'LICENSE'
   workflow_dispatch:
 
-env:
-  BASE_IMAGE: ghcr.io/${{ github.repository }}
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -35,14 +32,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sett tag for docker
-        run: echo "TAG=$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
       - name: Sett image for nais deploy
-        run: echo "IMAGE=${BASE_IMAGE}:${TAG}" >> $GITHUB_ENV
+        run: echo "IMAGE=ghcr.io/${{ github.repository }}:$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      - name: Bygg & last opp Docker image
-        uses: docker/build-push-action@v4
+      - uses: docker/build-push-action@v4
+        id: docker-build
         with:
           context: .
           push: true
@@ -73,7 +67,7 @@ jobs:
         with:
           key: ${{ secrets.SALSA_KMS_KEY }}
           registry: ${{ secrets.GITHUB_TOKEN }}
-          image_digest: ${{ steps.docker_build.outputs.digest }}
+          image_digest: ${{ steps.docker-build.outputs.digest }}
           image: ${{ env.IMAGE }}
 
       - name: Deploy til dev-gcp
