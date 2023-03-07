@@ -2,11 +2,11 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.9.2"
-val k9rapidVersion = "1.20230206064237-4df4393"
-val dusseldorfKtorVersion = "3.2.2.3-0b4ec43"
-val ktorVersion = "2.2.3"
+val k9rapidVersion = "1.20230223071927-10b4a1f"
+val dusseldorfKtorVersion = "3.2.2.4-98ccf55"
+val ktorVersion = "2.2.4"
 val jsonassertVersion = "1.5.1"
-val orgJsonVersion = "20220924"
+val orgJsonVersion = "20230227"
 val mockkVersion = "1.13.4"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.22.2"
@@ -15,7 +15,9 @@ val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "1.8.10"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.0"
+    id("org.sonarqube") version "4.0.0.2929"
+    jacoco
 }
 
 java {
@@ -94,7 +96,29 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.6"
+        gradleVersion = "8.0.2"
     }
 
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "navikt_omsorgspenger-journalforing")
+        property("sonar.organization", "navikt")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", System.getenv("SONAR_TOKEN"))
+        property("sonar.sourceEncoding", "UTF-8")
+    }
 }
