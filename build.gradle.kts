@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.9.2"
-val k9rapidVersion = "1.20230223071927-10b4a1f"
+val k9rapidVersion = "1.20230316100804-072b34b"
 val dusseldorfKtorVersion = "3.2.2.4-98ccf55"
 val ktorVersion = "2.2.4"
 val jsonassertVersion = "1.5.1"
@@ -15,7 +15,7 @@ val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "1.8.10"
-    id("com.github.johnrengelman.shadow") version "8.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.sonarqube") version "4.0.0.2929"
     jacoco
 }
