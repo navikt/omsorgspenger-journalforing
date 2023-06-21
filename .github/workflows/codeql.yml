@@ -1,7 +1,14 @@
 name: CodeQL
 on:
   push:
-    branches: master
+    branches:
+      - master
+    paths-ignore:
+      - '**.md'
+      - '**.MD'
+      - '.gitignore'
+      - 'LICENSE'
+      - 'CODEOWNERS'
   workflow_dispatch:
 
 jobs:
