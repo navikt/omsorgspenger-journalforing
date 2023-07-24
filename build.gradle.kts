@@ -1,22 +1,22 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.9.3"
-val k9rapidVersion = "1.20230601082432-b338e04"
-val dusseldorfKtorVersion = "3.2.3.1-b31dd02"
-val ktorVersion = "2.3.1"
+val junitJupiterVersion = "5.10.0"
+val k9rapidVersion = "1.20230721085317-ef25e22"
+val dusseldorfKtorVersion = "3.2.3.2-785ee09"
+val ktorVersion = "2.3.2"
 val jsonassertVersion = "1.5.1"
 val orgJsonVersion = "20230618"
 val mockkVersion = "1.13.5"
 val openhtmltopdfVersion = "1.0.10"
-val verapdfVersion = "1.22.2"
+val verapdfVersion = "1.24.1"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.8.22"
+    kotlin("jvm") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.sonarqube") version "4.2.1.3168"
+    id("org.sonarqube") version "4.3.0.3225"
     jacoco
 }
 
