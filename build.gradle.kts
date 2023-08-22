@@ -3,11 +3,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.10.0"
 val k9rapidVersion = "1.20230721085317-ef25e22"
-val dusseldorfKtorVersion = "3.2.3.2-785ee09"
-val ktorVersion = "2.3.2"
+val dusseldorfKtorVersion = "4.0.4"
+val ktorVersion = "2.3.3"
 val jsonassertVersion = "1.5.1"
 val orgJsonVersion = "20230618"
-val mockkVersion = "1.13.5"
+val mockkVersion = "1.13.7"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.24.1"
 
@@ -96,7 +96,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "8.2.1"
+        gradleVersion = "8.3"
     }
 
 }
