@@ -1,12 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.10.1"
-val k9rapidVersion = "1.20231002100147-90c2022"
-val dusseldorfKtorVersion = "4.1.5"
-val ktorVersion = "2.3.7"
+val junitJupiterVersion = "5.10.2"
+val k9rapidVersion = "1.20240115061003-339d641"
+val dusseldorfKtorVersion = "4.2.1"
+val ktorVersion = "2.3.8"
 val jsonassertVersion = "1.5.1"
-val orgJsonVersion = "20231013"
+val orgJsonVersion = "20240205"
 val mockkVersion = "1.13.9"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.24.1"
