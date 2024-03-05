@@ -4,10 +4,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val junitJupiterVersion = "5.10.2"
 val k9rapidVersion = "1.20240115061003-339d641"
 val dusseldorfKtorVersion = "4.2.1"
-val ktorVersion = "2.3.8"
+val ktorVersion = "2.3.9"
 val jsonassertVersion = "1.5.1"
-val orgJsonVersion = "20240205"
-val mockkVersion = "1.13.9"
+val orgJsonVersion = "20240303"
+val mockkVersion = "1.13.10"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.24.1"
 
