@@ -15,5 +15,5 @@ jobs:
       contents: read
     secrets: inherit
     with:
-      java-version: 21
+      javaversion: 21
       readertoken: false
