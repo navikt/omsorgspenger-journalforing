@@ -16,7 +16,7 @@ jobs:
     uses: navikt/sif-gha-workflows/.github/workflows/gradle-sonar.yml@main
     permissions:
       contents: read
-      pull-requests: read
+      pullrequests: read
     secrets: inherit
     with:
       java-version: 21
@@ -31,7 +31,7 @@ jobs:
       security-events: write
     secrets: inherit
     with:
-      java-version: 21
+      javaversion: 21
       readertoken: false
       package-command: './gradlew clean build -x test'
       branch: master
@@ -42,7 +42,7 @@ jobs:
       contents: read
     secrets: inherit
     with:
-      java-version: 21
+      javaversion: 21
       readertoken: false
 
   build:
@@ -52,7 +52,7 @@ jobs:
       id-token: write
     secrets: inherit
     with:
-      java-version: 21
+      javaversion: 21
       team: omsorgspenger
       dockercontext: .
       readertoken: false
