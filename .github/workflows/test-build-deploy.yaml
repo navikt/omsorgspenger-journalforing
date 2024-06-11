@@ -19,6 +19,7 @@ jobs:
       pull-requests: read
     secrets: inherit
     with:
+      java-version: 21
       readertoken: false
 
   codeql:
@@ -30,6 +31,7 @@ jobs:
       security-events: write
     secrets: inherit
     with:
+      java-version: 21
       readertoken: false
       package-command: './gradlew clean build -x test'
       branch: master
@@ -40,6 +42,7 @@ jobs:
       contents: read
     secrets: inherit
     with:
+      java-version: 21
       readertoken: false
 
   build:
@@ -49,6 +52,7 @@ jobs:
       id-token: write
     secrets: inherit
     with:
+      java-version: 21
       team: omsorgspenger
       dockercontext: .
       readertoken: false
