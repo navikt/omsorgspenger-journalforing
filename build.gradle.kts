@@ -21,8 +21,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 dependencies {
@@ -68,11 +68,11 @@ repositories {
 tasks {
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = "21"
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = "21"
     }
 
     withType<Test> {
@@ -95,7 +95,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "8.3"
+        gradleVersion = "8.8"
     }
 
 }
