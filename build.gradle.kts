@@ -7,7 +7,7 @@ val dusseldorfKtorVersion = "5.0.3"
 val ktorVersion = "2.3.12"
 val jsonassertVersion = "1.5.3"
 val orgJsonVersion = "20240303"
-val mockkVersion = "1.13.11"
+val mockkVersion = "1.13.12"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.26.1"
 
