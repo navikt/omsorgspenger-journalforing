@@ -3,18 +3,18 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.11.4"
 val k9rapidVersion = "1.20240510083323-9f05ca1"
-val dusseldorfKtorVersion = "5.0.15"
+val dusseldorfKtorVersion = "6.1.1"
 val ktorVersion = "2.3.13"
 val jsonassertVersion = "1.5.3"
-val orgJsonVersion = "20241224"
-val mockkVersion = "1.13.14"
+val orgJsonVersion = "20250107"
+val mockkVersion = "1.13.16"
 val openhtmltopdfVersion = "1.0.10"
-val verapdfVersion = "1.26.2"
+val verapdfVersion = "1.26.5"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.1.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.sonarqube") version "6.0.1.5171"
     jacoco
