@@ -1,12 +1,12 @@
 package no.nav.omsorgspenger
 
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
 import no.nav.helse.dusseldorf.ktor.health.*
 import no.nav.helse.rapids_rivers.RapidApplication
-import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.RapidsStateListener
 import no.nav.omsorgspenger.ferdigstilljournalforing.FerdigstillJournalføringRiver
 import no.nav.omsorgspenger.journalforjson.JournalførJsonRiver
@@ -15,11 +15,10 @@ import no.nav.omsorgspenger.oppgave.OpprettGosysJournalføringsoppgaverRiver
 
 fun main() {
     val applicationContext = ApplicationContext.Builder().build()
-    RapidApplication.Builder(
-        config = RapidApplication.RapidApplicationConfig.fromEnv(env = applicationContext.env)
+    RapidApplication.create(
+        env = applicationContext.env,
+        builder = { withKtorModule { omsorgspengerJournalføring(applicationContext) } }
     )
-        .withKtorModule { omsorgspengerJournalføring(applicationContext) }
-        .build()
         .apply { registerApplicationContext(applicationContext) }
         .start()
 }

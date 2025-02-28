@@ -1,10 +1,10 @@
 package no.nav.omsorgspenger.oppgave
 
+import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers.River
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.prometheus.client.Counter
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.skalLøseBehov
 import no.nav.omsorgspenger.CorrelationId.Companion.correlationId

@@ -1,10 +1,10 @@
 package no.nav.omsorgspenger.kopierjournalpost
 
+import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers.River
+import com.github.navikt.tbd_libs.rapids_and_rivers.isMissingOrNull
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import kotlinx.coroutines.runBlocking
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
-import no.nav.helse.rapids_rivers.isMissingOrNull
 import no.nav.k9.rapid.river.BehovssekvensPacketListener
 import no.nav.k9.rapid.river.aktueltBehov
 import no.nav.k9.rapid.river.skalLøseBehov
