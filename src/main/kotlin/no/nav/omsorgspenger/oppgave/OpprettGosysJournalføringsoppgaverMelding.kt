@@ -2,8 +2,8 @@ package no.nav.omsorgspenger.oppgave
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.TextNode
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.isMissingOrNull
+import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers.isMissingOrNull
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.river.leggTilBehov
 import no.nav.k9.rapid.river.leggTilLøsning

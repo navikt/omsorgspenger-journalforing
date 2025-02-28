@@ -1,10 +1,10 @@
 package no.nav.omsorgspenger.ferdigstilljournalforing
 
+import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import de.huxhorn.sulky.ulid.ULID
 import io.mockk.clearMocks
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.k9.rapid.river.leggTilLøsning
