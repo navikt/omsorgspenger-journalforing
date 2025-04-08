@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.12.1"
+val junitPlatformVersion = "1.12.1"
 val k9rapidVersion = "1.20250331094334-71f77eb"
 val dusseldorfKtorVersion = "6.1.2"
 val ktorVersion = "3.1.0"
@@ -43,6 +44,7 @@ dependencies {
     // Test
     testImplementation("org.skyscreamer:jsonassert:$jsonassertVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfKtorVersion")
     testImplementation("no.nav.k9.rapid:river-test:$k9rapidVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
