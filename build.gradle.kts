@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.12.1"
-val junitPlatformVersion = "1.12.1"
+val junitJupiterVersion = "5.12.2"
+val junitPlatformVersion = "1.12.2"
 val k9rapidVersion = "1.20250404105830-823f1fc"
 val dusseldorfKtorVersion = "6.1.2"
 val ktorVersion = "3.1.0"
