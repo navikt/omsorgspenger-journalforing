@@ -8,9 +8,9 @@ val dusseldorfKtorVersion = "6.1.2"
 val ktorVersion = "3.1.0"
 val jsonassertVersion = "1.5.3"
 val orgJsonVersion = "20250107"
-val mockkVersion = "1.14.0"
+val mockkVersion = "1.14.2"
 val openhtmltopdfVersion = "1.0.10"
-val verapdfVersion = "1.26.5"
+val verapdfVersion = "1.28.1"
 
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
