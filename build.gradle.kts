@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.12.2"
 val junitPlatformVersion = "1.12.2"
-val k9rapidVersion = "1.20250430062853-30d2e6d"
+val k9rapidVersion = "1.20250513110430-8339f35"
 val dusseldorfKtorVersion = "6.1.4"
 val ktorVersion = "3.1.0"
 val jsonassertVersion = "1.5.3"
@@ -15,7 +15,7 @@ val verapdfVersion = "1.28.1"
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.1.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.sonarqube") version "6.1.0.5360"
     jacoco
