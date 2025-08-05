@@ -3,7 +3,6 @@ package no.nav.omsorgspenger.oppgave
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import java.util.*
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovssekvens
@@ -105,7 +104,7 @@ internal fun TestRapid.mockLøsningPåHentePersonopplysninger(identitetsnummer: 
 private fun TestRapid.sisteMelding() = inspektør.message(inspektør.size - 1).toString()
 
 private fun String.somJsonMessage() =
-    JsonMessage(toString(), MessageProblems(this), SimpleMeterRegistry()).also { it.interestedIn("@løsninger") }
+    JsonMessage(toString(), MessageProblems(this), null).also { it.interestedIn("@løsninger") }
 
 private fun JsonMessage.leggTilLøsningPåHentePersonopplysninger(identitetsnummer: String) = leggTilLøsning(
     behov = "HentPersonopplysninger@opprettGosysJournalføringsoppgaver",
