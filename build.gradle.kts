@@ -1,10 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.13.3"
-val junitPlatformVersion = "1.13.3"
-val k9rapidVersion = "1.20250616113614-9760e08"
-val dusseldorfKtorVersion = "7.0.1"
+val junitJupiterVersion = "5.13.4"
+val junitPlatformVersion = "1.13.4"
+val k9rapidVersion = "1.20250721081433-60912ee"
+val dusseldorfKtorVersion = "7.0.2"
 val ktorVersion = "3.1.0"
 val jsonassertVersion = "1.5.3"
 val orgJsonVersion = "20250517"
