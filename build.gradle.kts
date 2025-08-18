@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.13.4"
 val junitPlatformVersion = "1.13.4"
@@ -24,6 +23,10 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 dependencies {
@@ -69,14 +72,6 @@ repositories {
 }
 
 tasks {
-
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "21"
-    }
-
-    named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "21"
-    }
 
     withType<Test> {
         useJUnitPlatform()
