@@ -13,7 +13,7 @@ val verapdfVersion = "1.28.2"
 val mainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.sonarqube") version "7.0.0.6105"
     jacoco
