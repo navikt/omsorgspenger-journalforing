@@ -1,12 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val junitVersion = "6.0.1"
+val junitVersion = "6.0.2"
 val k9rapidVersion = "1.20251128134720-c92d062"
-val dusseldorfKtorVersion = "7.0.6"
+val dusseldorfKtorVersion = "7.0.7"
 val ktorVersion = "3.2.3"
 val jsonassertVersion = "1.5.3"
 val orgJsonVersion = "20251224"
-val mockkVersion = "1.14.7"
+val mockkVersion = "1.14.9"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.28.2"
 
