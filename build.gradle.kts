@@ -1,30 +1,28 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val junitVersion = "6.0.1"
-val k9rapidVersion = "1.20251128134720-c92d062"
-val dusseldorfKtorVersion = "7.0.6"
-val ktorVersion = "3.2.3"
+val junitVersion = "6.0.2"
+val k9rapidVersion = "1.20260206143842-d99f063"
+val dusseldorfKtorVersion = "7.0.7"
+val ktorVersion = "3.4.0"
 val jsonassertVersion = "1.5.3"
 val orgJsonVersion = "20251224"
-val mockkVersion = "1.14.7"
+val mockkVersion = "1.14.9"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.28.2"
+val okhttpVersion = "5.3.2"
 
-val mainClass = "no.nav.omsorgspenger.AppKt"
+val appMainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.3.1"
     id("org.sonarqube") version "7.2.2.6593"
     jacoco
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(25))
     }
 }
 
@@ -37,6 +35,8 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("org.json:json:$orgJsonVersion")
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:$okhttpVersion"))
+    implementation("com.squareup.okhttp3:okhttp-jvm")
 
     // PDF
     implementation("com.openhtmltopdf:openhtmltopdf-core:$openhtmltopdfVersion")
@@ -85,14 +85,10 @@ tasks {
         manifest {
             attributes(
                 mapOf(
-                    "Main-Class" to mainClass
+                    "Main-Class" to appMainClass
                 )
             )
         }
-    }
-
-    withType<Wrapper> {
-        gradleVersion = "8.8"
     }
 
 }
