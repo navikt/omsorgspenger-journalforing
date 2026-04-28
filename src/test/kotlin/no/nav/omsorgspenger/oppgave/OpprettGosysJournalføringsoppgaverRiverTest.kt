@@ -83,7 +83,7 @@ internal class OpprettGosysJournalføringsoppgaverRiverTest(
                         "identitetsnummer" to identitetsnummer,
                         "journalpostType" to "OverføreOmsorgsdager",
                         "journalpostIder" to journalpostIder,
-                        "berørteIdentitetsnummer" to setOf("11111111112", "11111111113")
+                        "berørteIdentitetsnummer" to setOf("11111111112", "18410162721")
                     ),
                 )
             )
