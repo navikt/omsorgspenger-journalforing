@@ -17,7 +17,7 @@ internal abstract class AzureAwareClient(
     private val cachedAccessTokenClient = CachedAccessTokenClient(accessTokenClient)
 
     protected fun authorizationHeader() =
-        cachedAccessTokenClient.getAccessToken(scopes).asAuthoriationHeader()
+        cachedAccessTokenClient.getClientCredentialsAccessToken(scopes).asAuthoriationHeader()
 
     override suspend fun check() =
         Result.merge(
@@ -26,7 +26,7 @@ internal abstract class AzureAwareClient(
         )
 
     private fun accessTokenCheck() = kotlin.runCatching {
-        val accessTokenResponse = accessTokenClient.getAccessToken(scopes)
+        val accessTokenResponse = accessTokenClient.getClientCredentialsAccessToken(scopes)
         (SignedJWT.parse(accessTokenResponse.accessToken).jwtClaimsSet.getStringArrayClaim("roles")?.toList()
             ?: emptyList()).contains("access_as_application")
     }.fold(
