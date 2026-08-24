@@ -5,11 +5,11 @@ val k9rapidVersion = "1.20260630092344-01f2f22"
 val dusseldorfKtorVersion = "8.0.5"
 val ktorVersion = "3.5.2"
 val jsonassertVersion = "1.5.3"
-val orgJsonVersion = "20260719"
+val orgJsonVersion = "20260814"
 val mockkVersion = "1.14.11"
 val openhtmltopdfVersion = "1.0.10"
 val verapdfVersion = "1.30.2"
-val okhttpVersion = "5.4.0"
+val okhttpVersion = "5.5.0"
 
 val appMainClass = "no.nav.omsorgspenger.AppKt"
 
