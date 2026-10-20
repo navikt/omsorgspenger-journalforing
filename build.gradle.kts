@@ -8,13 +8,13 @@ val jsonassertVersion = "1.5.3"
 val orgJsonVersion = "20260814"
 val mockkVersion = "1.14.11"
 val openhtmltopdfVersion = "1.0.10"
-val verapdfVersion = "1.30.2"
+val verapdfVersion = "1.30.3"
 val okhttpVersion = "5.5.0"
 
 val appMainClass = "no.nav.omsorgspenger.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.4.20"
+    kotlin("jvm") version "2.4.21"
     id("com.gradleup.shadow") version "9.6.1"
     id("org.sonarqube") version "7.5.0.8588"
     jacoco
