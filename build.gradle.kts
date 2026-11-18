@@ -8,7 +8,7 @@ val jsonassertVersion = "1.5.3"
 val orgJsonVersion = "20260814"
 val mockkVersion = "1.14.12"
 val openhtmltopdfVersion = "1.0.10"
-val verapdfVersion = "1.30.3"
+val verapdfVersion = "1.30.4"
 val okhttpVersion = "5.5.1"
 
 val appMainClass = "no.nav.omsorgspenger.AppKt"
